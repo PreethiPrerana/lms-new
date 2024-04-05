@@ -28,7 +28,6 @@ public class BulkUploadService {
     private TopicRepository topicRepository;
 
     public void uploadFile(MultipartFile file) throws IOException {
-        System.out.println("Inside upload file");
         Workbook workbook = WorkbookFactory.create(file.getInputStream());
 
         // Process each sheet
@@ -38,18 +37,16 @@ public class BulkUploadService {
             // Extract level from the first row, first column (assuming it's a header row)
             Row headerRow = sheet.getRow(0);
             String level = headerRow.getCell(1).getStringCellValue();
-            System.out.println("level:"+level);
             // Extract course name from the sheet name
             String courseName = sheet.getSheetName();
-            System.out.println("Course:"+courseName);
             // Create or get the course from the database
             Course course = courseRepository.findByCourseName(courseName)
-                                .orElseGet(() -> {
-                                    Course newCourse = new Course();
-                                    newCourse.setCourseName(courseName);
-                                    newCourse.setLevel(level);
-                                    return courseRepository.save(newCourse);
-                                });
+                    .orElseGet(() -> {
+                        Course newCourse = new Course();
+                        newCourse.setCourseName(courseName);
+                        newCourse.setLevel(level);
+                        return courseRepository.save(newCourse);
+                    });
 
             // Process topics under this course
             List<Topic> topics = processTopics(sheet, course);
@@ -60,15 +57,14 @@ public class BulkUploadService {
     }
 
     private List<Topic> processTopics(Sheet sheet, Course course) {
-        System.out.println("Inside process topics");
         List<Topic> topics = new ArrayList<>();
         Iterator<Row> iterator = sheet.iterator();
-        
+
         // Skip header row
         if (iterator.hasNext()) {
             iterator.next();
+            iterator.next();
         }
-        System.out.println("Iterator:"+iterator);
         while (iterator.hasNext()) {
             Row currentRow = iterator.next();
             if (isRowEmpty(currentRow)) {
@@ -80,13 +76,11 @@ public class BulkUploadService {
             topic.setDescription(currentRow.getCell(1).getStringCellValue());
             topic.setCourse(course);
             topics.add(topic);
-            System.out.println("Topic:"+ topic);
         }
-        System.out.println("All Topics-:"+ topics);
-
         return topics;
     }
-      private boolean isRowEmpty(Row row) {
+
+    private boolean isRowEmpty(Row row) {
         if (row == null) {
             return true;
         }

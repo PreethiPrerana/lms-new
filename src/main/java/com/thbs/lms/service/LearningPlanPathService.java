@@ -8,6 +8,7 @@ import com.thbs.lms.repository.LearningPlanPathRepository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LearningPlanPathService {
@@ -16,7 +17,7 @@ public class LearningPlanPathService {
     private LearningPlanPathRepository learningPlanPathRepository;
 
     public LearningPlanPath createLearningPlanPath(LearningPlanPath learningPlanPath) {
-       return learningPlanPathRepository.save(learningPlanPath);
+        return learningPlanPathRepository.save(learningPlanPath);
     }
 
     public List<LearningPlanPath> getAllLearningPlanPathsByLearningPlanId(Long learningPlanId) {
@@ -38,11 +39,15 @@ public class LearningPlanPathService {
         learningPlanPathRepository.save(learningPlanPath);
     }
 
-    public void updateDates(Long pathId, Date newStartDate, Date newEndDate) {
-        LearningPlanPath learningPlanPath = learningPlanPathRepository.findById(pathId)
-                .orElseThrow(() -> new IllegalArgumentException("LearningPlanPath not found for ID: " + pathId));
-        learningPlanPath.setStartDate(newStartDate);
-        learningPlanPath.setEndDate(newEndDate);
-        learningPlanPathRepository.save(learningPlanPath);
+    public Optional<LearningPlanPath> updateDates(Long learningPlanPathID, Date startDate, Date endDate) {
+        Optional<LearningPlanPath> optionalLearningPlanPath = learningPlanPathRepository.findById(learningPlanPathID);
+        if (optionalLearningPlanPath.isPresent()) {
+            LearningPlanPath learningPlanPath = optionalLearningPlanPath.get();
+            learningPlanPath.setStartDate(startDate);
+            learningPlanPath.setEndDate(endDate);
+            return Optional.of(learningPlanPathRepository.save(learningPlanPath));
+        } else {
+            return Optional.empty();
+        }
     }
 }

@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/learningplans")
@@ -27,12 +25,12 @@ public class LearningPlanController {
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            System.out.println("Before upload file");
             bulkUploadService.uploadFile(file);
             return ResponseEntity.ok().body("File uploaded successfully.");
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while uploading the file.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error occurred while uploading the file.");
         }
     }
 
@@ -41,7 +39,7 @@ public class LearningPlanController {
         List<LearningPlan> learningPlans = learningPlanService.getAllLearningPlans();
         return learningPlans;
     }
-    
+
     @PostMapping("/save")
     public LearningPlan saveLearningPlan(@RequestBody LearningPlan learningPlan) {
         return learningPlanService.saveLearningPlan(learningPlan);
@@ -57,31 +55,4 @@ public class LearningPlanController {
         return learningPlanService.findByBatchID(batchID);
     }
 
-    @PutMapping("/update-dates")
-    public Optional<LearningPlan> updateLearningPlanDates(@RequestParam Long learningPlanID,
-                                                          @RequestBody DateRange dateRange) {
-        return learningPlanService.updateLearningPlanDates(learningPlanID, dateRange.getStartDate(), dateRange.getEndDate());
-    }
-
-    public static class DateRange {
-        private Date startDate;
-        private Date endDate;
-
-        // getters and setters
-        public Date getStartDate() {
-            return startDate;
-        }
-
-        public void setStartDate(Date startDate) {
-            this.startDate = startDate;
-        }
-
-        public Date getEndDate() {
-            return endDate;
-        }
-
-        public void setEndDate(Date endDate) {
-            this.endDate = endDate;
-        }
-    }
 }

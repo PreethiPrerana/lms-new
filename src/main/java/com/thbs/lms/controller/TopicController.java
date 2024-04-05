@@ -25,7 +25,7 @@ public class TopicController {
         return topicService.getAllTopics();
     }
 
-    @PutMapping("/description")
+    @PatchMapping("/description")
     public String updateDescription(@RequestParam Long topicId, @RequestBody String newDescription) {
         return topicService.updateDescription(topicId, newDescription);
     }

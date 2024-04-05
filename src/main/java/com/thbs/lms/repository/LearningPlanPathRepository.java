@@ -12,10 +12,7 @@ public interface LearningPlanPathRepository extends JpaRepository<LearningPlanPa
 
     List<LearningPlanPath> findByLearningPlanLearningPlanID(Long learningPlanID);
 
-    // List<LearningPlanPath> findByLearningPlanLearningPlanIDAndType(Long learningPlanId, String type);
-
     List<LearningPlanPath> findByType(String type);
 
     List<LearningPlanPath> findByTrainer(String trainer);
 }
-
