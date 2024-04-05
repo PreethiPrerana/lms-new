@@ -1,5 +1,6 @@
 package com.thbs.lms.controller;
 
+import com.thbs.lms.exception.FileProcessingException;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.service.BulkUploadService;
 import com.thbs.lms.service.LearningPlanService;
@@ -29,10 +30,15 @@ public class LearningPlanController {
         try {
             System.out.println("Before upload file");
             bulkUploadService.uploadFile(file);
+            System.out.println("Looks like no exception");
             return ResponseEntity.ok().body("File uploaded successfully.");
         } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while uploading the file.");
+            String errorMessage = "Error processing file: " + e.getMessage();
+            System.out.println("Inside catch: " + errorMessage);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+        } catch (FileProcessingException e) {
+            System.out.println("Inside catch: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

@@ -9,12 +9,14 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.thbs.lms.exception.FileProcessingException;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.repository.TopicRepository;
 
-import static org.mockito.Mockito.description;
+// import static org.mockito.Mockito.description;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,9 +32,10 @@ public class BulkUploadService {
     @Autowired
     private TopicRepository topicRepository;
 
-    public void uploadFile(MultipartFile file) throws IOException {
+    public void uploadFile(MultipartFile file) throws IOException, FileProcessingException {
         System.out.println("Inside upload file");
         Workbook workbook = WorkbookFactory.create(file.getInputStream());
+        System.out.println("Exception not thrown.");
 
         // Process each sheet
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
