@@ -13,5 +13,12 @@ public class GlobalExceptionHandler {
       String errorMessage = ex.getMessage(); 
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
+
+    @ExceptionHandler(InvalidSheetFormatException.class)
+    public ResponseEntity<String> handleInvalidSheetFormatException(InvalidSheetFormatException ex) {
+        String errorMessage = ex.getMessage(); 
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    }
+
 }
 
