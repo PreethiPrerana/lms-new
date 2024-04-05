@@ -13,6 +13,9 @@ import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.repository.TopicRepository;
+
+import static org.mockito.Mockito.description;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,7 +37,7 @@ public class BulkUploadService {
         // Process each sheet
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);
-
+            
             // Extract level from the first row, first column (assuming it's a header row)
             Row headerRow = sheet.getRow(0);
             String level = headerRow.getCell(1).getStringCellValue();
@@ -51,10 +54,8 @@ public class BulkUploadService {
                                     return courseRepository.save(newCourse);
                                 });
 
-            // Process topics under this course
             List<Topic> topics = processTopics(sheet, course);
 
-            // Save topics to the database
             topicRepository.saveAll(topics);
         }
     }
@@ -72,15 +73,20 @@ public class BulkUploadService {
         while (iterator.hasNext()) {
             Row currentRow = iterator.next();
             if (isRowEmpty(currentRow)) {
-                // Skip processing this row if it's empty
                 continue;
             }
-            Topic topic = new Topic();
-            topic.setTopicName(currentRow.getCell(0).getStringCellValue());
-            topic.setDescription(currentRow.getCell(1).getStringCellValue());
-            topic.setCourse(course);
-            topics.add(topic);
-            System.out.println("Topic:"+ topic);
+            String topicName = currentRow.getCell(0).getStringCellValue();
+            String description = currentRow.getCell(1).getStringCellValue();
+
+            boolean topicExists = topicRepository.existsByCourseAndTopicNameAndDescription(course, topicName, description);
+            if (!topicExists) {
+                Topic topic = new Topic();
+                topic.setTopicName(topicName);
+                topic.setDescription(description);
+                topic.setCourse(course);
+                topics.add(topic);
+                System.out.println("Topic:" + topic);
+            }
         }
         System.out.println("All Topics-:"+ topics);
 
