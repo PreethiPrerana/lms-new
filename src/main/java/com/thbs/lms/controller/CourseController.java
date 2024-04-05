@@ -3,15 +3,13 @@ package com.thbs.lms.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.thbs.lms.model.Course;
 import com.thbs.lms.service.CourseService;
+import com.thbs.lms.exceptionHandler.*;
 
 @RestController
 @RequestMapping("/courses")
@@ -21,19 +19,48 @@ public class CourseController {
     CourseService courseService;
 
     @PostMapping("/add")
-    public Course addCourse(@RequestBody Course course) {
-        return courseService.saveCourse(course);
+    public ResponseEntity<?> addCourse(@RequestBody Course course) {
+        try {
+            Course addedCourse = courseService.saveCourse(course);
+            return ResponseEntity.ok().body(addedCourse);
+        } catch (InvalidCourseDataException | DuplicateCourseException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @GetMapping
-    public List<Course> getAllCourses() {
-        List<Course> courses = courseService.getAllCourses();
-        return courses;
+    public ResponseEntity<?> getAllCourses() {
+        try {
+            List<Course> courses = courseService.getAllCourses();
+            return ResponseEntity.ok().body(courses);
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @GetMapping("/level")
-    public List<Course> getCoursesByLevel(@RequestParam String level) {
-        List<Course> courses = courseService.getCoursesByLevel(level);
-        return courses;
+    public ResponseEntity<?> getCoursesByLevel(@RequestParam String level) {
+        try {
+            List<Course> courses = courseService.getCoursesByLevel(level);
+            return ResponseEntity.ok().body(courses);
+        } catch (InvalidLevelException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/id")
+    public ResponseEntity<?> getCourseById(@RequestParam Long id) {
+        try {
+            Course course = courseService.getCourseById(id);
+            return ResponseEntity.ok().body(course);
+        } catch (CourseNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 }
