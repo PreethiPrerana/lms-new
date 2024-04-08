@@ -21,19 +21,18 @@ public class CourseService {
                 course.getLevel() == null || course.getLevel().isEmpty()) {
             throw new InvalidCourseDataException("Course name, description, and level cannot be null or empty.");
         }
-    
+
         Optional<Course> existingCourse = courseRepository.findByCourseName(course.getCourseName());
         if (existingCourse.isPresent()) {
             throw new DuplicateCourseException("Course with name '" + course.getCourseName() + "' already exists.");
         }
-    
+
         try {
             return courseRepository.save(course);
         } catch (Exception e) {
             throw new RepositoryOperationException("Error saving course: " + e.getMessage());
         }
     }
-    
 
     public List<Course> getAllCourses() {
         try {

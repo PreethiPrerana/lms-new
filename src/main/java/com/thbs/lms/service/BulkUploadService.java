@@ -19,8 +19,6 @@ import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.repository.TopicRepository;
 import com.thbs.lms.utility.SheetValidator;
 
-// import static org.mockito.Mockito.description;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,14 +36,12 @@ public class BulkUploadService {
     private TopicRepository topicRepository;
 
     public void uploadFile(MultipartFile file) throws IOException, FileProcessingException {
-        System.out.println("Inside upload file");
         Workbook workbook = WorkbookFactory.create(file.getInputStream());
 
-        System.out.println("After WorkbookFactory");
         // Process each sheet
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);
-            
+
             if (!SheetValidator.isValidSheetFormat(sheet)) {
                 throw new InvalidSheetFormatException("Sheet format does not match the expected format.");
             }
@@ -93,14 +89,16 @@ public class BulkUploadService {
             }
             topicNames.add(topicName);
 
-            // boolean topicExists = topicRepository.existsByCourseAndTopicNameAndDescription(course, topicName, description);
+            // boolean topicExists =
+            // topicRepository.existsByCourseAndTopicNameAndDescription(course, topicName,
+            // description);
             // if (!topicExists) {
-                Topic topic = new Topic();
-                topic.setTopicName(topicName);
-                topic.setDescription(description);
-                topic.setCourse(course);
-                topics.add(topic);
-                System.out.println("Topic:" + topic);
+            Topic topic = new Topic();
+            topic.setTopicName(topicName);
+            topic.setDescription(description);
+            topic.setCourse(course);
+            topics.add(topic);
+            System.out.println("Topic:" + topic);
             // }
         }
         return topics;
