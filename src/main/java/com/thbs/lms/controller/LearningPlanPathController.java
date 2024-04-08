@@ -3,12 +3,21 @@ package com.thbs.lms.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.thbs.lms.exceptionHandler.DuplicateLearningPlanPathException;
+import com.thbs.lms.exceptionHandler.InvalidLearningPlanPathDataException;
+import com.thbs.lms.exceptionHandler.InvalidTrainerException;
+import com.thbs.lms.exceptionHandler.InvalidTypeException;
+import com.thbs.lms.exceptionHandler.LearningPlanPathNotFoundException;
+import com.thbs.lms.exceptionHandler.RepositoryOperationException;
 import com.thbs.lms.model.LearningPlanPath;
 import com.thbs.lms.service.LearningPlanPathService;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/learning-plan-paths")
@@ -18,43 +27,84 @@ public class LearningPlanPathController {
     private LearningPlanPathService learningPlanPathService;
 
     @PostMapping
-    public LearningPlanPath createLearningPlanPath(@RequestBody LearningPlanPath learningPlanPath) {
-        return learningPlanPathService.createLearningPlanPath(learningPlanPath);
+    public ResponseEntity<?> createLearningPlanPath(@RequestBody LearningPlanPath learningPlanPath) {
+        try {
+            LearningPlanPath createdPath = learningPlanPathService.createLearningPlanPath(learningPlanPath);
+            return ResponseEntity.ok(createdPath);
+        } catch (DuplicateLearningPlanPathException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(e.getMessage());
+        } catch (InvalidLearningPlanPathDataException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
     }
 
     @GetMapping("/ID")
-    public List<LearningPlanPath> getAllLearningPlanPathsByLearningPlanId(@RequestBody Long learningPlanId) {
-        return learningPlanPathService.getAllLearningPlanPathsByLearningPlanId(learningPlanId);
+    public ResponseEntity<?> getAllLearningPlanPathsByLearningPlanId(@RequestBody Long learningPlanId) {
+        try {
+            List<LearningPlanPath> paths = learningPlanPathService
+                    .getAllLearningPlanPathsByLearningPlanId(learningPlanId);
+            return ResponseEntity.ok().body(paths);
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @GetMapping("/type")
-    public List<LearningPlanPath> getAllLearningPlansByType(@RequestParam String type) {
-        return learningPlanPathService.getAllLearningPlansByType(type);
+    public ResponseEntity<?> getAllLearningPlansByType(@RequestParam String type) {
+        try {
+            List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlansByType(type);
+            return ResponseEntity.ok().body(paths);
+        } catch (InvalidTypeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @GetMapping("/trainer")
-    public List<LearningPlanPath> getAllLearningPlansByTrainer(@RequestParam String trainer) {
-        return learningPlanPathService.getAllLearningPlansByTrainer(trainer);
-
+    public ResponseEntity<?> getAllLearningPlansByTrainer(@RequestParam String trainer) {
+        try {
+            List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlansByTrainer(trainer);
+            return ResponseEntity.ok().body(paths);
+        } catch (InvalidTrainerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
     }
 
     @PatchMapping("/pathID/trainer")
-    public String updateTrainer(@RequestParam Long pathId, @RequestBody String newTrainer) {
-        learningPlanPathService.updateTrainer(pathId, newTrainer);
-        return "Trainer updated successfully";
+    public ResponseEntity<?> updateTrainer(@RequestParam Long pathId, @RequestBody String newTrainer) {
+        try {
+            learningPlanPathService.updateTrainer(pathId, newTrainer);
+            return ResponseEntity.ok().body("Trainer updated successfully");
+        } catch (InvalidTrainerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
     }
 
-    // @PutMapping("/pathID/dates")
-    // public String updateDates(@RequestParam Long pathId,
-    //         @RequestBody Date newStartDate,
-    //         @RequestBody Date newEndDate) {
-    //     learningPlanPathService.updateDates(pathId, newStartDate, newEndDate);
-    //     return "Dates updated successfully";
-    // }
     @PatchMapping("/update-dates")
-    public Optional<LearningPlanPath> updateLearningPlanDates(@RequestParam Long learningPlanPathID,
-                                                          @RequestBody DateRange dateRange) {
-        return learningPlanPathService.updateDates(learningPlanPathID, dateRange.getStartDate(), dateRange.getEndDate());
+    public ResponseEntity<?> updateLearningPlanDates(@RequestParam Long learningPlanPathID,
+            @RequestBody DateRange dateRange) {
+        try {
+            Optional<LearningPlanPath> updatedPath = learningPlanPathService.updateDates(learningPlanPathID,
+                    dateRange.getStartDate(), dateRange.getEndDate());
+            return ResponseEntity.ok().body("Date Range updated successfully.");
+        } catch (LearningPlanPathNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("LearningPlan Path with ID: " + learningPlanPathID + " not found.");
+        } catch (RepositoryOperationException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     public static class DateRange {

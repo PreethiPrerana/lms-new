@@ -151,12 +151,13 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    // @ExceptionHandler(Exception.class)
-    // @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    // @ResponseBody
-    // public ErrorResponse handleGlobalException(Exception ex) {
-    //     // Log the exception for debugging
-    //     ex.printStackTrace();
-    //     return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred");
-    // }
+    @ExceptionHandler(FileProcessingException.class)
+    public ErrorResponse handleFileProcessingException(FileProcessingException ex) {
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidSheetFormatException.class)
+    public ErrorResponse handleInvalidSheetFormatException(InvalidSheetFormatException ex) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
 }
