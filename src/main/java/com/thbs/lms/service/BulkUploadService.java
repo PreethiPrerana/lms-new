@@ -10,19 +10,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.thbs.lms.exception.FileProcessingException;
-import com.thbs.lms.exception.InvalidSheetFormatException;
+import com.thbs.lms.exceptionHandler.DuplicateTopicException;
+import com.thbs.lms.exceptionHandler.FileProcessingException;
+import com.thbs.lms.exceptionHandler.InvalidSheetFormatException;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.repository.TopicRepository;
+import com.thbs.lms.utility.SheetValidator;
 
 // import static org.mockito.Mockito.description;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class BulkUploadService {
@@ -37,11 +41,12 @@ public class BulkUploadService {
         System.out.println("Inside upload file");
         Workbook workbook = WorkbookFactory.create(file.getInputStream());
 
+        System.out.println("After WorkbookFactory");
         // Process each sheet
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);
             
-            if (!isValidSheetFormat(sheet)) {
+            if (!SheetValidator.isValidSheetFormat(sheet)) {
                 throw new InvalidSheetFormatException("Sheet format does not match the expected format.");
             }
 
@@ -67,6 +72,7 @@ public class BulkUploadService {
 
     private List<Topic> processTopics(Sheet sheet, Course course) {
         List<Topic> topics = new ArrayList<>();
+        Set<String> topicNames = new HashSet<>();
         Iterator<Row> iterator = sheet.iterator();
 
         // Skip header row
@@ -82,15 +88,20 @@ public class BulkUploadService {
             String topicName = currentRow.getCell(0).getStringCellValue();
             String description = currentRow.getCell(1).getStringCellValue();
 
-            boolean topicExists = topicRepository.existsByCourseAndTopicNameAndDescription(course, topicName, description);
-            if (!topicExists) {
+            if (topicNames.contains(topicName)) {
+                throw new DuplicateTopicException("Duplicate entries present in sheet.");
+            }
+            topicNames.add(topicName);
+
+            // boolean topicExists = topicRepository.existsByCourseAndTopicNameAndDescription(course, topicName, description);
+            // if (!topicExists) {
                 Topic topic = new Topic();
                 topic.setTopicName(topicName);
                 topic.setDescription(description);
                 topic.setCourse(course);
                 topics.add(topic);
                 System.out.println("Topic:" + topic);
-            }
+            // }
         }
         return topics;
     }
@@ -110,55 +121,4 @@ public class BulkUploadService {
         // All cells in the row are empty
         return true;
     }
-
-    private boolean isValidSheetFormat(Sheet sheet) {
-        // Check if the sheet has at least one row
-        if (sheet.getPhysicalNumberOfRows() < 1) {
-            return false;
-        }
-    
-        // Check if the first row (header row) has the correct format
-        Row headerRow = sheet.getRow(0);
-        if (headerRow == null) {
-            return false;
-        }
-        
-        // Check if the first cell (A1) contains "Level"
-        Cell firstCell = headerRow.getCell(0);
-        if (firstCell == null || !firstCell.getStringCellValue().trim().equalsIgnoreCase("Level")) {
-            return false;
-        }
-    
-        // Check if the second cell (B1) contains "BASIC", "INTERMEDIATE", or "ADVANCED"
-        Cell levelCell = headerRow.getCell(1);
-        if (levelCell == null) {
-            return false;
-        }
-        String level = levelCell.getStringCellValue().trim();
-        if (!level.equalsIgnoreCase("BASIC") && !level.equalsIgnoreCase("INTERMEDIATE") && !level.equalsIgnoreCase("ADVANCED")) {
-            return false;
-        }
-    
-        // Check if the sheet contains at least two columns
-        if (sheet.getRow(0).getPhysicalNumberOfCells() < 2) {
-            return false;
-        }
-    
-        // Check if each subsequent row (starting from the second row) has non-empty cells in both columns
-        for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
-            Row row = sheet.getRow(i);
-            if (row == null || row.getPhysicalNumberOfCells() < 2) {
-                return false;
-            }
-            Cell topicNameCell = row.getCell(0);
-            Cell topicDescriptionCell = row.getCell(1);
-            if (topicNameCell == null || topicDescriptionCell == null ||
-                    topicNameCell.getCellType() == CellType.BLANK || topicDescriptionCell.getCellType() == CellType.BLANK) {
-                return false;
-            }
-        }
-    
-        return true;
-    }
-    
 }
