@@ -1,4 +1,6 @@
 package com.thbs.lms.testService;
+
+import com.thbs.lms.exceptionHandler.LearningPlanNotFoundException;
 import com.thbs.lms.exceptionHandler.RepositoryOperationException;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.repository.LearningPlanRepository;
@@ -49,6 +51,18 @@ public class LearningPlanServiceTest {
     }
 
     @Test
+    void testSaveLearningPlan() {
+        LearningPlan learningPlan = new LearningPlan();
+        learningPlan.setLearningPlanID(1L);
+        learningPlan.setType("Test Learning Plan");
+
+        when(learningPlanRepository.save(learningPlan)).thenReturn(learningPlan);
+        LearningPlan savedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
+        verify(learningPlanRepository, times(1)).save(learningPlan);
+        assertEquals(learningPlan, savedLearningPlan);
+    }
+
+    @Test
     void testGetLearningPlanById() {
         Long learningPlanId = 1L;
         when(learningPlanRepository.findById(learningPlanId)).thenReturn(Optional.of(learningPlan));
@@ -83,6 +97,45 @@ public class LearningPlanServiceTest {
         assertEquals(expectedLearningPlans.size(), actualLearningPlans.size());
         assertEquals(expectedLearningPlans.get(0), actualLearningPlans.get(0));
     }
+
+    @Test
+    void testGetLearningPlanById_NotFound() {
+        Long learningPlanId = 1L;
+        when(learningPlanRepository.findById(learningPlanId)).thenReturn(Optional.empty());
+
+        assertThrows(LearningPlanNotFoundException.class, () -> {
+            learningPlanService.getLearningPlanById(learningPlanId);
+        });
+    }
+
+    @Test
+    void testFindByType_NotFound() {
+        String type = "Nonexistent Type";
+        when(learningPlanRepository.findByType(type)).thenReturn(new ArrayList<>());
+
+        assertThrows(LearningPlanNotFoundException.class, () -> {
+            learningPlanService.findByType(type);
+        });
+    }
+
+    @Test
+    void testFindByBatchID_NotFound() {
+        Long batchID = 2L; // Assuming no learning plans exist for batchID = 2
+        when(learningPlanRepository.findByBatchID(batchID)).thenReturn(new ArrayList<>());
+
+        assertThrows(LearningPlanNotFoundException.class, () -> {
+            learningPlanService.findByBatchID(batchID);
+        });
+    }
+
+    @Test
+    void testGetAllLearningPlans_RepositoryException() {
+        // Stubbing the repository to throw an exception
+        when(learningPlanRepository.findAll()).thenThrow(new RuntimeException("Repository exception"));
+
+        // Verifying that a RepositoryOperationException is thrown
+        assertThrows(RepositoryOperationException.class, () -> {
+            learningPlanService.getAllLearningPlans();
+        });
+    }
 }
-
-

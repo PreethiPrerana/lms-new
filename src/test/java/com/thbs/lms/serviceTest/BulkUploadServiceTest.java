@@ -5,9 +5,6 @@
 // import java.io.ByteArrayInputStream;
 // import java.io.IOException;
 
-// import org.apache.poi.ss.usermodel.Row;
-// import org.apache.poi.ss.usermodel.Sheet;
-// import org.apache.poi.ss.usermodel.Workbook;
 // import org.junit.jupiter.api.BeforeEach;
 // import org.junit.jupiter.api.Test;
 // import org.mockito.InjectMocks;
@@ -17,7 +14,6 @@
 // import org.springframework.web.multipart.MultipartFile;
 
 // import com.thbs.lms.model.Course;
-// import com.thbs.lms.model.Topic;
 // import com.thbs.lms.repository.CourseRepository;
 // import com.thbs.lms.repository.TopicRepository;
 // import com.thbs.lms.service.BulkUploadService;

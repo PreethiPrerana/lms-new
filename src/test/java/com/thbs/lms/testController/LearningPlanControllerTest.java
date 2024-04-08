@@ -1,5 +1,5 @@
 package com.thbs.lms.testController;
-import com.thbs.lms.exceptionHandler.RepositoryOperationException;
+
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.service.LearningPlanService;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.thbs.lms.controller.LearningPlanController;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class LearningPlanControllerTest {
         learningPlan.setType("Test Type");
         learningPlan.setBatchID(1L);
     }
+
     @Test
     void testSaveLearningPlan() {
         when(learningPlanService.saveLearningPlan(learningPlan)).thenReturn(learningPlan);
@@ -83,7 +85,4 @@ public class LearningPlanControllerTest {
         assertEquals(expectedLearningPlans, responseEntity.getBody());
     }
 
-    
 }
-
-

@@ -1,125 +1,183 @@
-// import com.thbs.lms.exceptionHandler.*;
-// import com.thbs.lms.model.Topic;
-// import com.thbs.lms.repository.TopicRepository;
-// import com.thbs.lms.service.TopicService;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.extension.ExtendWith;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.junit.jupiter.MockitoExtension;
+package com.thbs.lms.testService;
 
-// import java.util.ArrayList;
-// import java.util.List;
-// import java.util.Optional;
+import com.thbs.lms.exceptionHandler.*;
+import com.thbs.lms.model.Course;
+import com.thbs.lms.model.Topic;
+import com.thbs.lms.repository.TopicRepository;
+import com.thbs.lms.service.TopicService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-// import static org.junit.jupiter.api.Assertions.*;
-// import static org.mockito.Mockito.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-// @ExtendWith(MockitoExtension.class)
-// public class TopicServiceTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-//     @Mock
-//     private TopicRepository topicRepository;
+@ExtendWith(MockitoExtension.class)
+public class TopicServiceTest {
 
-//     @InjectMocks
-//     private TopicService topicService;
+    @Mock
+    private TopicRepository topicRepository;
 
-//     private Topic topic;
+    @InjectMocks
+    private TopicService topicService;
 
-//     @BeforeEach
-//     void setUp() {
-//         topic = new Topic();
-//         topic.setTopicName("Test Topic");
-//         topic.setDescription("Test Description");
-//     }
+    private Topic topic;
 
-//     @Test
-//     void testGetAllTopics() {
-//         List<Topic> expectedTopics = new ArrayList<>();
-//         expectedTopics.add(topic);
-//         when(topicRepository.findAll()).thenReturn(expectedTopics);
+    @BeforeEach
+    void setUp() {
+        topic = new Topic();
+        topic.setTopicName("Test Topic");
+        topic.setDescription("Test Description");
+    }
 
-//         List<Topic> actualTopics = topicService.getAllTopics();
+    @Test
+    void testGetAllTopics_Success() {
+        // Mock repository to return a list of topics
+        List<Topic> expectedTopics = new ArrayList<>();
+        expectedTopics.add(new Topic());
+        when(topicRepository.findAll()).thenReturn(expectedTopics);
 
-//         assertEquals(expectedTopics.size(), actualTopics.size());
-//         assertEquals(expectedTopics.get(0), actualTopics.get(0));
-//     }
+        // Call the service method
+        List<Topic> actualTopics = topicService.getAllTopics();
 
-//     @Test
-//     void testUpdateDescription() {
-//         Long topicId = 1L;
-//         String newDescription = "Updated Description";
+        // Assert the result
+        assertEquals(expectedTopics.size(), actualTopics.size());
+    }
 
-//         when(topicRepository.findById(topicId)).thenReturn(Optional.of(topic));
-//         when(topicRepository.save(any(Topic.class))).thenReturn(topic);
+    @Test
+    void testGetAllTopics_Exception() {
+        // Mock repository to throw an exception
+        when(topicRepository.findAll()).thenThrow(new RuntimeException("Database error"));
 
-//         String result = topicService.updateDescription(topicId, newDescription);
+        // Call the service method and expect an exception
+        assertThrows(RepositoryOperationException.class, () -> topicService.getAllTopics());
+    }
 
-//         assertEquals("Description updated successfully.", result);
-//         assertEquals(newDescription, topic.getDescription());
-//     }
+    @Test
+    void testUpdateDescription_Success() {
+        // Mock repository to return an optional topic
+        Topic topic = new Topic();
+        when(topicRepository.findById(1L)).thenReturn(Optional.of(topic));
 
-//     @Test
-//     void testAddTopicWithValidation() {
-//         when(topicRepository.existsByTopicName(anyString())).thenReturn(false);
-//         when(topicRepository.save(any(Topic.class))).thenReturn(topic);
+        // Call the service method
+        String result = topicService.updateDescription(1L, "New description");
 
-//         Topic addedTopic = topicService.addTopicWithValidation(topic.getTopicName(), topic.getDescription());
+        // Assert the result
+        assertEquals("Description updated successfully.", result);
+        assertEquals("New description", topic.getDescription());
+    }
 
-//         assertNotNull(addedTopic);
-//         assertEquals(topic, addedTopic);
-//     }
+    @Test
+    void testUpdateDescription_RepositoryOperationException() {
+        // Mock repository to throw an exception
+        when(topicRepository.findById(1L)).thenThrow(new RepositoryOperationException("Database error"));
 
-//     @Test
-//     void testAddTopicWithValidation_DuplicateTopic() {
-//         when(topicRepository.existsByTopicName(anyString())).thenReturn(true);
+        // Call the service method and expect an exception
+        assertThrows(RepositoryOperationException.class, () -> topicService.updateDescription(1L, "New description"));
+    }
 
-//         assertThrows(DuplicateTopicException.class, () -> {
-//             topicService.addTopicWithValidation(topic.getTopicName(), topic.getDescription());
-//         });
-//     }
+    @Test
+    void testUpdateDescription_TopicNotFoundException() {
+        // Mock repository to return an empty optional
+        when(topicRepository.findById(1L)).thenReturn(Optional.empty());
 
-//     @Test
-//     void testAddTopicWithValidation_InvalidData() {
-//         assertThrows(InvalidTopicDataException.class, () -> {
-//             topicService.addTopicWithValidation(null, null);
-//         });
-//     }
+        // Call the service method and expect a TopicNotFoundException
+        assertThrows(TopicNotFoundException.class, () -> topicService.updateDescription(1L, "New description"));
+    }
 
-//     @Test
-//     void testUpdateTopicDescriptionWithValidation() {
-//         Long topicId = 1L;
-//         String newDescription = "Updated Description";
+    @Test
+    void testAddTopicWithValidation_Success() {
+        // Mock repository to return false (topic does not exist)
+        when(topicRepository.existsByTopicNameAndCourse(anyString(), any(Course.class))).thenReturn(false);
+        // Mock repository to save the topic
+        when(topicRepository.save(any(Topic.class))).thenReturn(topic);
 
-//         when(topicRepository.findById(topicId)).thenReturn(Optional.of(topic));
-//         when(topicRepository.save(any(Topic.class))).thenReturn(topic);
+        // Call the service method
+        Topic addedTopic = topicService.addTopicWithValidation("New Topic", "Description", new Course());
 
-//         Topic updatedTopic = topicService.updateTopicDescriptionWithValidation(topicId, newDescription);
+        // Assert the result
+        assertNotNull(addedTopic);
+        assertEquals(topic, addedTopic);
+    }
 
-//         assertNotNull(updatedTopic);
-//         assertEquals(newDescription, updatedTopic.getDescription());
-//     }
+    @Test
+    void testAddTopicWithValidation_DuplicateTopic() {
+        // Mock repository to return true (topic already exists)
+        when(topicRepository.existsByTopicNameAndCourse(anyString(), any(Course.class))).thenReturn(true);
 
-//     @Test
-//     void testUpdateTopicDescriptionWithValidation_TopicNotFound() {
-//         Long topicId = 1L;
+        // Call the service method and expect a DuplicateTopicException
+        assertThrows(DuplicateTopicException.class,
+                () -> topicService.addTopicWithValidation("Existing Topic", "Description", new Course()));
+    }
 
-//         when(topicRepository.findById(topicId)).thenReturn(Optional.empty());
+    @Test
+    void testAddTopicWithValidation_InvalidData() {
+        // Call the service method with invalid data and expect an
+        // InvalidTopicDataException
+        assertThrows(InvalidTopicDataException.class, () -> topicService.addTopicWithValidation(null, null, null));
+    }
 
-//         assertThrows(TopicNotFoundException.class, () -> {
-//             topicService.updateTopicDescriptionWithValidation(topicId, "Updated Description");
-//         });
-//     }
+    @Test
+    void testAddTopicWithValidation_RepositoryOperationException() {
+        // Mock repository to throw an exception
+        when(topicRepository.existsByTopicNameAndCourse(anyString(), any(Course.class)))
+                .thenThrow(new RepositoryOperationException("Database error"));
 
-//     @Test
-//     void testUpdateTopicDescriptionWithValidation_InvalidDescription() {
-//         Long topicId = 1L;
+        // Call the service method and expect a RepositoryOperationException
+        assertThrows(RepositoryOperationException.class,
+                () -> topicService.addTopicWithValidation("New Topic", "Description", new Course()));
+    }
 
-//         when(topicRepository.findById(topicId)).thenReturn(Optional.of(topic));
+    @Test
+    void testUpdateTopicDescriptionWithValidation_Success() {
+        // Mock repository to return an optional containing the topic
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
+        // Mock repository to save the topic
+        when(topicRepository.save(any(Topic.class))).thenReturn(topic);
 
-//         assertThrows(InvalidDescriptionException.class, () -> {
-//             topicService.updateTopicDescriptionWithValidation(topicId, null);
-//         });
-//     }
-// }
+        // Call the service method
+        Topic updatedTopic = topicService.updateTopicDescriptionWithValidation(1L, "New Description");
+
+        // Assert the result
+        assertNotNull(updatedTopic);
+        assertEquals("New Description", updatedTopic.getDescription());
+    }
+
+    @Test
+    void testUpdateTopicDescriptionWithValidation_InvalidDescription() {
+        // Mock repository to return an optional containing the topic
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
+
+        // Call the service method with an empty description and expect an
+        // InvalidDescriptionException
+        assertThrows(InvalidDescriptionException.class,
+                () -> topicService.updateTopicDescriptionWithValidation(1L, ""));
+    }
+
+    @Test
+    void testUpdateTopicDescriptionWithValidation_RepositoryOperationException() {
+        // Mock repository to throw an exception
+        when(topicRepository.findById(anyLong())).thenThrow(new RepositoryOperationException("Database error"));
+
+        // Call the service method and expect a RepositoryOperationException
+        assertThrows(RepositoryOperationException.class,
+                () -> topicService.updateTopicDescriptionWithValidation(1L, "New Description"));
+    }
+
+    @Test
+    void testUpdateTopicDescriptionWithValidation_TopicNotFoundException() {
+        // Mock repository to return an empty optional (topic not found)
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // Call the service method and expect a TopicNotFoundException
+        assertThrows(TopicNotFoundException.class,
+                () -> topicService.updateTopicDescriptionWithValidation(1L, "New Description"));
+    }
+}

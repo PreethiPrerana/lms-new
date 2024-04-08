@@ -89,17 +89,11 @@ public class BulkUploadService {
             }
             topicNames.add(topicName);
 
-            // boolean topicExists =
-            // topicRepository.existsByCourseAndTopicNameAndDescription(course, topicName,
-            // description);
-            // if (!topicExists) {
             Topic topic = new Topic();
             topic.setTopicName(topicName);
             topic.setDescription(description);
             topic.setCourse(course);
             topics.add(topic);
-            System.out.println("Topic:" + topic);
-            // }
         }
         return topics;
     }

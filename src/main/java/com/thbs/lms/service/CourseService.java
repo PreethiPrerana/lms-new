@@ -12,14 +12,13 @@ import java.util.Optional;
 
 @Service
 public class CourseService {
-
     @Autowired
     private CourseRepository courseRepository;
 
     public Course saveCourse(Course course) {
         if (course.getCourseName() == null || course.getCourseName().isEmpty() ||
                 course.getLevel() == null || course.getLevel().isEmpty()) {
-            throw new InvalidCourseDataException("Course name, description, and level cannot be null or empty.");
+            throw new InvalidCourseDataException("Course name, and level cannot be null or empty.");
         }
 
         Optional<Course> existingCourse = courseRepository.findByCourseName(course.getCourseName());
