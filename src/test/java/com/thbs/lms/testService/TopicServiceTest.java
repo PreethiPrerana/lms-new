@@ -108,6 +108,30 @@ public class TopicServiceTest {
     }
 
     @Test
+    void testAddTopicWithValidation_EmptyTopicName() {
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicWithValidation("", "Description", new Course()));
+    }
+
+    @Test
+    void testAddTopicWithValidation_NullTopicName() {
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicWithValidation(null, "Description", new Course()));
+    }
+
+    @Test
+    void testAddTopicWithValidation_EmptyDescription() {
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicWithValidation("New Tpoic", "", new Course()));
+    }
+
+    @Test
+    void testAddTopicWithValidation_NullDescription() {
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicWithValidation("New Tpoic", null, new Course()));
+    }
+
+    @Test
     void testAddTopicWithValidation_DuplicateTopic() {
         // Mock repository to return true (topic already exists)
         when(topicRepository.existsByTopicNameAndCourse(anyString(), any(Course.class))).thenReturn(true);
@@ -159,6 +183,37 @@ public class TopicServiceTest {
         // InvalidDescriptionException
         assertThrows(InvalidDescriptionException.class,
                 () -> topicService.updateTopicDescriptionWithValidation(1L, ""));
+    }
+
+    @Test
+    void testUpdateTopicDescriptionWithValidation_NullDescription() {
+        // Mock repository to return an optional containing the topic
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
+
+        // Call the service method with an empty description and expect an
+        // InvalidDescriptionException
+        assertThrows(InvalidDescriptionException.class,
+                () -> topicService.updateTopicDescriptionWithValidation(1L, null));
+    }
+
+    @Test
+    void testUpdateDescription_ExceptionHandling() {
+        // Mocking data
+        Long topicId = 1L;
+        String newDescription = "New Description";
+        Topic topic = new Topic();
+        topic.setTopicID(topicId);
+
+        // Mocking behavior
+        when(topicRepository.findById(topicId)).thenReturn(Optional.of(topic));
+        when(topicRepository.save(topic)).thenThrow(new RuntimeException("Mocked exception"));
+
+        // Verify exception handling
+        RepositoryOperationException exception = assertThrows(RepositoryOperationException.class, () -> {
+            topicService.updateDescription(topicId, newDescription);
+        });
+
+        assertEquals("Error updating description: Mocked exception", exception.getMessage());
     }
 
     @Test
