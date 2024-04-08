@@ -11,12 +11,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FileProcessingException.class)
     public ResponseEntity<String> handleFileProcessingException(FileProcessingException ex) {
       String errorMessage = ex.getMessage(); 
+      System.out.println("Inside GlobalExceptionHandler: "+ errorMessage);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
     }
 
     @ExceptionHandler(InvalidSheetFormatException.class)
     public ResponseEntity<String> handleInvalidSheetFormatException(InvalidSheetFormatException ex) {
+        String errorMessage = ex.getMessage();
+        System.out.println("Inside GlobalExceptionHandler: "+ errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    }
+
+    @ExceptionHandler(DuplicateTopicException.class)
+    public ResponseEntity<String> handleDuplicateTopicException(DuplicateTopicException ex) {
         String errorMessage = ex.getMessage(); 
+        System.out.println("Inside GlobalExceptionHandler: "+ errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
