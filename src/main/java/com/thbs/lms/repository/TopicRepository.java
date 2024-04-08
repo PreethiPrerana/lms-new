@@ -12,5 +12,6 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
     boolean existsByTopicNameAndCourse(String topicName, Course course);
 
     Object existsByTopicName(String anyString);
+    boolean existsByCourseAndTopicNameAndDescription(Course course, String topicName, String description);
 
 }
