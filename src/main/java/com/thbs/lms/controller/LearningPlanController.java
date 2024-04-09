@@ -23,6 +23,12 @@ public class LearningPlanController {
     @Autowired
     private BulkUploadService bulkUploadService;
 
+    @PostMapping
+    public ResponseEntity<?> saveLearningPlan(@RequestBody LearningPlan learningPlan) {
+        LearningPlan addedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
+        return ResponseEntity.ok().body(addedLearningPlan);
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -40,21 +46,15 @@ public class LearningPlanController {
         return ResponseEntity.ok().body(learningPlans);
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<?> saveLearningPlan(@RequestBody LearningPlan learningPlan) {
-        LearningPlan addedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
-        return ResponseEntity.ok().body(addedLearningPlan);
-    }
-
     @GetMapping("/type")
     public ResponseEntity<?> findByType(@RequestParam String type) {
-        List<LearningPlan> learningPlan = learningPlanService.findByType(type);
+        List<LearningPlan> learningPlan = learningPlanService.getLearningPlansByType(type);
         return ResponseEntity.ok().body(learningPlan);
     }
 
     @GetMapping("/batch-id")
     public ResponseEntity<?> findByBatchID(@RequestParam Long batchID) {
-        List<LearningPlan> learningPlan = learningPlanService.findByBatchID(batchID);
+        List<LearningPlan> learningPlan = learningPlanService.getLearningPlansByBatchID(batchID);
         return ResponseEntity.ok().body(learningPlan);
     }
 }

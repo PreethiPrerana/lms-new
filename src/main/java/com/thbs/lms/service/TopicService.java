@@ -17,37 +17,12 @@ public class TopicService {
     @Autowired
     private TopicRepository topicRepository;
 
-    public List<Topic> getAllTopics() {
-        try {
-            return topicRepository.findAll();
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error retrieving topics: " + e.getMessage());
-        }
-    }
-
-    public String updateDescription(Long topicId, String newDescription) {
-        Optional<Topic> optionalTopic = topicRepository.findById(topicId);
-        if (optionalTopic.isPresent()) {
-            Topic topic = optionalTopic.get();
-            topic.setDescription(newDescription);
-            try {
-                topicRepository.save(topic);
-                return "Description updated successfully.";
-            } catch (Exception e) {
-                throw new RepositoryOperationException("Error updating description: " + e.getMessage());
-            }
-        } else {
-            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
-        }
-    }
-
     public Topic addTopicWithValidation(String topicName, String description, Course course) {
-        // Check for duplicate topic
+
         if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
             throw new DuplicateTopicException("Topic '" + topicName + "' already exists for this course.");
         }
 
-        // Validate topic data
         if (topicName == null || topicName.isEmpty() || description == null || description.isEmpty()) {
             throw new InvalidTopicDataException("Topic name and description cannot be null or empty.");
         }
@@ -59,20 +34,60 @@ public class TopicService {
         return topicRepository.save(newTopic);
     }
 
-    public Topic updateTopicDescriptionWithValidation(Long topicId, String newDescription) {
+    public List<Topic> getAllTopics() {
+        try {
+            return topicRepository.findAll();
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error retrieving topics: " + e.getMessage());
+        }
+    }
+
+    public String updateTopicDescriptionWithValidation(Long topicId, String newDescription) {
         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
         if (optionalTopic.isPresent()) {
             Topic topic = optionalTopic.get();
 
-            // Validate new description
             if (newDescription == null || newDescription.isEmpty()) {
                 throw new InvalidDescriptionException("Description cannot be null or empty.");
             }
 
             topic.setDescription(newDescription);
-            return topicRepository.save(topic);
+            try {
+                topicRepository.save(topic);
+                return "Description updated successfully";
+            } catch (Exception e) {
+                throw new RepositoryOperationException("Error updating description: " + e.getMessage());
+            }
+
         } else {
             throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+        }
+    }
+
+    public void deleteTopics(List<Topic> topics) {
+        try {
+            for (Topic topic : topics) {
+                Long topicId = topic.getTopicID();
+                Optional<Topic> optionalTopic = topicRepository.findById(topicId);
+                if (optionalTopic.isPresent()) {
+                    topicRepository.delete(topic);
+                } else {
+                    throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+                }
+            }
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error deleting topics: " + e.getMessage());
+        }
+    }
+
+    public void deleteTopicsByCourse(Course course) {
+        List<Topic> topics = topicRepository.findByCourse(course);
+        try {
+            for (Topic topic : topics) {
+                topicRepository.delete(topic);
+            }
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error deleting topics for course: " + e.getMessage());
         }
     }
 }

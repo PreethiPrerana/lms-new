@@ -16,19 +16,19 @@ public class LearningPlanService {
     @Autowired
     private LearningPlanRepository learningPlanRepository;
 
-    public List<LearningPlan> getAllLearningPlans() {
-        try {
-            return learningPlanRepository.findAll();
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error retrieving learning plans: " + e.getMessage());
-        }
-    }
-
     public LearningPlan saveLearningPlan(LearningPlan learningPlan) {
         try {
             return learningPlanRepository.save(learningPlan);
         } catch (Exception e) {
             throw new RepositoryOperationException("Error saving learning plans: " + e.getMessage());
+        }
+    }
+
+    public List<LearningPlan> getAllLearningPlans() {
+        try {
+            return learningPlanRepository.findAll();
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error retrieving learning plans: " + e.getMessage());
         }
     }
 
@@ -41,7 +41,7 @@ public class LearningPlanService {
         }
     }
 
-    public List<LearningPlan> findByType(String type) {
+    public List<LearningPlan> getLearningPlansByType(String type) {
         List<LearningPlan> learningPlan = learningPlanRepository.findByType(type);
         if (!learningPlan.isEmpty()) {
             return learningPlan;
@@ -50,7 +50,7 @@ public class LearningPlanService {
         }
     }
 
-    public List<LearningPlan> findByBatchID(Long batchID) {
+    public List<LearningPlan> getLearningPlansByBatchID(Long batchID) {
         List<LearningPlan> learningPlan = learningPlanRepository.findByBatchID(batchID);
         if (!learningPlan.isEmpty()) {
             return learningPlan;

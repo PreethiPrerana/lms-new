@@ -15,8 +15,8 @@ public class TopicController {
     @Autowired
     private TopicService topicService;
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addNewTopic(@RequestBody Topic topic) {
+    @PostMapping
+    public ResponseEntity<?> addTopic(@RequestBody Topic topic) {
         Topic addedTopic = topicService.addTopicWithValidation(topic.getTopicName(), topic.getDescription(),
                 topic.getCourse());
         return ResponseEntity.ok().body(addedTopic);
@@ -30,7 +30,18 @@ public class TopicController {
 
     @PatchMapping("/description")
     public ResponseEntity<?> updateDescription(@RequestParam Long topicId, @RequestBody String newDescription) {
-        String result = topicService.updateDescription(topicId, newDescription);
+        String result = topicService.updateTopicDescriptionWithValidation(topicId, newDescription);
         return ResponseEntity.ok().body(result);
+    }
+
+    // @DeleteMapping
+    // public ResponseEntity<?> deleteTopic() {
+    // return ResponseEntity.ok().body("done");
+    // }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteTopics(@RequestBody List<Topic> topics) {
+        topicService.deleteTopics(topics);
+        return ResponseEntity.ok().body("Topics deleted successfully.");
     }
 }

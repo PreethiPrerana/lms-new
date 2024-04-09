@@ -64,7 +64,7 @@ public class LearningPlanControllerTest {
         String type = "Test Type";
         List<LearningPlan> expectedLearningPlans = new ArrayList<>();
         expectedLearningPlans.add(learningPlan);
-        when(learningPlanService.findByType(type)).thenReturn(expectedLearningPlans);
+        when(learningPlanService.getLearningPlansByType(type)).thenReturn(expectedLearningPlans);
 
         ResponseEntity<?> responseEntity = learningPlanController.findByType(type);
 
@@ -77,7 +77,7 @@ public class LearningPlanControllerTest {
         Long batchID = 1L;
         List<LearningPlan> expectedLearningPlans = new ArrayList<>();
         expectedLearningPlans.add(learningPlan);
-        when(learningPlanService.findByBatchID(batchID)).thenReturn(expectedLearningPlans);
+        when(learningPlanService.getLearningPlansByBatchID(batchID)).thenReturn(expectedLearningPlans);
 
         ResponseEntity<?> responseEntity = learningPlanController.findByBatchID(batchID);
 

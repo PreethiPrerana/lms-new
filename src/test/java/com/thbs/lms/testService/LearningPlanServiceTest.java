@@ -79,7 +79,7 @@ public class LearningPlanServiceTest {
         expectedLearningPlans.add(learningPlan);
         when(learningPlanRepository.findByType(type)).thenReturn(expectedLearningPlans);
 
-        List<LearningPlan> actualLearningPlans = learningPlanService.findByType(type);
+        List<LearningPlan> actualLearningPlans = learningPlanService.getLearningPlansByType(type);
 
         assertEquals(expectedLearningPlans.size(), actualLearningPlans.size());
         assertEquals(expectedLearningPlans.get(0), actualLearningPlans.get(0));
@@ -92,7 +92,7 @@ public class LearningPlanServiceTest {
         expectedLearningPlans.add(learningPlan);
         when(learningPlanRepository.findByBatchID(batchID)).thenReturn(expectedLearningPlans);
 
-        List<LearningPlan> actualLearningPlans = learningPlanService.findByBatchID(batchID);
+        List<LearningPlan> actualLearningPlans = learningPlanService.getLearningPlansByBatchID(batchID);
 
         assertEquals(expectedLearningPlans.size(), actualLearningPlans.size());
         assertEquals(expectedLearningPlans.get(0), actualLearningPlans.get(0));
@@ -114,7 +114,7 @@ public class LearningPlanServiceTest {
         when(learningPlanRepository.findByType(type)).thenReturn(new ArrayList<>());
 
         assertThrows(LearningPlanNotFoundException.class, () -> {
-            learningPlanService.findByType(type);
+            learningPlanService.getLearningPlansByType(type);
         });
     }
 
@@ -124,7 +124,7 @@ public class LearningPlanServiceTest {
         when(learningPlanRepository.findByBatchID(batchID)).thenReturn(new ArrayList<>());
 
         assertThrows(LearningPlanNotFoundException.class, () -> {
-            learningPlanService.findByBatchID(batchID);
+            learningPlanService.getLearningPlansByBatchID(batchID);
         });
     }
 

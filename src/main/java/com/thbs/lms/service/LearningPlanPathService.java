@@ -44,6 +44,10 @@ public class LearningPlanPathService {
         }
     }
 
+    public List<LearningPlanPath> saveAllLearningPlanPaths(List<LearningPlanPath> learningPlanPaths) {
+        return learningPlanPathRepository.saveAll(learningPlanPaths);
+    }
+
     public List<LearningPlanPath> getAllLearningPlanPathsByLearningPlanId(Long learningPlanId) {
         try {
             return learningPlanPathRepository.findByLearningPlanLearningPlanID(learningPlanId);
@@ -53,7 +57,7 @@ public class LearningPlanPathService {
         }
     }
 
-    public List<LearningPlanPath> getAllLearningPlansByType(String type) {
+    public List<LearningPlanPath> getAllLearningPlanPathsByType(String type) {
         if (type == null || type.isEmpty()) {
             throw new InvalidTypeException("Type cannot be null or empty.");
         }
@@ -64,7 +68,7 @@ public class LearningPlanPathService {
         }
     }
 
-    public List<LearningPlanPath> getAllLearningPlansByTrainer(String trainer) {
+    public List<LearningPlanPath> getAllLearningPlanPathsByTrainer(String trainer) {
         if (trainer == null || trainer.isEmpty()) {
             throw new InvalidTrainerException("trainer cannot be null or empty.");
         }
@@ -75,7 +79,7 @@ public class LearningPlanPathService {
         }
     }
 
-    public void updateTrainer(Long pathId, String newTrainer) {
+    public void updateLearningPlanPathTrainer(Long pathId, String newTrainer) {
         try {
             if (newTrainer == null || newTrainer.isEmpty()) {
                 throw new InvalidTrainerException("Invalid or Incomplete trainer value provided");
@@ -90,7 +94,7 @@ public class LearningPlanPathService {
         }
     }
 
-    public Optional<LearningPlanPath> updateDates(Long learningPlanPathID, Date startDate, Date endDate) {
+    public Optional<LearningPlanPath> updateLearningPlanPathDates(Long learningPlanPathID, Date startDate, Date endDate) {
         try {
             if (startDate == null || endDate == null) {
                 throw new InvalidLearningPlanPathDataException(

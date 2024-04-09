@@ -67,7 +67,7 @@ public class TopicServiceTest {
         when(topicRepository.findById(1L)).thenReturn(Optional.of(topic));
 
         // Call the service method
-        String result = topicService.updateDescription(1L, "New description");
+        String result = topicService.updateTopicDescriptionWithValidation(1L, "New description");
 
         // Assert the result
         assertEquals("Description updated successfully.", result);
@@ -80,7 +80,8 @@ public class TopicServiceTest {
         when(topicRepository.findById(1L)).thenThrow(new RepositoryOperationException("Database error"));
 
         // Call the service method and expect an exception
-        assertThrows(RepositoryOperationException.class, () -> topicService.updateDescription(1L, "New description"));
+        assertThrows(RepositoryOperationException.class,
+                () -> topicService.updateTopicDescriptionWithValidation(1L, "New description"));
     }
 
     @Test
@@ -89,7 +90,8 @@ public class TopicServiceTest {
         when(topicRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Call the service method and expect a TopicNotFoundException
-        assertThrows(TopicNotFoundException.class, () -> topicService.updateDescription(1L, "New description"));
+        assertThrows(TopicNotFoundException.class,
+                () -> topicService.updateTopicDescriptionWithValidation(1L, "New description"));
     }
 
     @Test
@@ -167,11 +169,10 @@ public class TopicServiceTest {
         when(topicRepository.save(any(Topic.class))).thenReturn(topic);
 
         // Call the service method
-        Topic updatedTopic = topicService.updateTopicDescriptionWithValidation(1L, "New Description");
+        String updatedTopic = topicService.updateTopicDescriptionWithValidation(1L, "New Description");
 
         // Assert the result
-        assertNotNull(updatedTopic);
-        assertEquals("New Description", updatedTopic.getDescription());
+        assertEquals("New Description", updatedTopic);
     }
 
     @Test
@@ -210,7 +211,7 @@ public class TopicServiceTest {
 
         // Verify exception handling
         RepositoryOperationException exception = assertThrows(RepositoryOperationException.class, () -> {
-            topicService.updateDescription(topicId, newDescription);
+            topicService.updateTopicDescriptionWithValidation(topicId, newDescription);
         });
 
         assertEquals("Error updating description: Mocked exception", exception.getMessage());

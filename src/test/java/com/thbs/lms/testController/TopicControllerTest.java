@@ -39,7 +39,7 @@ public class TopicControllerTest {
                 .thenReturn(topic);
 
         // When
-        ResponseEntity<?> responseEntity = topicController.addNewTopic(topic);
+        ResponseEntity<?> responseEntity = topicController.addTopic(topic);
 
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -75,7 +75,7 @@ public class TopicControllerTest {
         String newDescription = "Updated Description";
         String expectedResult = "Description updated successfully.";
 
-        when(topicService.updateDescription(topicId, newDescription)).thenReturn(expectedResult);
+        when(topicService.updateTopicDescriptionWithValidation(topicId, newDescription)).thenReturn(expectedResult);
 
         // When
         ResponseEntity<?> responseEntity = topicController.updateDescription(topicId, newDescription);
@@ -83,6 +83,6 @@ public class TopicControllerTest {
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResult, responseEntity.getBody());
-        verify(topicService, times(1)).updateDescription(topicId, newDescription);
+        verify(topicService, times(1)).updateTopicDescriptionWithValidation(topicId, newDescription);
     }
 }

@@ -16,10 +16,16 @@ public class CourseController {
     @Autowired
     CourseService courseService;
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<?> addCourse(@RequestBody Course course) {
         Course addedCourse = courseService.saveCourse(course);
         return ResponseEntity.ok().body(addedCourse);
+    }
+
+    @PostMapping("/addAll")
+    public ResponseEntity<?> addCourses(@RequestBody List<Course> courses) {
+        List<Course> addedCourses = courseService.saveCourses(courses);
+        return ResponseEntity.ok().body(addedCourses);
     }
 
     @GetMapping
@@ -38,5 +44,11 @@ public class CourseController {
     public ResponseEntity<?> getCourseById(@RequestParam Long id) {
         Course course = courseService.getCourseById(id);
         return ResponseEntity.ok().body(course);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteCourses(@RequestBody List<Course> courses) {
+        courseService.deleteCourses(courses);
+        return ResponseEntity.ok().body("Courses deleted successfully");
     }
 }

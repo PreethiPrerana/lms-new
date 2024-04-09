@@ -8,7 +8,6 @@ import com.thbs.lms.service.LearningPlanPathService;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 
@@ -25,6 +24,12 @@ public class LearningPlanPathController {
         return ResponseEntity.ok(createdPath);
     }
 
+    @PostMapping("addAll")
+    public ResponseEntity<?> createLearningPlanPaths(@RequestBody List<LearningPlanPath> learningPlanPaths) {
+        List<LearningPlanPath> createdPaths = learningPlanPathService.saveAllLearningPlanPaths(learningPlanPaths);
+        return ResponseEntity.ok().body(createdPaths);
+    }
+
     @GetMapping("/ID")
     public ResponseEntity<?> getAllLearningPlanPathsByLearningPlanId(@RequestBody Long learningPlanId) {
         List<LearningPlanPath> paths = learningPlanPathService
@@ -34,27 +39,27 @@ public class LearningPlanPathController {
 
     @GetMapping("/type")
     public ResponseEntity<?> getAllLearningPlansByType(@RequestParam String type) {
-        List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlansByType(type);
+        List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlanPathsByType(type);
         return ResponseEntity.ok().body(paths);
     }
 
     @GetMapping("/trainer")
     public ResponseEntity<?> getAllLearningPlansByTrainer(@RequestParam String trainer) {
-        List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlansByTrainer(trainer);
+        List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlanPathsByTrainer(trainer);
         return ResponseEntity.ok().body(paths);
     }
 
-    @PatchMapping("/pathID/trainer")
+    @PatchMapping("/trainer")
     public ResponseEntity<?> updateTrainer(@RequestParam Long pathId, @RequestBody String newTrainer) {
-        learningPlanPathService.updateTrainer(pathId, newTrainer);
+        learningPlanPathService.updateLearningPlanPathTrainer(pathId, newTrainer);
         return ResponseEntity.ok().body("Trainer updated successfully");
     }
 
     @PatchMapping("/update-dates")
     public ResponseEntity<?> updateLearningPlanDates(@RequestParam Long learningPlanPathID,
             @RequestBody DateRange dateRange) {
-        Optional<LearningPlanPath> updatedPath = learningPlanPathService.updateDates(learningPlanPathID,
-                dateRange.getStartDate(), dateRange.getEndDate());
+        learningPlanPathService.updateLearningPlanPathDates(learningPlanPathID, dateRange.getStartDate(),
+                dateRange.getEndDate());
         return ResponseEntity.ok().body("Date Range updated successfully.");
     }
 
@@ -62,7 +67,6 @@ public class LearningPlanPathController {
         private Date startDate;
         private Date endDate;
 
-        // getters and setters
         public Date getStartDate() {
             return startDate;
         }
@@ -79,5 +83,4 @@ public class LearningPlanPathController {
             this.endDate = endDate;
         }
     }
-
 }

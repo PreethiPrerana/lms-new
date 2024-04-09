@@ -71,7 +71,7 @@ public class LearningPlanPathControllerTest {
         String type = "Test Type";
         List<LearningPlanPath> learningPlanPaths = new ArrayList<>();
 
-        when(learningPlanPathService.getAllLearningPlansByType(type)).thenReturn(learningPlanPaths);
+        when(learningPlanPathService.getAllLearningPlanPathsByType(type)).thenReturn(learningPlanPaths);
 
         // When
         ResponseEntity<?> responseEntity = learningPlanPathController.getAllLearningPlansByType(type);
@@ -79,7 +79,7 @@ public class LearningPlanPathControllerTest {
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(learningPlanPaths, responseEntity.getBody());
-        verify(learningPlanPathService, times(1)).getAllLearningPlansByType(type);
+        verify(learningPlanPathService, times(1)).getAllLearningPlanPathsByType(type);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class LearningPlanPathControllerTest {
         String trainer = "Test Trainer";
         List<LearningPlanPath> learningPlanPaths = new ArrayList<>();
 
-        when(learningPlanPathService.getAllLearningPlansByTrainer(trainer)).thenReturn(learningPlanPaths);
+        when(learningPlanPathService.getAllLearningPlanPathsByTrainer(trainer)).thenReturn(learningPlanPaths);
 
         // When
         ResponseEntity<?> responseEntity = learningPlanPathController.getAllLearningPlansByTrainer(trainer);
@@ -96,7 +96,7 @@ public class LearningPlanPathControllerTest {
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(learningPlanPaths, responseEntity.getBody());
-        verify(learningPlanPathService, times(1)).getAllLearningPlansByTrainer(trainer);
+        verify(learningPlanPathService, times(1)).getAllLearningPlanPathsByTrainer(trainer);
     }
 
     @Test
@@ -111,7 +111,7 @@ public class LearningPlanPathControllerTest {
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("Trainer updated successfully", responseEntity.getBody());
-        verify(learningPlanPathService, times(1)).updateTrainer(pathId, newTrainer);
+        verify(learningPlanPathService, times(1)).updateLearningPlanPathTrainer(pathId, newTrainer);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class LearningPlanPathControllerTest {
         dateRange.setStartDate(new Date());
         dateRange.setEndDate(new Date());
 
-        when(learningPlanPathService.updateDates(learningPlanPathID, dateRange.getStartDate(), dateRange.getEndDate()))
+        when(learningPlanPathService.updateLearningPlanPathDates(learningPlanPathID, dateRange.getStartDate(), dateRange.getEndDate()))
                 .thenReturn(Optional.of(new LearningPlanPath()));
 
         // When
@@ -132,7 +132,7 @@ public class LearningPlanPathControllerTest {
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("Date Range updated successfully.", responseEntity.getBody());
-        verify(learningPlanPathService, times(1)).updateDates(learningPlanPathID, dateRange.getStartDate(),
+        verify(learningPlanPathService, times(1)).updateLearningPlanPathDates(learningPlanPathID, dateRange.getStartDate(),
                 dateRange.getEndDate());
     }
 }
