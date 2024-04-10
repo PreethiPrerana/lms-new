@@ -1,9 +1,16 @@
 package com.thbs.lms.model;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import jakarta.persistence.*;
 
-@Data
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "Topic")
 public class Topic {
