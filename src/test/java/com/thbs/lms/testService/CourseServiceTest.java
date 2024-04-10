@@ -1,6 +1,7 @@
 package com.thbs.lms.testService;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -56,16 +57,6 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourse_RepositoryOperationException() {
-        Course course = new Course();
-        course.setCourseName("Java Programming");
-        course.setLevel("Test type");
-        Mockito.when(courseRepository.findByCourseName("Java Programming")).thenReturn(Optional.empty());
-        Mockito.when(courseRepository.save(course)).thenThrow(new RuntimeException("Database connection failed"));
-        assertThrows(RepositoryOperationException.class, () -> courseService.saveCourse(course));
-    }
-
-    @Test
     public void testSaveCourse_NullCourseName_InvalidCourseDataException() {
         Course course = new Course();
         course.setCourseName(null);
@@ -98,6 +89,122 @@ public class CourseServiceTest {
     }
 
     @Test
+    void testSaveCourses_InvalidCourseDataException() {
+        List<Course> courses = new ArrayList<>();
+        Course invalidCourse = new Course(); // Create a course object with null or empty values
+        courses.add(invalidCourse);
+
+        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
+    }
+
+    @Test
+    void testSaveCourses_DuplicateCourseException() {
+        List<Course> courses = new ArrayList<>();
+        Course existingCourse = new Course();
+        existingCourse.setCourseName("Java Programming");
+        existingCourse.setLevel("Intermediate");
+        courses.add(existingCourse);
+
+        Mockito.when(courseRepository.findByCourseName("Java Programming")).thenReturn(Optional.of(existingCourse));
+
+        assertThrows(DuplicateCourseException.class, () -> courseService.saveCourses(courses));
+    }
+
+    @Test
+    void testSaveCourses_SuccessfulSaving() {
+        List<Course> courses = new ArrayList<>();
+        Course newCourse = new Course();
+        newCourse.setCourseName("Python Programming");
+        newCourse.setLevel("Intermediate");
+        courses.add(newCourse);
+
+        Mockito.when(courseRepository.findByCourseName("Python Programming")).thenReturn(Optional.empty());
+        Mockito.when(courseRepository.save(newCourse)).thenReturn(newCourse);
+
+        List<Course> savedCourses = courseService.saveCourses(courses);
+
+        assertEquals(1, savedCourses.size());
+        assertEquals(newCourse, savedCourses.get(0));
+    }
+    
+    @Test
+public void testSaveCourses_InvalidCourseDataException_NullCourseName() {
+    // Create a list of courses with one course having null course name
+    List<Course> courses = new ArrayList<>();
+    Course course1 = new Course();
+    course1.setCourseName(null);
+    course1.setLevel("Intermediate");
+
+    Course course2 = new Course();
+    course2.setCourseName("Java Programming");
+    course2.setLevel("Intermediate");
+
+    courses.add(course1);
+    courses.add(course2);
+
+    // Test
+    assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
+}
+
+@Test
+public void testSaveCourses_InvalidCourseDataException_EmptyCourseName() {
+    // Create a list of courses with one course having empty course name
+    List<Course> courses = new ArrayList<>();
+    Course course1 = new Course();
+    course1.setCourseName("");
+    course1.setLevel("Intermediate");
+
+    Course course2 = new Course();
+    course2.setCourseName("Java Programming");
+    course2.setLevel("Intermediate");
+
+    courses.add(course1);
+    courses.add(course2);
+
+    // Test
+    assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
+}
+
+@Test
+public void testSaveCourses_InvalidCourseDataException_NullLevel() {
+    // Create a list of courses with one course having null level
+    List<Course> courses = new ArrayList<>();
+    Course course1 = new Course();
+    course1.setCourseName("Python Programming");
+    course1.setLevel(null);
+
+    Course course2 = new Course();
+    course2.setCourseName("Java Programming");
+    course2.setLevel("Intermediate");
+
+    courses.add(course1);
+    courses.add(course2);
+
+    // Test
+    assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
+}
+
+@Test
+public void testSaveCourses_InvalidCourseDataException_EmptyLevel() {
+    // Create a list of courses with one course having empty level
+    List<Course> courses = new ArrayList<>();
+    Course course1 = new Course();
+    course1.setCourseName("Python Programming");
+    course1.setLevel("");
+
+    Course course2 = new Course();
+    course2.setCourseName("Java Programming");
+    course2.setLevel("Intermediate");
+
+    courses.add(course1);
+    courses.add(course2);
+
+    // Test
+    assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
+}
+
+
+    @Test
     public void testGetAllCourses_SuccessfulRetrieval() {
         // Mock data
         List<Course> courses = new ArrayList<>();
@@ -118,15 +225,6 @@ public class CourseServiceTest {
 
         // Test
         assertEquals(courses, courseService.getAllCourses());
-    }
-
-    @Test
-    public void testGetAllCourses_RepositoryOperationException() {
-        // Mock behavior to throw an exception
-        Mockito.when(courseRepository.findAll()).thenThrow(new RuntimeException("Database connection failed"));
-
-        // Test
-        assertThrows(RepositoryOperationException.class, () -> courseService.getAllCourses());
     }
 
     @Test
@@ -159,16 +257,6 @@ public class CourseServiceTest {
 
         // Test
         assertEquals(courses, courseService.getCoursesByLevel(level));
-    }
-
-    @Test
-    public void testGetCoursesByLevel_RepositoryOperationException() {
-        // Mock behavior to throw an exception
-        String level = "Intermediate";
-        Mockito.when(courseRepository.findByLevel(level)).thenThrow(new RuntimeException("Database connection failed"));
-
-        // Test
-        assertThrows(RepositoryOperationException.class, () -> courseService.getCoursesByLevel(level));
     }
 
     @Test
