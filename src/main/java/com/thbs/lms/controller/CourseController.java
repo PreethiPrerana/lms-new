@@ -46,9 +46,15 @@ public class CourseController {
         return ResponseEntity.ok().body(course);
     }
 
-    // @DeleteMapping
+    // @DeleteMapping("/id")
+    // public ResponseEntity<?> deleteCourse(@RequestParam Long id) {
+    // courseService.deleteCourse(id);
+    // return ResponseEntity.ok().body("Course deleted successfully");
+    // }
+
+    // @DeleteMapping()
     // public ResponseEntity<?> deleteCourses(@RequestBody List<Course> courses) {
-    //     courseService.deleteCourses(courses);
-    //     return ResponseEntity.ok().body("Courses deleted successfully");
+    // courseService.deleteCourses(courses);
+    // return ResponseEntity.ok().body("Courses deleted successfully");
     // }
 }
