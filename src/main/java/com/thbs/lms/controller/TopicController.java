@@ -22,6 +22,12 @@ public class TopicController {
         return ResponseEntity.ok().body(addedTopic);
     }
 
+    @PostMapping("/addAll")
+    public ResponseEntity<?> addTopics(@RequestBody List<Topic> topics) {
+        List<Topic> addedTopics = topicService.addTopicsWithValidation(topics);
+        return ResponseEntity.ok().body(addedTopics);
+    }
+
     @GetMapping
     public ResponseEntity<?> getAllTopics() {
         List<Topic> topics = topicService.getAllTopics();
@@ -34,12 +40,13 @@ public class TopicController {
         return ResponseEntity.ok().body(result);
     }
 
-    // @DeleteMapping
-    // public ResponseEntity<?> deleteTopic() {
-    // return ResponseEntity.ok().body("done");
-    // }
-
     @DeleteMapping
+    public ResponseEntity<?> deleteTopic(@RequestParam Long topicId) {
+        topicService.deleteTopicById(topicId);
+        return ResponseEntity.ok().body("Topic deleted successfully.");
+    }
+
+    @DeleteMapping("/delete")
     public ResponseEntity<?> deleteTopics(@RequestBody List<Topic> topics) {
         topicService.deleteTopics(topics);
         return ResponseEntity.ok().body("Topics deleted successfully.");

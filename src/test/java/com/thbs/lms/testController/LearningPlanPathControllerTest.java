@@ -47,6 +47,28 @@ public class LearningPlanPathControllerTest {
     }
 
     @Test
+    public void testCreateLearningPlanPaths() {
+        // Create a sample list of LearningPlanPath objects
+        List<LearningPlanPath> learningPlanPaths = new ArrayList<>();
+        LearningPlanPath learningPlanPath1 = new LearningPlanPath();
+        learningPlanPath1.setPathID(1L); // Set an ID for testing
+        LearningPlanPath learningPlanPath2 = new LearningPlanPath();
+        learningPlanPath2.setPathID(2L); // Set an ID for testing
+        learningPlanPaths.add(learningPlanPath1);
+        learningPlanPaths.add(learningPlanPath2);
+
+        // Mock the service method
+        when(learningPlanPathService.saveAllLearningPlanPaths(learningPlanPaths)).thenReturn(learningPlanPaths);
+
+        // Call the controller method
+        ResponseEntity<?> responseEntity = learningPlanPathController.createLearningPlanPaths(learningPlanPaths);
+
+        // Verify the response
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(learningPlanPaths, responseEntity.getBody());
+    }
+
+    @Test
     void testGetAllLearningPlanPathsByLearningPlanId() {
         // Given
         Long learningPlanId = 1L;
@@ -122,7 +144,8 @@ public class LearningPlanPathControllerTest {
         dateRange.setStartDate(new Date());
         dateRange.setEndDate(new Date());
 
-        when(learningPlanPathService.updateLearningPlanPathDates(learningPlanPathID, dateRange.getStartDate(), dateRange.getEndDate()))
+        when(learningPlanPathService.updateLearningPlanPathDates(learningPlanPathID, dateRange.getStartDate(),
+                dateRange.getEndDate()))
                 .thenReturn(Optional.of(new LearningPlanPath()));
 
         // When
@@ -132,7 +155,8 @@ public class LearningPlanPathControllerTest {
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("Date Range updated successfully.", responseEntity.getBody());
-        verify(learningPlanPathService, times(1)).updateLearningPlanPathDates(learningPlanPathID, dateRange.getStartDate(),
+        verify(learningPlanPathService, times(1)).updateLearningPlanPathDates(learningPlanPathID,
+                dateRange.getStartDate(),
                 dateRange.getEndDate());
     }
 }
