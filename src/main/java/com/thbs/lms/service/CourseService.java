@@ -88,6 +88,21 @@ public class CourseService {
         }
     }
 
+    public void deleteCourse(Long courseId) {
+        try {
+            Optional<Course> optionalCourse = courseRepository.findById(courseId);
+            if (optionalCourse.isPresent()) {
+                Course course = optionalCourse.get();
+                topicService.deleteTopicsByCourse(course);
+                courseRepository.delete(course);
+            } else {
+                throw new CourseNotFoundException("Course not found for ID: " + courseId);
+            }
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error deleting course: " + e.getMessage());
+        }
+    }
+
     public void deleteCourses(List<Course> courses) {
         try {
             for (Course course : courses) {

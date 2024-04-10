@@ -16,6 +16,9 @@ public class LearningPlanService {
     @Autowired
     private LearningPlanRepository learningPlanRepository;
 
+    @Autowired
+    private LearningPlanPathService learningPlanPathService;
+
     public LearningPlan saveLearningPlan(LearningPlan learningPlan) {
         try {
             return learningPlanRepository.save(learningPlan);
@@ -56,6 +59,21 @@ public class LearningPlanService {
             return learningPlan;
         } else {
             throw new LearningPlanNotFoundException("Learning plan for Batch " + batchID + " not found.");
+        }
+    }
+
+    public void deleteLearningPlanById(Long id) {
+        try {
+            Optional<LearningPlan> optionalLearningPlan = learningPlanRepository.findById(id);
+            if (optionalLearningPlan.isPresent()) {
+                learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(id); // Delete associated learning plan
+                                                                                     // paths
+                learningPlanRepository.delete(optionalLearningPlan.get());
+            } else {
+                throw new LearningPlanNotFoundException("Learning plan with ID " + id + " not found.");
+            }
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error deleting learning plan: " + e.getMessage());
         }
     }
 }

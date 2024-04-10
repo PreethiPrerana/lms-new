@@ -8,6 +8,7 @@ import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.TopicRepository;
 import com.thbs.lms.exceptionHandler.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,31 @@ public class TopicService {
         newTopic.setDescription(description);
         newTopic.setCourse(course);
         return topicRepository.save(newTopic);
+    }
+
+    public List<Topic> addTopicsWithValidation(List<Topic> topics) {
+        List<Topic> addedTopics = new ArrayList<>();
+        for (Topic topic : topics) {
+            String topicName = topic.getTopicName();
+            String description = topic.getDescription();
+            Course course = topic.getCourse();
+
+            if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
+                throw new DuplicateTopicException("Topic '" + topicName + "' already exists for this course.");
+            }
+
+            if (topicName == null || topicName.isEmpty() || description == null || description.isEmpty()) {
+                throw new InvalidTopicDataException("Topic name and description cannot be null or empty.");
+            }
+
+            Topic newTopic = new Topic();
+            newTopic.setTopicName(topicName);
+            newTopic.setDescription(description);
+            newTopic.setCourse(course);
+
+            addedTopics.add(topicRepository.save(newTopic));
+        }
+        return addedTopics;
     }
 
     public List<Topic> getAllTopics() {
@@ -61,6 +87,19 @@ public class TopicService {
 
         } else {
             throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+        }
+    }
+
+    public void deleteTopicById(Long topicId) {
+        try {
+            Optional<Topic> optionalTopic = topicRepository.findById(topicId);
+            if (optionalTopic.isPresent()) {
+                topicRepository.delete(optionalTopic.get());
+            } else {
+                throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+            }
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error deleting topic: " + e.getMessage());
         }
     }
 

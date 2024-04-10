@@ -94,7 +94,8 @@ public class LearningPlanPathService {
         }
     }
 
-    public Optional<LearningPlanPath> updateLearningPlanPathDates(Long learningPlanPathID, Date startDate, Date endDate) {
+    public Optional<LearningPlanPath> updateLearningPlanPathDates(Long learningPlanPathID, Date startDate,
+            Date endDate) {
         try {
             if (startDate == null || endDate == null) {
                 throw new InvalidLearningPlanPathDataException(
@@ -118,6 +119,41 @@ public class LearningPlanPathService {
             }
         } catch (Exception ex) {
             throw new RepositoryOperationException("Error occurred while updating dates: " + ex.getMessage());
+        }
+    }
+
+    public void deleteLearningPlanPathsByLearningPlanId(Long learningPlanId) {
+        try {
+            List<LearningPlanPath> learningPlanPaths = learningPlanPathRepository
+                    .findByLearningPlanLearningPlanID(learningPlanId);
+            for (LearningPlanPath path : learningPlanPaths) {
+                learningPlanPathRepository.delete(path);
+            }
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error deleting learning plan paths for learning plan ID "
+                    + learningPlanId + ": " + e.getMessage());
+        }
+    }
+
+    public void deleteLearningPlanPaths(List<LearningPlanPath> learningPlanPaths) {
+        try {
+            learningPlanPathRepository.deleteAll(learningPlanPaths);
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error deleting learning plan paths: " + e.getMessage());
+        }
+    }
+
+    public void deleteLearningPlanPath(Long learningPlanPathId) {
+        try {
+            Optional<LearningPlanPath> learningPlanPath = learningPlanPathRepository.findById(learningPlanPathId);
+            if (learningPlanPath.isPresent()) {
+                learningPlanPathRepository.delete(learningPlanPath.get());
+            } else {
+                throw new LearningPlanPathNotFoundException(
+                        "Learning Plan Path not found for ID: " + learningPlanPathId);
+            }
+        } catch (Exception e) {
+            throw new RepositoryOperationException("Error deleting learning plan path: " + e.getMessage());
         }
     }
 }
