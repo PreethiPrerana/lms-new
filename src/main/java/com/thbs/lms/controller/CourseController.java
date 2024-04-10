@@ -16,7 +16,7 @@ public class CourseController {
     @Autowired
     CourseService courseService;
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<?> addCourse(@RequestBody Course course) {
         Course addedCourse = courseService.saveCourse(course);
         return ResponseEntity.ok().body(addedCourse);
@@ -34,20 +34,29 @@ public class CourseController {
         return ResponseEntity.ok().body(courses);
     }
 
-    @GetMapping("/level")
-    public ResponseEntity<?> getCoursesByLevel(@RequestParam String level) {
+    @GetMapping("/level/{level}")
+    public ResponseEntity<?> getCoursesByLevel(@PathVariable String level) {
         List<Course> courses = courseService.getCoursesByLevel(level);
         return ResponseEntity.ok().body(courses);
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<?> getCourseById(@RequestParam Long id) {
+    @GetMapping("/id/{id}")
+    public ResponseEntity<?> getCourseById(@PathVariable Long id) {
         Course course = courseService.getCourseById(id);
         return ResponseEntity.ok().body(course);
     }
 
+    @PatchMapping("/id/{id}")
+    public ResponseEntity<?> updateCourseName(@PathVariable Long id, @RequestBody String newCourseName) {
+        Course updatedCourse = courseService.updateCourseName(id, newCourseName);
+        if (updatedCourse != null) {
+            return ResponseEntity.ok().body(updatedCourse);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     // @DeleteMapping("/id")
-    // public ResponseEntity<?> deleteCourse(@RequestParam Long id) {
+    // public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
     // courseService.deleteCourse(id);
     // return ResponseEntity.ok().body("Course deleted successfully");
     // }

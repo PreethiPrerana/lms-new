@@ -62,7 +62,7 @@ public class LearningPlanPathService {
         return learningPlanPathRepository.findByTrainer(trainer);
     }
 
-    public void updateLearningPlanPathTrainer(Long pathId, String newTrainer) {
+    public LearningPlanPath updateLearningPlanPathTrainer(Long pathId, String newTrainer) {
         if (newTrainer == null || newTrainer.isEmpty()) {
             throw new InvalidTrainerException("Invalid or Incomplete trainer value provided");
         }
@@ -70,7 +70,7 @@ public class LearningPlanPathService {
                 .orElseThrow(() -> new LearningPlanPathNotFoundException(
                         "Learning Plan Path not found for ID: " + pathId));
         learningPlanPath.setTrainer(newTrainer);
-        learningPlanPathRepository.save(learningPlanPath);
+        return learningPlanPathRepository.save(learningPlanPath);
     }
 
     public Optional<LearningPlanPath> updateLearningPlanPathDates(Long learningPlanPathID, Date startDate,
