@@ -130,17 +130,6 @@ public class TopicServiceTest {
         assertEquals(expectedTopics.size(), actualTopics.size());
     }
 
-    // @Test
-    // void testGetAllTopics_Exception() {
-    // // Mock repository to throw an exception
-    // when(topicRepository.findAll()).thenThrow(new RuntimeException("Database
-    // error"));
-
-    // // Call the service method and expect an exception
-    // assertThrows(RepositoryOperationException.class, () ->
-    // topicService.getAllTopics());
-    // }
-
     @Test
     void testUpdateDescription_Success() {
         // Mock repository to return an optional topic
@@ -256,29 +245,6 @@ public class TopicServiceTest {
         assertThrows(InvalidDescriptionException.class,
                 () -> topicService.updateTopicDescriptionWithValidation(1L, null));
     }
-
-    // @Test
-    // void testUpdateDescription_ExceptionHandling() {
-    // // Mocking data
-    // Long topicId = 1L;
-    // String newDescription = "New Description";
-    // Topic topic = new Topic();
-    // topic.setTopicID(topicId);
-
-    // // Mocking behavior
-    // when(topicRepository.findById(topicId)).thenReturn(Optional.of(topic));
-    // when(topicRepository.save(topic)).thenThrow(new RuntimeException("Mocked
-    // exception"));
-
-    // // Verify exception handling
-    // RepositoryOperationException exception =
-    // assertThrows(RepositoryOperationException.class, () -> {
-    // topicService.updateTopicDescriptionWithValidation(topicId, newDescription);
-    // });
-
-    // assertEquals("Error updating description: Mocked exception",
-    // exception.getMessage());
-    // }
 
     @Test
     void testUpdateTopicDescriptionWithValidation_RepositoryOperationException() {

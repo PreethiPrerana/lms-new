@@ -1,9 +1,9 @@
 package com.thbs.lms.testService;
 
 import com.thbs.lms.exceptionHandler.LearningPlanNotFoundException;
-import com.thbs.lms.exceptionHandler.RepositoryOperationException;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.repository.LearningPlanRepository;
+import com.thbs.lms.service.LearningPlanPathService;
 import com.thbs.lms.service.LearningPlanService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +24,9 @@ public class LearningPlanServiceTest {
 
     @Mock
     private LearningPlanRepository learningPlanRepository;
+
+    @Mock
+    private LearningPlanPathService learningPlanPathService;
 
     @InjectMocks
     private LearningPlanService learningPlanService;
@@ -120,7 +123,7 @@ public class LearningPlanServiceTest {
 
     @Test
     void testFindByBatchID_NotFound() {
-        Long batchID = 2L; // Assuming no learning plans exist for batchID = 2
+        Long batchID = 2L;
         when(learningPlanRepository.findByBatchID(batchID)).thenReturn(new ArrayList<>());
 
         assertThrows(LearningPlanNotFoundException.class, () -> {
@@ -128,5 +131,31 @@ public class LearningPlanServiceTest {
         });
     }
 
+<<<<<<< HEAD
    
+=======
+    @Test
+    void testDeleteLearningPlanById() {
+        when(learningPlanRepository.findById(1L)).thenReturn(Optional.of(learningPlan));
+
+        assertDoesNotThrow(() -> {
+            learningPlanService.deleteLearningPlanById(1L);
+        });
+
+        verify(learningPlanRepository, times(1)).delete(learningPlan);
+    }
+
+    @Test
+    void testDeleteLearningPlanById_LearningPlanNotFound() {
+        Long id = 1L;
+
+        when(learningPlanRepository.findById(id)).thenReturn(Optional.empty());
+
+        LearningPlanNotFoundException exception = assertThrows(LearningPlanNotFoundException.class, () -> {
+            learningPlanService.deleteLearningPlanById(id);
+        });
+
+        assertEquals("Learning plan with ID 1 not found.", exception.getMessage());
+    }
+>>>>>>> 0640309443c73834ce514d9ee9a871e25c0e7772
 }
