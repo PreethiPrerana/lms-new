@@ -23,7 +23,7 @@ public class LearningPlanController {
     @Autowired
     private BulkUploadService bulkUploadService;
 
-    @PostMapping
+    @PostMapping("/save")
     public ResponseEntity<?> saveLearningPlan(@RequestBody LearningPlan learningPlan) {
         LearningPlan addedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
         return ResponseEntity.ok().body(addedLearningPlan);
@@ -46,14 +46,14 @@ public class LearningPlanController {
         return ResponseEntity.ok().body(learningPlans);
     }
 
-    @GetMapping("/type")
-    public ResponseEntity<?> findByType(@RequestParam String type) {
+    @GetMapping("/type/{type}")
+    public ResponseEntity<?> findByType(@PathVariable String type) {
         List<LearningPlan> learningPlan = learningPlanService.getLearningPlansByType(type);
         return ResponseEntity.ok().body(learningPlan);
     }
 
-    @GetMapping("/batch-id")
-    public ResponseEntity<?> findByBatchID(@RequestParam Long batchID) {
+    @GetMapping("/id/{batch-id}")
+    public ResponseEntity<?> findByBatchID(@PathVariable Long batchID) {
         List<LearningPlan> learningPlan = learningPlanService.getLearningPlansByBatchID(batchID);
         return ResponseEntity.ok().body(learningPlan);
     }

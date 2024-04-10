@@ -34,14 +34,19 @@ public class TopicController {
         return ResponseEntity.ok().body(topics);
     }
 
-    @PatchMapping("/description")
-    public ResponseEntity<?> updateDescription(@RequestParam Long topicId, @RequestBody String newDescription) {
+    @PatchMapping("/description/{id}")
+    public ResponseEntity<?> updateDescription(@PathVariable Long topicId, @RequestBody String newDescription) {
         String result = topicService.updateTopicDescriptionWithValidation(topicId, newDescription);
-        return ResponseEntity.ok().body(result);
+        if (result != null) {
+            return ResponseEntity.ok().body(result);
+        } else {
+            return ResponseEntity.notFound().build(); // Or return any appropriate error response
+        }
     }
+    
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteTopic(@RequestParam Long topicId) {
+    @DeleteMapping("/id/{id}")
+    public ResponseEntity<?> deleteTopic(@PathVariable Long topicId) {
         topicService.deleteTopicById(topicId);
         return ResponseEntity.ok().body("Topic deleted successfully.");
     }

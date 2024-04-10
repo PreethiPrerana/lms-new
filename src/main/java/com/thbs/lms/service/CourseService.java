@@ -74,6 +74,17 @@ public class CourseService {
         }
     }
 
+    public Course updateCourseName(Long courseId, String newCourseName) {
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if (optionalCourse.isPresent()) {
+            Course course = optionalCourse.get();
+            course.setCourseName(newCourseName);
+            return courseRepository.save(course);
+        } else {
+            throw new CourseNotFoundException("Course not found for ID: " + courseId);
+        }
+    }
+
     // public void deleteCourse(Long courseId) {
     // try {
     // Optional<Course> optionalCourse = courseRepository.findById(courseId);
