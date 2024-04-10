@@ -46,9 +46,5 @@ public class CourseController {
         return ResponseEntity.ok().body(course);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteCourses(@RequestBody List<Course> courses) {
-        courseService.deleteCourses(courses);
-        return ResponseEntity.ok().body("Courses deleted successfully");
-    }
+    
 }

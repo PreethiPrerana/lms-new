@@ -117,20 +117,5 @@ public class CourseControllerTest {
         assertEquals(course, responseEntity.getBody());
     }
 
-    @Test
-    public void testDeleteCourses() {
-        List<Course> courses = new ArrayList<>();
-        Course course1 = new Course();
-        course1.setCourseID(1L);
-        Course course2 = new Course();
-        course2.setCourseID(2L);
-        courses.add(course1);
-        courses.add(course2);
-
-        ResponseEntity<?> responseEntity = courseController.deleteCourses(courses);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("Courses deleted successfully", responseEntity.getBody());
-        verify(courseService, times(1)).deleteCourses(courses);
-    }
+  
 }

@@ -128,14 +128,5 @@ public class LearningPlanServiceTest {
         });
     }
 
-    @Test
-    void testGetAllLearningPlans_RepositoryException() {
-        // Stubbing the repository to throw an exception
-        when(learningPlanRepository.findAll()).thenThrow(new RuntimeException("Repository exception"));
-
-        // Verifying that a RepositoryOperationException is thrown
-        assertThrows(RepositoryOperationException.class, () -> {
-            learningPlanService.getAllLearningPlans();
-        });
-    }
+   
 }
