@@ -131,9 +131,6 @@ public class LearningPlanServiceTest {
         });
     }
 
-<<<<<<< HEAD
-   
-=======
     @Test
     void testDeleteLearningPlanById() {
         when(learningPlanRepository.findById(1L)).thenReturn(Optional.of(learningPlan));
@@ -157,5 +154,4 @@ public class LearningPlanServiceTest {
 
         assertEquals("Learning plan with ID 1 not found.", exception.getMessage());
     }
->>>>>>> 0640309443c73834ce514d9ee9a871e25c0e7772
 }

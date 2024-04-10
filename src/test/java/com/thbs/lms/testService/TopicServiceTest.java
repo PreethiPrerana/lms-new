@@ -39,16 +39,13 @@ public class TopicServiceTest {
 
     @Test
     void testAddTopics_Success() {
-        // Mock repository behavior
         when(topicRepository.existsByTopicNameAndCourse(anyString(), any(Course.class))).thenReturn(false);
         when(topicRepository.save(any(Topic.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Create a list of valid topics
         List<Topic> topics = new ArrayList<>();
         topicService.addTopicWithValidation("Topic1", "Description1", new Course());
         topicService.addTopicWithValidation("Topic2", "Description2", new Course());
 
-        // Assert that topics are added successfully without any exceptions
         assertDoesNotThrow(() -> {
             topicService.addTopicsWithValidation(topics);
         });
@@ -56,8 +53,8 @@ public class TopicServiceTest {
 
     @Test
     void testAddTopicsWithValidation_ValidTopics() {
-        // Arrange
         List<Topic> topics = new ArrayList<>();
+        
         Topic validTopic1 = new Topic();
         validTopic1.setTopicName("Topic 1");
         validTopic1.setDescription("Description 1");

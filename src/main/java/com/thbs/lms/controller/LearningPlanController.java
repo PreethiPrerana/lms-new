@@ -1,5 +1,6 @@
 package com.thbs.lms.controller;
 
+import com.thbs.lms.exceptionHandler.DuplicateLearningPlanException;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.service.BulkUploadService;
 import com.thbs.lms.service.LearningPlanService;
@@ -25,9 +26,14 @@ public class LearningPlanController {
 
     @PostMapping
     public ResponseEntity<?> saveLearningPlan(@RequestBody LearningPlan learningPlan) {
-        LearningPlan addedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
-        return ResponseEntity.ok().body(addedLearningPlan);
-    }
+        try {
+            LearningPlan addedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
+            return ResponseEntity.ok().body(addedLearningPlan);
+        } catch (DuplicateLearningPlanException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Failed to save learning plan: " + e.getMessage());
+        }
+        }
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {

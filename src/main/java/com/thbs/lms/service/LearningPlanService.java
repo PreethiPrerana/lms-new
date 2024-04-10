@@ -20,6 +20,10 @@ public class LearningPlanService {
     private LearningPlanPathService learningPlanPathService;
 
     public LearningPlan saveLearningPlan(LearningPlan learningPlan) {
+        List<LearningPlan> existingLearningPlan = learningPlanRepository.findByBatchID(learningPlan.getBatchID());
+        if (!existingLearningPlan.isEmpty()) {
+            throw new DuplicateLearningPlanException("Learning plan for this batch " + learningPlan.getBatchID() + " already exists.");
+        }
         return learningPlanRepository.save(learningPlan);
     }
 
