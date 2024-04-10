@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.thbs.lms.exceptionHandler.DuplicateTopicException;
 import com.thbs.lms.exceptionHandler.FileProcessingException;
 import com.thbs.lms.exceptionHandler.InvalidSheetFormatException;
+import com.thbs.lms.exceptionHandler.NoTopicEntriesException;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.CourseRepository;
@@ -46,8 +47,13 @@ public class BulkUploadService {
                 throw new InvalidSheetFormatException("Sheet format does not match the expected format.");
             }
 
-            // Extract level from the first row, first column (assuming it's a header row)
+            // Check if header row exists
             Row headerRow = sheet.getRow(0);
+            
+            int lastRowNum = sheet.getLastRowNum();
+            if (lastRowNum < 1) {
+                throw new NoTopicEntriesException("No topics found in the course.");
+            }
             String level = headerRow.getCell(1).getStringCellValue();
             // Extract course name from the sheet name
             String courseName = sheet.getSheetName();
@@ -89,17 +95,12 @@ public class BulkUploadService {
             }
             topicNames.add(topicName);
 
-            // boolean topicExists =
-            // topicRepository.existsByCourseAndTopicNameAndDescription(course, topicName,
-            // description);
-            // if (!topicExists) {
             Topic topic = new Topic();
             topic.setTopicName(topicName);
             topic.setDescription(description);
             topic.setCourse(course);
             topics.add(topic);
             System.out.println("Topic:" + topic);
-            // }
         }
         return topics;
     }
