@@ -20,19 +20,11 @@ public class LearningPlanService {
     private LearningPlanPathService learningPlanPathService;
 
     public LearningPlan saveLearningPlan(LearningPlan learningPlan) {
-        try {
-            return learningPlanRepository.save(learningPlan);
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error saving learning plans: " + e.getMessage());
-        }
+        return learningPlanRepository.save(learningPlan);
     }
 
     public List<LearningPlan> getAllLearningPlans() {
-        try {
             return learningPlanRepository.findAll();
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error retrieving learning plans: " + e.getMessage());
-        }
     }
 
     public LearningPlan getLearningPlanById(Long id) {
@@ -63,17 +55,13 @@ public class LearningPlanService {
     }
 
     public void deleteLearningPlanById(Long id) {
-        try {
-            Optional<LearningPlan> optionalLearningPlan = learningPlanRepository.findById(id);
-            if (optionalLearningPlan.isPresent()) {
-                learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(id); // Delete associated learning plan
-                                                                                     // paths
-                learningPlanRepository.delete(optionalLearningPlan.get());
-            } else {
-                throw new LearningPlanNotFoundException("Learning plan with ID " + id + " not found.");
-            }
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error deleting learning plan: " + e.getMessage());
+        Optional<LearningPlan> optionalLearningPlan = learningPlanRepository.findById(id);
+        if (optionalLearningPlan.isPresent()) {
+            learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(id); // Delete associated learning plan
+                                                                                 // paths
+            learningPlanRepository.delete(optionalLearningPlan.get());
+        } else {
+            throw new LearningPlanNotFoundException("Learning plan with ID " + id + " not found.");
         }
     }
 }

@@ -16,9 +16,6 @@ public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
-    @Autowired
-    private TopicService topicService;
-
     public Course saveCourse(Course course) {
         if (course.getCourseName() == null || course.getCourseName().isEmpty() ||
                 course.getLevel() == null || course.getLevel().isEmpty()) {
@@ -30,41 +27,33 @@ public class CourseService {
             throw new DuplicateCourseException("Course with name '" + course.getCourseName() + "' already exists.");
         }
 
-        try {
-            return courseRepository.save(course);
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error saving course: " + e.getMessage());
-        }
+        return courseRepository.save(course);
     }
 
     public List<Course> saveCourses(List<Course> courses) {
         List<Course> savedCourses = new ArrayList<>();
-        try {
-            for (Course course : courses) {
-                if (course.getCourseName() == null || course.getCourseName().isEmpty() ||
-                        course.getLevel() == null || course.getLevel().isEmpty()) {
-                    throw new InvalidCourseDataException("Course name, and level cannot be null or empty.");
-                }
 
-                Optional<Course> existingCourse = courseRepository.findByCourseName(course.getCourseName());
-                if (existingCourse.isPresent()) {
-                    throw new DuplicateCourseException(
-                            "Course with name '" + course.getCourseName() + "' already exists.");
-                }
-                savedCourses.add(courseRepository.save(course));
+        for (Course course : courses) {
+            if (course.getCourseName() == null || course.getCourseName().isEmpty() ||
+                    course.getLevel() == null || course.getLevel().isEmpty()) {
+                throw new InvalidCourseDataException("Course name, and level cannot be null or empty.");
             }
-            return savedCourses;
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error saving courses: " + e.getMessage());
+
+            Optional<Course> existingCourse = courseRepository.findByCourseName(course.getCourseName());
+            if (existingCourse.isPresent()) {
+                throw new DuplicateCourseException(
+                        "Course with name '" + course.getCourseName() + "' already exists.");
+            }
+            savedCourses.add(courseRepository.save(course));
         }
+        return savedCourses;
+
     }
 
     public List<Course> getAllCourses() {
-        try {
-            return courseRepository.findAll();
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error retrieving courses: " + e.getMessage());
-        }
+
+        return courseRepository.findAll();
+
     }
 
     public List<Course> getCoursesByLevel(String level) {
@@ -72,11 +61,8 @@ public class CourseService {
             throw new InvalidLevelException("Level cannot be null or empty.");
         }
 
-        try {
-            return courseRepository.findByLevel(level);
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error retrieving courses by level: " + e.getMessage());
-        }
+        return courseRepository.findByLevel(level);
+
     }
 
     public Course getCourseById(Long courseId) {
@@ -88,35 +74,37 @@ public class CourseService {
         }
     }
 
-    public void deleteCourse(Long courseId) {
-        try {
-            Optional<Course> optionalCourse = courseRepository.findById(courseId);
-            if (optionalCourse.isPresent()) {
-                Course course = optionalCourse.get();
-                topicService.deleteTopicsByCourse(course);
-                courseRepository.delete(course);
-            } else {
-                throw new CourseNotFoundException("Course not found for ID: " + courseId);
-            }
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error deleting course: " + e.getMessage());
-        }
-    }
+    // public void deleteCourse(Long courseId) {
+    // try {
+    // Optional<Course> optionalCourse = courseRepository.findById(courseId);
+    // if (optionalCourse.isPresent()) {
+    // Course course = optionalCourse.get();
+    // topicService.deleteTopicsByCourse(course);
+    // courseRepository.delete(course);
+    // } else {
+    // throw new CourseNotFoundException("Course not found for ID: " + courseId);
+    // }
+    // } catch (Exception e) {
+    // throw new RepositoryOperationException("Error deleting course: " +
+    // e.getMessage());
+    // }
+    // }
 
-    public void deleteCourses(List<Course> courses) {
-        try {
-            for (Course course : courses) {
-                Long courseId = course.getCourseID();
-                Optional<Course> optionalCourse = courseRepository.findById(courseId);
-                if (optionalCourse.isPresent()) {
-                    topicService.deleteTopicsByCourse(course);
-                    courseRepository.delete(course);
-                } else {
-                    throw new CourseNotFoundException("Course not found for ID: " + courseId);
-                }
-            }
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error deleting courses: " + e.getMessage());
-        }
-    }
+    // public void deleteCourses(List<Course> courses) {
+    // try {
+    // for (Course course : courses) {
+    // Long courseId = course.getCourseID();
+    // Optional<Course> optionalCourse = courseRepository.findById(courseId);
+    // if (optionalCourse.isPresent()) {
+    // topicService.deleteTopicsByCourse(course);
+    // courseRepository.delete(course);
+    // } else {
+    // throw new CourseNotFoundException("Course not found for ID: " + courseId);
+    // }
+    // }
+    // } catch (Exception e) {
+    // throw new RepositoryOperationException("Error deleting courses: " +
+    // e.getMessage());
+    // }
+    // }
 }
