@@ -45,7 +45,7 @@ public class TopicService {
             Course course = topic.getCourse();
 
             if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
-                throw new DuplicateTopicException("Topic '" + topicName + "' already existsfor this course.");
+                throw new DuplicateTopicException("Topic '" + topicName + "' already exists for this course.");
             }
 
             if (topicName == null || topicName.isEmpty() || description == null ||

@@ -29,6 +29,7 @@ public class TopicControllerTest {
     @Test
     public void testAddTopic() {
         Topic topic = new Topic();
+
         topic.setTopicName("Test Topic");
         topic.setDescription("Test Description");
 
@@ -44,12 +45,15 @@ public class TopicControllerTest {
     @Test
     public void testAddTopics() {
         List<Topic> topics = new ArrayList<>();
+
         Topic topic1 = new Topic();
         topic1.setTopicName("Test Topic 1");
         topic1.setDescription("Test Description 1");
+
         Topic topic2 = new Topic();
         topic2.setTopicName("Test Topic 2");
         topic2.setDescription("Test Description 2");
+
         topics.add(topic1);
         topics.add(topic2);
 
@@ -64,12 +68,15 @@ public class TopicControllerTest {
     @Test
     public void testGetAllTopics() {
         List<Topic> topics = new ArrayList<>();
+
         Topic topic1 = new Topic();
         topic1.setTopicName("Test Topic 1");
         topic1.setDescription("Test Description 1");
+
         Topic topic2 = new Topic();
         topic2.setTopicName("Test Topic 2");
         topic2.setDescription("Test Description 2");
+
         topics.add(topic1);
         topics.add(topic2);
 
@@ -103,16 +110,20 @@ public class TopicControllerTest {
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("Topic deleted successfully.", responseEntity.getBody());
+
         verify(topicService, times(1)).deleteTopicById(topicId);
     }
 
     @Test
     public void testDeleteTopics() {
         List<Topic> topics = new ArrayList<>();
+
         Topic topic1 = new Topic();
         topic1.setTopicID(1L);
+
         Topic topic2 = new Topic();
         topic2.setTopicID(2L);
+
         topics.add(topic1);
         topics.add(topic2);
 
@@ -120,6 +131,7 @@ public class TopicControllerTest {
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("Topics deleted successfully.", responseEntity.getBody());
+
         verify(topicService, times(1)).deleteTopics(topics);
     }
 }
