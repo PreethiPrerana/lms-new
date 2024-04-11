@@ -1,6 +1,5 @@
 package com.thbs.lms.controller;
 
-import com.thbs.lms.exceptionHandler.DuplicateLearningPlanException;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.service.BulkUploadService;
 import com.thbs.lms.service.LearningPlanService;
@@ -24,19 +23,14 @@ public class LearningPlanController {
     @Autowired
     private BulkUploadService bulkUploadService;
 
-    @PostMapping("/save")
+    @PostMapping("/add")
     public ResponseEntity<?> saveLearningPlan(@RequestBody LearningPlan learningPlan) {
-        try {
-            LearningPlan addedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
-            return ResponseEntity.ok().body(addedLearningPlan);
-        } catch (DuplicateLearningPlanException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Failed to save learning plan: " + e.getMessage());
-        }
-        }
+        LearningPlan addedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
+        return ResponseEntity.ok().body(addedLearningPlan);
+    }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             bulkUploadService.uploadFile(file);
             return ResponseEntity.ok().body("File uploaded successfully.");
@@ -53,14 +47,20 @@ public class LearningPlanController {
     }
 
     @GetMapping("/type/{type}")
-    public ResponseEntity<?> findByType(@PathVariable String type) {
+    public ResponseEntity<?> getLearningPlansByType(@PathVariable String type) {
         List<LearningPlan> learningPlan = learningPlanService.getLearningPlansByType(type);
         return ResponseEntity.ok().body(learningPlan);
     }
 
-    @GetMapping("/id/{batch-id}")
-    public ResponseEntity<?> findByBatchID(@PathVariable Long batchID) {
-        List<LearningPlan> learningPlan = learningPlanService.getLearningPlansByBatchID(batchID);
+    @GetMapping("/batch/{id}")
+    public ResponseEntity<?> getLearningPlansByBatchID(@PathVariable Long id) {
+        List<LearningPlan> learningPlan = learningPlanService.getLearningPlansByBatchID(id);
         return ResponseEntity.ok().body(learningPlan);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteLearningPlan(@PathVariable Long id) {
+        learningPlanService.deleteLearningPlan(id);
+        return ResponseEntity.ok().body("LearningPlan deleted successfully.");
     }
 }

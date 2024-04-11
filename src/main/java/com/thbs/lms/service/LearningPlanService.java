@@ -22,13 +22,17 @@ public class LearningPlanService {
     public LearningPlan saveLearningPlan(LearningPlan learningPlan) {
         List<LearningPlan> existingLearningPlan = learningPlanRepository.findByBatchID(learningPlan.getBatchID());
         if (!existingLearningPlan.isEmpty()) {
-            throw new DuplicateLearningPlanException("Learning plan for this batch " + learningPlan.getBatchID() + " already exists.");
+            throw new DuplicateLearningPlanException(
+                    "Learning plan for this batch " + learningPlan.getBatchID() + " already exists.");
+        }
+        if (learningPlan.getBatchID() == null || learningPlan.getType() == null || learningPlan.getType().isEmpty()) {
+            throw new InvalidLearningPlanException("Batch ID or LearningPlan Type cannot be null");
         }
         return learningPlanRepository.save(learningPlan);
     }
 
     public List<LearningPlan> getAllLearningPlans() {
-            return learningPlanRepository.findAll();
+        return learningPlanRepository.findAll();
     }
 
     public LearningPlan getLearningPlanById(Long id) {
@@ -41,6 +45,9 @@ public class LearningPlanService {
     }
 
     public List<LearningPlan> getLearningPlansByType(String type) {
+        if (type == null || type.isEmpty()) {
+            throw new InvalidTypeException("LearningPlan Type cannot be null");
+        }
         List<LearningPlan> learningPlan = learningPlanRepository.findByType(type);
         if (!learningPlan.isEmpty()) {
             return learningPlan;
@@ -50,6 +57,9 @@ public class LearningPlanService {
     }
 
     public List<LearningPlan> getLearningPlansByBatchID(Long batchID) {
+        if (batchID == null) {
+            throw new InvalidBatchException("LearningPlan Type cannot be null");
+        }
         List<LearningPlan> learningPlan = learningPlanRepository.findByBatchID(batchID);
         if (!learningPlan.isEmpty()) {
             return learningPlan;
@@ -58,11 +68,10 @@ public class LearningPlanService {
         }
     }
 
-    public void deleteLearningPlanById(Long id) {
+    public void deleteLearningPlan(Long id) {
         Optional<LearningPlan> optionalLearningPlan = learningPlanRepository.findById(id);
         if (optionalLearningPlan.isPresent()) {
-            learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(id); // Delete associated learning plan
-                                                                                 // paths
+            learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(id);
             learningPlanRepository.delete(optionalLearningPlan.get());
         } else {
             throw new LearningPlanNotFoundException("Learning plan with ID " + id + " not found.");

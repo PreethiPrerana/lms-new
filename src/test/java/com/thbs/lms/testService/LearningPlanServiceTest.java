@@ -1,5 +1,9 @@
 package com.thbs.lms.testService;
 
+import com.thbs.lms.exceptionHandler.DuplicateLearningPlanException;
+import com.thbs.lms.exceptionHandler.InvalidBatchException;
+import com.thbs.lms.exceptionHandler.InvalidLearningPlanException;
+import com.thbs.lms.exceptionHandler.InvalidTypeException;
 import com.thbs.lms.exceptionHandler.LearningPlanNotFoundException;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.repository.LearningPlanRepository;
@@ -42,9 +46,62 @@ public class LearningPlanServiceTest {
     }
 
     @Test
+    void testSaveLearningPlan() {
+        when(learningPlanRepository.save(learningPlan)).thenReturn(learningPlan);
+
+        LearningPlan savedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
+
+        verify(learningPlanRepository, times(1)).save(learningPlan);
+        assertEquals(learningPlan, savedLearningPlan);
+    }
+
+    @Test
+    public void testSaveLearningPlan_NullBatchID() {
+        learningPlan.setBatchID(null);
+        assertThrows(InvalidLearningPlanException.class, () -> {
+            learningPlanService.saveLearningPlan(learningPlan);
+        });
+    }
+
+    @Test
+    public void testSaveLearningPlan_NullType() {
+        learningPlan.setType(null);
+
+        assertThrows(InvalidLearningPlanException.class, () -> {
+            learningPlanService.saveLearningPlan(learningPlan);
+        });
+    }
+
+    @Test
+    public void testSaveLearningPlan_EmptyType() {
+        learningPlan.setType("");
+
+        assertThrows(InvalidLearningPlanException.class, () -> {
+            learningPlanService.saveLearningPlan(learningPlan);
+        });
+    }
+
+    @Test
+    void testSaveLearningPlan_DuplicateLearningPlanException() {
+        LearningPlan existingLearningPlan = new LearningPlan();
+        existingLearningPlan.setBatchID(1L);
+
+        when(learningPlanRepository.findByBatchID(existingLearningPlan.getBatchID()))
+                .thenReturn(new ArrayList<>(List.of(existingLearningPlan)));
+
+        learningPlan.setBatchID(existingLearningPlan.getBatchID());
+
+        assertThrows(DuplicateLearningPlanException.class,
+                () -> learningPlanService.saveLearningPlan(learningPlan));
+
+        verify(learningPlanRepository, never()).save(any());
+    }
+
+    @Test
     void testGetAllLearningPlans() {
         List<LearningPlan> expectedLearningPlans = new ArrayList<>();
         expectedLearningPlans.add(learningPlan);
+
         when(learningPlanRepository.findAll()).thenReturn(expectedLearningPlans);
 
         List<LearningPlan> actualLearningPlans = learningPlanService.getAllLearningPlans();
@@ -54,20 +111,9 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    void testSaveLearningPlan() {
-        LearningPlan learningPlan = new LearningPlan();
-        learningPlan.setLearningPlanID(1L);
-        learningPlan.setType("Test Learning Plan");
-
-        when(learningPlanRepository.save(learningPlan)).thenReturn(learningPlan);
-        LearningPlan savedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
-        verify(learningPlanRepository, times(1)).save(learningPlan);
-        assertEquals(learningPlan, savedLearningPlan);
-    }
-
-    @Test
-    void testGetLearningPlanById() {
+    void testGetLearningPlanById_Success() {
         Long learningPlanId = 1L;
+
         when(learningPlanRepository.findById(learningPlanId)).thenReturn(Optional.of(learningPlan));
 
         LearningPlan actualLearningPlan = learningPlanService.getLearningPlanById(learningPlanId);
@@ -76,10 +122,23 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    void testFindByType() {
+    void testGetLearningPlanById_NotFound() {
+        Long learningPlanId = 1L;
+
+        when(learningPlanRepository.findById(learningPlanId)).thenReturn(Optional.empty());
+
+        assertThrows(LearningPlanNotFoundException.class, () -> {
+            learningPlanService.getLearningPlanById(learningPlanId);
+        });
+    }
+
+    @Test
+    void testGetLearningPlansByType_Success() {
         String type = "Test Type";
+
         List<LearningPlan> expectedLearningPlans = new ArrayList<>();
         expectedLearningPlans.add(learningPlan);
+
         when(learningPlanRepository.findByType(type)).thenReturn(expectedLearningPlans);
 
         List<LearningPlan> actualLearningPlans = learningPlanService.getLearningPlansByType(type);
@@ -89,10 +148,37 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    void testFindByBatchID() {
+    void testGetLearningPlansByType_NotFound() {
+        String type = "Nonexistent Type";
+
+        when(learningPlanRepository.findByType(type)).thenReturn(new ArrayList<>());
+
+        assertThrows(LearningPlanNotFoundException.class, () -> {
+            learningPlanService.getLearningPlansByType(type);
+        });
+    }
+
+    @Test
+    void testGetLearningPlansByType_NullType() {
+        assertThrows(InvalidTypeException.class, () -> {
+            learningPlanService.getLearningPlansByType(null);
+        });
+    }
+
+    @Test
+    void testGetLearningPlansByType_EmptyType() {
+        assertThrows(InvalidTypeException.class, () -> {
+            learningPlanService.getLearningPlansByType("");
+        });
+    }
+
+    @Test
+    void testGetLearningPlansByBatchID_Success() {
         Long batchID = 1L;
+
         List<LearningPlan> expectedLearningPlans = new ArrayList<>();
         expectedLearningPlans.add(learningPlan);
+
         when(learningPlanRepository.findByBatchID(batchID)).thenReturn(expectedLearningPlans);
 
         List<LearningPlan> actualLearningPlans = learningPlanService.getLearningPlansByBatchID(batchID);
@@ -102,28 +188,9 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    void testGetLearningPlanById_NotFound() {
-        Long learningPlanId = 1L;
-        when(learningPlanRepository.findById(learningPlanId)).thenReturn(Optional.empty());
-
-        assertThrows(LearningPlanNotFoundException.class, () -> {
-            learningPlanService.getLearningPlanById(learningPlanId);
-        });
-    }
-
-    @Test
-    void testFindByType_NotFound() {
-        String type = "Nonexistent Type";
-        when(learningPlanRepository.findByType(type)).thenReturn(new ArrayList<>());
-
-        assertThrows(LearningPlanNotFoundException.class, () -> {
-            learningPlanService.getLearningPlansByType(type);
-        });
-    }
-
-    @Test
-    void testFindByBatchID_NotFound() {
+    void testGetLearningPlansByBatchID_NotFound() {
         Long batchID = 2L;
+
         when(learningPlanRepository.findByBatchID(batchID)).thenReturn(new ArrayList<>());
 
         assertThrows(LearningPlanNotFoundException.class, () -> {
@@ -132,11 +199,18 @@ public class LearningPlanServiceTest {
     }
 
     @Test
+    public void testGetLearningPlansByBatchID_NullBatchID() {
+        assertThrows(InvalidBatchException.class, () -> {
+            learningPlanService.getLearningPlansByBatchID(null);
+        });
+    }
+
+    @Test
     void testDeleteLearningPlanById() {
         when(learningPlanRepository.findById(1L)).thenReturn(Optional.of(learningPlan));
 
         assertDoesNotThrow(() -> {
-            learningPlanService.deleteLearningPlanById(1L);
+            learningPlanService.deleteLearningPlan(1L);
         });
 
         verify(learningPlanRepository, times(1)).delete(learningPlan);
@@ -149,7 +223,7 @@ public class LearningPlanServiceTest {
         when(learningPlanRepository.findById(id)).thenReturn(Optional.empty());
 
         LearningPlanNotFoundException exception = assertThrows(LearningPlanNotFoundException.class, () -> {
-            learningPlanService.deleteLearningPlanById(id);
+            learningPlanService.deleteLearningPlan(id);
         });
 
         assertEquals("Learning plan with ID 1 not found.", exception.getMessage());

@@ -46,9 +46,6 @@ public class LearningPlanControllerTest {
 
     @Test
     public void testSaveLearningPlan() {
-        LearningPlan learningPlan = new LearningPlan();
-        learningPlan.setType("Test Type");
-
         when(learningPlanService.saveLearningPlan(learningPlan)).thenReturn(learningPlan);
 
         ResponseEntity<?> responseEntity = learningPlanController.saveLearningPlan(learningPlan);
@@ -63,7 +60,7 @@ public class LearningPlanControllerTest {
 
         doNothing().when(bulkUploadService).uploadFile(file);
 
-        ResponseEntity<String> responseEntity = learningPlanController.uploadFile(file);
+        ResponseEntity<?> responseEntity = learningPlanController.uploadFile(file);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals("File uploaded successfully.", responseEntity.getBody());
@@ -75,7 +72,7 @@ public class LearningPlanControllerTest {
 
         doThrow(new IOException("File processing error")).when(bulkUploadService).uploadFile(file);
 
-        ResponseEntity<String> responseEntity = learningPlanController.uploadFile(file);
+        ResponseEntity<?> responseEntity = learningPlanController.uploadFile(file);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertEquals("Error processing file: File processing error", responseEntity.getBody());
@@ -84,11 +81,11 @@ public class LearningPlanControllerTest {
     @Test
     public void testGetAllLearningPlans() {
         List<LearningPlan> learningPlans = new ArrayList<>();
-        LearningPlan learningPlan1 = new LearningPlan();
-        learningPlan1.setType("Test Type 1");
+
         LearningPlan learningPlan2 = new LearningPlan();
         learningPlan2.setType("Test Type 2");
-        learningPlans.add(learningPlan1);
+
+        learningPlans.add(learningPlan);
         learningPlans.add(learningPlan2);
 
         when(learningPlanService.getAllLearningPlans()).thenReturn(learningPlans);
@@ -104,16 +101,19 @@ public class LearningPlanControllerTest {
         String type = "Type";
 
         List<LearningPlan> learningPlans = new ArrayList<>();
+
         LearningPlan learningPlan1 = new LearningPlan();
         learningPlan1.setType("Type");
+
         LearningPlan learningPlan2 = new LearningPlan();
         learningPlan2.setType("Type");
+
         learningPlans.add(learningPlan1);
         learningPlans.add(learningPlan2);
 
         when(learningPlanService.getLearningPlansByType(type)).thenReturn(learningPlans);
 
-        ResponseEntity<?> responseEntity = learningPlanController.findByType(type);
+        ResponseEntity<?> responseEntity = learningPlanController.getLearningPlansByType(type);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(learningPlans, responseEntity.getBody());
@@ -124,18 +124,31 @@ public class LearningPlanControllerTest {
         Long batchID = 123L;
 
         List<LearningPlan> learningPlans = new ArrayList<>();
+
         LearningPlan learningPlan1 = new LearningPlan();
         learningPlan1.setType("Type 1");
+
         LearningPlan learningPlan2 = new LearningPlan();
         learningPlan2.setType("Type 2");
+
         learningPlans.add(learningPlan1);
         learningPlans.add(learningPlan2);
 
         when(learningPlanService.getLearningPlansByBatchID(batchID)).thenReturn(learningPlans);
 
-        ResponseEntity<?> responseEntity = learningPlanController.findByBatchID(batchID);
+        ResponseEntity<?> responseEntity = learningPlanController.getLearningPlansByBatchID(batchID);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(learningPlans, responseEntity.getBody());
+    }
+
+    @Test
+    public void testDeleteLearningPlan() {
+        Long idToDelete = 1L;
+
+        ResponseEntity<?> responseEntity = learningPlanController.deleteLearningPlan(idToDelete);
+
+        verify(learningPlanService).deleteLearningPlan(idToDelete);
+        assertEquals("LearningPlan deleted successfully.", responseEntity.getBody());
     }
 }
