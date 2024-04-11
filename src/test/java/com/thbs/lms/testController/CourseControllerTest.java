@@ -117,20 +117,30 @@ public class CourseControllerTest {
         assertEquals(course, responseEntity.getBody());
     }
 
-    // @Test
-    // public void testDeleteCourses() {
-    // List<Course> courses = new ArrayList<>();
-    // Course course1 = new Course();
-    // course1.setCourseID(1L);
-    // Course course2 = new Course();
-    // course2.setCourseID(2L);
-    // courses.add(course1);
-    // courses.add(course2);
+    @Test
+    void testUpdateCourseName() {
+        when(courseService.updateCourseName(1L, "New Course Name")).thenReturn(new Course());
 
-    // ResponseEntity<?> responseEntity = courseController.deleteCourses(courses);
+        ResponseEntity<?> responseEntity = courseController.updateCourseName(1L, "New Course Name");
 
-    // assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-    // assertEquals("Courses deleted successfully", responseEntity.getBody());
-    // verify(courseService, times(1)).deleteCourses(courses);
-    // }
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void testDeleteCourse() {
+        ResponseEntity<?> responseEntity = courseController.deleteCourse(1L);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    void testDeleteCourses() {
+        List<Course> courses = new ArrayList<>();
+        courses.add(new Course());
+        courses.add(new Course());
+
+        ResponseEntity<?> responseEntity = courseController.deleteCourses(courses);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
 }

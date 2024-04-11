@@ -16,6 +16,9 @@ public class CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
+    @Autowired
+    private TopicService topicService;
+
     public Course saveCourse(Course course) {
         if (course.getCourseName() == null || course.getCourseName().isEmpty() ||
                 course.getLevel() == null || course.getLevel().isEmpty()) {
@@ -51,18 +54,14 @@ public class CourseService {
     }
 
     public List<Course> getAllCourses() {
-
         return courseRepository.findAll();
-
     }
 
     public List<Course> getCoursesByLevel(String level) {
         if (level == null || level.isEmpty()) {
             throw new InvalidLevelException("Level cannot be null or empty.");
         }
-
         return courseRepository.findByLevel(level);
-
     }
 
     public Course getCourseById(Long courseId) {
@@ -85,37 +84,27 @@ public class CourseService {
         }
     }
 
-    // public void deleteCourse(Long courseId) {
-    // try {
-    // Optional<Course> optionalCourse = courseRepository.findById(courseId);
-    // if (optionalCourse.isPresent()) {
-    // Course course = optionalCourse.get();
-    // topicService.deleteTopicsByCourse(course);
-    // courseRepository.delete(course);
-    // } else {
-    // throw new CourseNotFoundException("Course not found for ID: " + courseId);
-    // }
-    // } catch (Exception e) {
-    // throw new RepositoryOperationException("Error deleting course: " +
-    // e.getMessage());
-    // }
-    // }
+    public void deleteCourse(Long courseId) {
+        Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        if (optionalCourse.isPresent()) {
+            Course course = optionalCourse.get();
+            topicService.deleteTopicsByCourse(course);
+            courseRepository.delete(course);
+        } else {
+            throw new CourseNotFoundException("Course not found for ID: " + courseId);
+        }
+    }
 
-    // public void deleteCourses(List<Course> courses) {
-    // try {
-    // for (Course course : courses) {
-    // Long courseId = course.getCourseID();
-    // Optional<Course> optionalCourse = courseRepository.findById(courseId);
-    // if (optionalCourse.isPresent()) {
-    // topicService.deleteTopicsByCourse(course);
-    // courseRepository.delete(course);
-    // } else {
-    // throw new CourseNotFoundException("Course not found for ID: " + courseId);
-    // }
-    // }
-    // } catch (Exception e) {
-    // throw new RepositoryOperationException("Error deleting courses: " +
-    // e.getMessage());
-    // }
-    // }
+    public void deleteCourses(List<Course> courses) {
+        for (Course course : courses) {
+            Long courseId = course.getCourseID();
+            Optional<Course> optionalCourse = courseRepository.findById(courseId);
+            if (optionalCourse.isPresent()) {
+                topicService.deleteTopicsByCourse(course);
+                courseRepository.delete(course);
+            } else {
+                throw new CourseNotFoundException("Course not found for ID: " + courseId);
+            }
+        }
+    }
 }

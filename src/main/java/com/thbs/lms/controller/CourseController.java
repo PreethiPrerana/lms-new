@@ -49,21 +49,18 @@ public class CourseController {
     @PatchMapping("/id/{id}")
     public ResponseEntity<?> updateCourseName(@PathVariable Long id, @RequestBody String newCourseName) {
         Course updatedCourse = courseService.updateCourseName(id, newCourseName);
-        if (updatedCourse != null) {
-            return ResponseEntity.ok().body(updatedCourse);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok().body(updatedCourse);
     }
-    // @DeleteMapping("/id")
-    // public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
-    // courseService.deleteCourse(id);
-    // return ResponseEntity.ok().body("Course deleted successfully");
-    // }
 
-    // @DeleteMapping()
-    // public ResponseEntity<?> deleteCourses(@RequestBody List<Course> courses) {
-    // courseService.deleteCourses(courses);
-    // return ResponseEntity.ok().body("Courses deleted successfully");
-    // }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
+        courseService.deleteCourse(id);
+        return ResponseEntity.ok().body("Course deleted successfully");
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteCourses(@RequestBody List<Course> courses) {
+        courseService.deleteCourses(courses);
+        return ResponseEntity.ok().body("Courses deleted successfully");
+    }
 }
