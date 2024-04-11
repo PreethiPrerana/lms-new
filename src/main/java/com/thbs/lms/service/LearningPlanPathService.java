@@ -7,6 +7,7 @@ import com.thbs.lms.repository.LearningPlanPathRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +18,9 @@ public class LearningPlanPathService {
     @Autowired
     private LearningPlanPathRepository learningPlanPathRepository;
 
-    public LearningPlanPath createLearningPlanPath(LearningPlanPath learningPlanPath) {
+    public LearningPlanPath saveLearningPlanPath(LearningPlanPath learningPlanPath) {
         if (learningPlanPath.getStartDate() == null || learningPlanPath.getEndDate() == null
+                || learningPlanPath.getTrainer() == null || learningPlanPath.getType() == null
                 || learningPlanPath.getTrainer().isEmpty() || learningPlanPath.getType().isEmpty()
                 || learningPlanPath.getCourse() == null) {
             throw new InvalidLearningPlanPathDataException(
@@ -35,12 +37,19 @@ public class LearningPlanPathService {
                     "A learning plan path with the same course, learning plan ID, and type already exists.");
         }
 
-        // If no duplicate entry found, save the learning plan path
         return learningPlanPathRepository.save(learningPlanPath);
     }
 
     public List<LearningPlanPath> saveAllLearningPlanPaths(List<LearningPlanPath> learningPlanPaths) {
-        return learningPlanPathRepository.saveAll(learningPlanPaths);
+        List<LearningPlanPath> savedPaths = new ArrayList<LearningPlanPath>();
+        for (LearningPlanPath learningPlanPath : learningPlanPaths) {
+            savedPaths.add(saveLearningPlanPath(learningPlanPath));
+        }
+        return savedPaths;
+    }
+
+    public List<LearningPlanPath> getAllLearningPlanPaths() {
+        return learningPlanPathRepository.findAll();
     }
 
     public List<LearningPlanPath> getAllLearningPlanPathsByLearningPlanId(Long learningPlanId) {
@@ -101,7 +110,7 @@ public class LearningPlanPathService {
         List<LearningPlanPath> learningPlanPaths = learningPlanPathRepository
                 .findByLearningPlanLearningPlanID(learningPlanId);
         for (LearningPlanPath path : learningPlanPaths) {
-            learningPlanPathRepository.delete(path);
+            deleteLearningPlanPath(path.getPathID());
         }
     }
 

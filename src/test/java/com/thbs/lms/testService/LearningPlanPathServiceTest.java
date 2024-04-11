@@ -1,11 +1,12 @@
 package com.thbs.lms.testService;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
+import com.thbs.lms.controller.LearningPlanPathController;
 import com.thbs.lms.exceptionHandler.DuplicateLearningPlanPathException;
 import com.thbs.lms.exceptionHandler.InvalidLearningPlanPathDataException;
 import com.thbs.lms.exceptionHandler.InvalidTrainerException;
@@ -28,19 +29,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-// import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class LearningPlanPathServiceTest {
 
-    @Autowired
-    private LearningPlanPathService learningPlanPathService;
-
-    @MockBean
+    @Mock
     private LearningPlanPathRepository learningPlanPathRepository;
 
-    private LearningPlanPath learningPlanPath;
+    @Mock
+    private LearningPlanPathController learningPlanPathController;
+
+    @InjectMocks
+    private LearningPlanPathService learningPlanPathService;
+
+    private LearningPlanPath learningPlanPath, learningPlanPath2;
     private Course course;
     private LearningPlan learningPlan;
 
@@ -62,66 +65,143 @@ public class LearningPlanPathServiceTest {
         learningPlanPath.setType("Test Type");
         learningPlanPath.setCourse(course);
         learningPlanPath.setLearningPlan(learningPlan);
+
+        learningPlanPath2 = new LearningPlanPath();
+        learningPlanPath2.setPathID(2L);
+        learningPlanPath2.setStartDate(new Date());
+        learningPlanPath2.setEndDate(new Date());
+        learningPlanPath2.setTrainer("Test Trainer2");
+        learningPlanPath2.setType("Test Type2");
+        learningPlanPath2.setCourse(course);
+        learningPlanPath2.setLearningPlan(learningPlan);
     }
 
     @Test
-    public void testCreateLearningPlanPath_ValidInput() {
+    public void testSaveLearningPlanPath_Success() {
         when(learningPlanPathRepository.save(any(LearningPlanPath.class))).thenReturn(learningPlanPath);
 
-        LearningPlanPath createdPath = learningPlanPathService.createLearningPlanPath(learningPlanPath);
+        LearningPlanPath createdPath = learningPlanPathService.saveLearningPlanPath(learningPlanPath);
 
         assertNotNull(createdPath);
-        assertEquals(learningPlanPath.getTrainer(), createdPath.getTrainer());
+        assertEquals(learningPlanPath, createdPath);
     }
 
     @Test
-    public void testCreateLearningPlanPath_InvalidInput() {
-        // Making start date null to trigger invalid data condition
+    public void testSaveLearningPlanPath_NullStartDate() {
         learningPlanPath.setStartDate(null);
 
         assertThrows(InvalidLearningPlanPathDataException.class, () -> {
-            learningPlanPathService.createLearningPlanPath(learningPlanPath);
+            learningPlanPathService.saveLearningPlanPath(learningPlanPath);
         });
     }
 
     @Test
-    public void testCreateLearningPlanPath_DuplicateEntry() {
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanIDAndCourseAndType(anyLong(), any(Course.class), anyString())).thenReturn(Optional.of(learningPlanPath));
+    public void testSaveLearningPlanPath_NullEndDate() {
+        learningPlanPath.setEndDate(null);
+
+        assertThrows(InvalidLearningPlanPathDataException.class, () -> {
+            learningPlanPathService.saveLearningPlanPath(learningPlanPath);
+        });
+    }
+
+    @Test
+    public void testSaveLearningPlanPath_EmptyTrainer() {
+        learningPlanPath.setTrainer("");
+
+        assertThrows(InvalidLearningPlanPathDataException.class, () -> {
+            learningPlanPathService.saveLearningPlanPath(learningPlanPath);
+        });
+    }
+
+    @Test
+    public void testSaveLearningPlanPath_NullTrainer() {
+        learningPlanPath.setTrainer(null);
+
+        assertThrows(InvalidLearningPlanPathDataException.class, () -> {
+            learningPlanPathService.saveLearningPlanPath(learningPlanPath);
+        });
+    }
+
+    @Test
+    public void testSaveLearningPlanPath_EmptyType() {
+        learningPlanPath.setType("");
+
+        assertThrows(InvalidLearningPlanPathDataException.class, () -> {
+            learningPlanPathService.saveLearningPlanPath(learningPlanPath);
+        });
+    }
+
+    @Test
+    public void testSaveLearningPlanPath_NullCourse() {
+        learningPlanPath.setCourse(null);
+
+        assertThrows(InvalidLearningPlanPathDataException.class, () -> {
+            learningPlanPathService.saveLearningPlanPath(learningPlanPath);
+        });
+    }
+
+    @Test
+    public void testSaveLearningPlanPath_NullType() {
+        learningPlanPath.setType(null);
+
+        assertThrows(InvalidLearningPlanPathDataException.class, () -> {
+            learningPlanPathService.saveLearningPlanPath(learningPlanPath);
+        });
+    }
+
+    @Test
+    public void testSaveLearningPlanPath_DuplicateEntry() {
+        when(learningPlanPathRepository.findByLearningPlanLearningPlanIDAndCourseAndType(anyLong(), any(Course.class),
+                anyString())).thenReturn(Optional.of(learningPlanPath));
 
         assertThrows(DuplicateLearningPlanPathException.class, () -> {
-            learningPlanPathService.createLearningPlanPath(learningPlanPath);
+            learningPlanPathService.saveLearningPlanPath(learningPlanPath);
         });
     }
 
     @Test
-    public void testSaveAllLearningPlanPaths_ValidInputList() {
-        // Mocking saveAll method of repository
-        when(learningPlanPathRepository.saveAll(anyList())).thenReturn(Arrays.asList(learningPlanPath));
-
+    void testSaveAllLearningPlanPaths_Success() {
         List<LearningPlanPath> learningPlanPaths = new ArrayList<>();
+
         learningPlanPaths.add(learningPlanPath);
+        learningPlanPaths.add(learningPlanPath2);
+
+        when(learningPlanPathRepository.saveAll(learningPlanPaths))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         List<LearningPlanPath> savedPaths = learningPlanPathService.saveAllLearningPlanPaths(learningPlanPaths);
 
-        assertNotNull(savedPaths);
-        assertEquals(1, savedPaths.size());
-        assertEquals(learningPlanPath.getPathID(), savedPaths.get(0).getPathID());
+        assertEquals(2, savedPaths.size());
+        verify(learningPlanPathRepository, times(2)).save(any(LearningPlanPath.class));
     }
 
     @Test
-    public void testSaveAllLearningPlanPaths_EmptyList() {
-        // Mocking saveAll method of repository
-        when(learningPlanPathRepository.saveAll(anyList())).thenReturn(new ArrayList<>());
+    void testSaveAllLearningPlanPaths_EmptyList() {
+        List<LearningPlanPath> learningPlanPaths = new ArrayList<>();
 
-        List<LearningPlanPath> savedPaths = learningPlanPathService.saveAllLearningPlanPaths(new ArrayList<>());
+        List<LearningPlanPath> savedPaths = learningPlanPathService.saveAllLearningPlanPaths(learningPlanPaths);
 
-        assertNotNull(savedPaths);
         assertEquals(0, savedPaths.size());
+        verify(learningPlanPathRepository, never()).save(any(LearningPlanPath.class));
     }
 
     @Test
-    public void testGetAllLearningPlanPathsByLearningPlanId_ExistingId() {
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong())).thenReturn(Arrays.asList(learningPlanPath));
+    void testGetAllLearningPlanPaths_Success() {
+        List<LearningPlanPath> expectedPaths = new ArrayList<>();
+
+        expectedPaths.add(new LearningPlanPath());
+
+        when(learningPlanPathRepository.findAll()).thenReturn(expectedPaths);
+
+        List<LearningPlanPath> actualPaths = learningPlanPathService.getAllLearningPlanPaths();
+
+        assertEquals(expectedPaths.size(), actualPaths.size());
+    }
+
+    @Test
+    public void testGetAllLearningPlanPathsByLearningPlanId_Success() {
+        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong()))
+                .thenReturn(Arrays.asList(learningPlanPath));
 
         List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlanPathsByLearningPlanId(1L);
 
@@ -131,17 +211,7 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testGetAllLearningPlanPathsByLearningPlanId_NonExistentId() {
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong())).thenReturn(new ArrayList<>());
-
-        List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlanPathsByLearningPlanId(2L);
-
-        assertNotNull(paths);
-        assertEquals(0, paths.size());
-    }
-
-    @Test
-    public void testGetAllLearningPlanPathsByType_ValidType() {
+    public void testGetAllLearningPlanPathsByType_Success() {
         when(learningPlanPathRepository.findByType(anyString())).thenReturn(Arrays.asList(learningPlanPath));
 
         List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlanPathsByType("Test Type");
@@ -159,7 +229,14 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testGetAllLearningPlanPathsByTrainer_ValidTrainer() {
+    public void testGetAllLearningPlanPathsByType_EmptyType() {
+        assertThrows(InvalidTypeException.class, () -> {
+            learningPlanPathService.getAllLearningPlanPathsByType("");
+        });
+    }
+
+    @Test
+    public void testGetAllLearningPlanPathsByTrainer_Success() {
         when(learningPlanPathRepository.findByTrainer(anyString())).thenReturn(Arrays.asList(learningPlanPath));
 
         List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlanPathsByTrainer("Test Trainer");
@@ -177,7 +254,14 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testUpdateLearningPlanPathTrainer_ValidInputs() {
+    public void testGetAllLearningPlanPathsByTrainer_EmptyTrainer() {
+        assertThrows(InvalidTrainerException.class, () -> {
+            learningPlanPathService.getAllLearningPlanPathsByTrainer("");
+        });
+    }
+
+    @Test
+    public void testUpdateLearningPlanPathTrainer_Success() {
         when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.of(learningPlanPath));
         when(learningPlanPathRepository.save(any(LearningPlanPath.class))).thenReturn(learningPlanPath);
 
@@ -195,7 +279,14 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testUpdateLearningPlanPathTrainer_NonExistentPathId() {
+    public void testUpdateLearningPlanPathTrainer_EmptyTrainer() {
+        assertThrows(InvalidTrainerException.class, () -> {
+            learningPlanPathService.updateLearningPlanPathTrainer(1L, "");
+        });
+    }
+
+    @Test
+    public void testUpdateLearningPlanPathTrainer_LearningPlanPathNotFound() {
         when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(LearningPlanPathNotFoundException.class, () -> {
@@ -204,14 +295,15 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testUpdateLearningPlanPathDates_ValidInputs() {
+    public void testUpdateLearningPlanPathDates_Success() {
         when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.of(learningPlanPath));
         when(learningPlanPathRepository.save(any(LearningPlanPath.class))).thenReturn(learningPlanPath);
 
         Date startDate = new Date();
         Date endDate = new Date(startDate.getTime() + 1000 * 60 * 60 * 24); // Adding one day
 
-        Optional<LearningPlanPath> updatedPath = learningPlanPathService.updateLearningPlanPathDates(1L, startDate, endDate);
+        Optional<LearningPlanPath> updatedPath = learningPlanPathService.updateLearningPlanPathDates(1L, startDate,
+                endDate);
 
         assertTrue(updatedPath.isPresent());
         assertEquals(startDate, updatedPath.get().getStartDate());
@@ -219,9 +311,16 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testUpdateLearningPlanPathDates_NullDates() {
+    public void testUpdateLearningPlanPathDates_NullStartDate() {
         assertThrows(InvalidLearningPlanPathDataException.class, () -> {
-            learningPlanPathService.updateLearningPlanPathDates(1L, null, null);
+            learningPlanPathService.updateLearningPlanPathDates(1L, null, any(Date.class));
+        });
+    }
+
+    @Test
+    public void testUpdateLearningPlanPathDates_NullEndDate() {
+        assertThrows(InvalidLearningPlanPathDataException.class, () -> {
+            learningPlanPathService.updateLearningPlanPathDates(1L, any(Date.class), null);
         });
     }
 
@@ -236,7 +335,7 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testUpdateLearningPlanPathDates_NonExistentPathId() {
+    public void testUpdateLearningPlanPathDates_LearningPlanPathNotFound() {
         when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(LearningPlanPathNotFoundException.class, () -> {
@@ -245,16 +344,12 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testDeleteLearningPlanPathsByLearningPlanId_ExistingId() {
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong())).thenReturn(Arrays.asList(learningPlanPath));
+    public void testDeleteLearningPlanPathsByLearningPlanId_Success() {
 
-        assertDoesNotThrow(() -> {
-            learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(1L);
-        });
     }
 
     @Test
-    public void testDeleteLearningPlanPathsByLearningPlanId_NonExistentId() {
+    public void testDeleteLearningPlanPathsByLearningPlanId_EmptyList() {
         when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong())).thenReturn(new ArrayList<>());
 
         assertDoesNotThrow(() -> {
@@ -263,7 +358,7 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testDeleteLearningPlanPaths_ValidList() {
+    public void testDeleteLearningPlanPaths_Success() {
         List<LearningPlanPath> paths = Arrays.asList(learningPlanPath);
 
         assertDoesNotThrow(() -> {
@@ -281,16 +376,18 @@ public class LearningPlanPathServiceTest {
     }
 
     @Test
-    public void testDeleteLearningPlanPath_ExistingPathId() {
-        when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.of(learningPlanPath));
+    public void testDeleteLearningPlanPath_Success() {
+        Long learningPlanPathId = 1L;
 
-        assertDoesNotThrow(() -> {
-            learningPlanPathService.deleteLearningPlanPath(1L);
-        });
+        when(learningPlanPathRepository.findById(learningPlanPathId)).thenReturn(Optional.of(learningPlanPath));
+
+        learningPlanPathService.deleteLearningPlanPath(learningPlanPathId);
+
+        verify(learningPlanPathRepository, times(1)).delete(learningPlanPath);
     }
 
     @Test
-    public void testDeleteLearningPlanPath_NonExistentPathId() {
+    public void testDeleteLearningPlanPath_LearningPlanPathNotFound() {
         when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(LearningPlanPathNotFoundException.class, () -> {
