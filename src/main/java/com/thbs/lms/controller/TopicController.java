@@ -1,6 +1,8 @@
 package com.thbs.lms.controller;
 
+import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
+import com.thbs.lms.service.CourseService;
 import com.thbs.lms.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,9 @@ public class TopicController {
 
     @Autowired
     private TopicService topicService;
+
+    @Autowired
+    private CourseService courseService;
 
     @PostMapping("/add")
     public ResponseEntity<?> addTopic(@RequestBody Topic topic) {
@@ -31,6 +36,14 @@ public class TopicController {
     @GetMapping
     public ResponseEntity<?> getAllTopics() {
         List<Topic> topics = topicService.getAllTopics();
+        return ResponseEntity.ok().body(topics);
+    }
+
+    @GetMapping("/course/{courseId}")
+    public ResponseEntity<List<Topic>> getTopicsByCourse(@PathVariable Long courseId) {
+        Course course = courseService.getCourseById(courseId);
+
+        List<Topic> topics = topicService.getTopicsByCourse(course);
         return ResponseEntity.ok().body(topics);
     }
 
