@@ -11,62 +11,61 @@ import com.thbs.lms.model.Course;
 import com.thbs.lms.service.CourseService;
 
 @RestController
-@RequestMapping("/courses")
+@RequestMapping("/course")
+// @CrossOrigin("*")
 public class CourseController {
 
-    @Autowired
-    CourseService courseService;
+    private final CourseService courseService;
 
-    @PostMapping("/add")
-    public ResponseEntity<?> addCourse(@RequestBody Course course) {
+    @Autowired
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
+    }
+
+    @PostMapping
+    public ResponseEntity<Course> addCourse(@RequestBody Course course) {
         Course addedCourse = courseService.saveCourse(course);
         return ResponseEntity.ok().body(addedCourse);
     }
 
-    @PostMapping("/addAll")
-    public ResponseEntity<?> addCourses(@RequestBody List<Course> courses) {
-        List<Course> addedCourses = courseService.saveCourses(courses);
-        return ResponseEntity.ok().body(addedCourses);
-    }
-
     @GetMapping
-    public ResponseEntity<?> getAllCourses() {
+    public ResponseEntity<List<Course>> getAllCourses() {
         List<Course> courses = courseService.getAllCourses();
         return ResponseEntity.ok().body(courses);
     }
 
     @GetMapping("/dto")
-    public ResponseEntity<?> getAllCourseDTOs() {
+    public ResponseEntity<List<CourseDTO>> getAllCourseDTOs() {
         List<CourseDTO> courseDTOs = courseService.getAllCourseDTOs();
         return ResponseEntity.ok().body(courseDTOs);
     }
 
     @GetMapping("/level/{level}")
-    public ResponseEntity<?> getCoursesByLevel(@PathVariable String level) {
+    public ResponseEntity<List<Course>> getCoursesByLevel(@PathVariable String level) {
         List<Course> courses = courseService.getCoursesByLevel(level);
         return ResponseEntity.ok().body(courses);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<?> getCourseById(@PathVariable Long id) {
+    public ResponseEntity<Course> getCourseById(@PathVariable Long id) {
         Course course = courseService.getCourseById(id);
         return ResponseEntity.ok().body(course);
     }
 
-    @PatchMapping("/id/{id}")
-    public ResponseEntity<?> updateCourseName(@PathVariable Long id, @RequestBody String newCourseName) {
+    @PatchMapping("/name/{id}")
+    public ResponseEntity<Course> updateCourseName(@PathVariable Long id, @RequestBody String newCourseName) {
         Course updatedCourse = courseService.updateCourseName(id, newCourseName);
         return ResponseEntity.ok().body(updatedCourse);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteCourse(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return ResponseEntity.ok().body("Course deleted successfully");
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteCourses(@RequestBody List<Course> courses) {
+    @DeleteMapping("/multiple")
+    public ResponseEntity<String> deleteCourses(@RequestBody List<Course> courses) {
         courseService.deleteCourses(courses);
         return ResponseEntity.ok().body("Courses deleted successfully");
     }

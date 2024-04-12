@@ -3,10 +3,10 @@ package com.thbs.lms.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.thbs.lms.exception.*;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.TopicRepository;
-import com.thbs.lms.exceptionHandler.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +15,12 @@ import java.util.Optional;
 @Service
 public class TopicService {
 
+    private final TopicRepository topicRepository;
+
     @Autowired
-    private TopicRepository topicRepository;
+    public TopicService(TopicRepository topicRepository) {
+        this.topicRepository = topicRepository;
+    }
 
     public Topic addTopicWithValidation(String topicName, String description,
             Course course) {
@@ -113,6 +117,23 @@ public class TopicService {
         List<Topic> topics = topicRepository.findByCourse(course);
         for (Topic topic : topics) {
             topicRepository.delete(topic);
+        }
+    }
+
+    public String updateTopicNameWithValidation(Long topicId, String newName) {
+        Optional<Topic> optionalTopic = topicRepository.findById(topicId);
+        if (optionalTopic.isPresent()) {
+            Topic topic = optionalTopic.get();
+
+            if (newName == null || newName.isEmpty()) {
+                throw new InvalidTopicDataException("Topic Name cannot be null or empty.");
+            }
+
+            topic.setTopicName(newName);
+            topicRepository.save(topic);
+            return "Topic name updated successfully";
+        } else {
+            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
         }
     }
 }

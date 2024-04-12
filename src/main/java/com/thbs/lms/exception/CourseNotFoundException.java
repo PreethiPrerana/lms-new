@@ -1,4 +1,4 @@
-package com.thbs.lms.exceptionHandler;
+package com.thbs.lms.exception;
 
 public class CourseNotFoundException extends RuntimeException {
     public CourseNotFoundException(String message) {

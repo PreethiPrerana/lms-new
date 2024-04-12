@@ -1,6 +1,6 @@
 package com.thbs.lms.service;
 
-import com.thbs.lms.exceptionHandler.*;
+import com.thbs.lms.exception.*;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.LearningPlanPath;
 import com.thbs.lms.repository.LearningPlanPathRepository;
@@ -15,8 +15,12 @@ import java.util.Optional;
 @Service
 public class LearningPlanPathService {
 
-    @Autowired
     private LearningPlanPathRepository learningPlanPathRepository;
+
+    @Autowired
+    public LearningPlanPathService(LearningPlanPathRepository learningPlanPathRepository) {
+        this.learningPlanPathRepository = learningPlanPathRepository;
+    }
 
     public LearningPlanPath saveLearningPlanPath(LearningPlanPath learningPlanPath) {
         if (learningPlanPath.getStartDate() == null || learningPlanPath.getEndDate() == null
@@ -41,7 +45,7 @@ public class LearningPlanPathService {
     }
 
     public List<LearningPlanPath> saveAllLearningPlanPaths(List<LearningPlanPath> learningPlanPaths) {
-        List<LearningPlanPath> savedPaths = new ArrayList<LearningPlanPath>();
+        List<LearningPlanPath> savedPaths = new ArrayList<>();
         for (LearningPlanPath learningPlanPath : learningPlanPaths) {
             savedPaths.add(saveLearningPlanPath(learningPlanPath));
         }

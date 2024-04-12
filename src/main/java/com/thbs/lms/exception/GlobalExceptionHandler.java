@@ -1,4 +1,4 @@
-package com.thbs.lms.exceptionHandler;
+package com.thbs.lms.exception;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 

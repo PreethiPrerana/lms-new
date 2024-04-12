@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.thbs.lms.exceptionHandler.DuplicateTopicException;
-import com.thbs.lms.exceptionHandler.FileProcessingException;
+import com.thbs.lms.exception.DuplicateTopicException;
+import com.thbs.lms.exception.FileProcessingException;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.CourseRepository;
@@ -28,11 +28,14 @@ import java.util.Set;
 @Service
 public class BulkUploadService {
 
-    @Autowired
-    private CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
+    private final TopicRepository topicRepository;
 
     @Autowired
-    private TopicRepository topicRepository;
+    public BulkUploadService(CourseRepository courseRepository, TopicRepository topicRepository) {
+        this.courseRepository = courseRepository;
+        this.topicRepository = topicRepository;
+    }
 
     public void uploadFile(MultipartFile file) throws IOException, FileProcessingException {
         Workbook workbook = WorkbookFactory.create(file.getInputStream());
@@ -44,7 +47,7 @@ public class BulkUploadService {
             SheetValidator.isValidSheetFormat(sheet);
             // Check if header row exists
             Row headerRow = sheet.getRow(0);
-            
+
             String level = headerRow.getCell(1).getStringCellValue();
             // Extract course name from the sheet name
             String courseName = sheet.getSheetName();
@@ -84,7 +87,7 @@ public class BulkUploadService {
             if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
                 continue; // Skip adding existing topics
             }
-            
+
             if (topicNames.contains(topicName)) {
                 throw new DuplicateTopicException("Duplicate entries present in sheet.");
             }

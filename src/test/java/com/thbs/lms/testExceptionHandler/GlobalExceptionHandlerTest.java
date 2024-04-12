@@ -10,23 +10,23 @@ import org.mockito.InjectMocks;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.thbs.lms.exceptionHandler.CourseNotFoundException;
-import com.thbs.lms.exceptionHandler.DuplicateCourseException;
-import com.thbs.lms.exceptionHandler.DuplicateLearningPlanException;
-import com.thbs.lms.exceptionHandler.DuplicateLearningPlanPathException;
-import com.thbs.lms.exceptionHandler.DuplicateTopicException;
-import com.thbs.lms.exceptionHandler.ErrorResponse;
-import com.thbs.lms.exceptionHandler.GlobalExceptionHandler;
-import com.thbs.lms.exceptionHandler.InvalidCourseDataException;
-import com.thbs.lms.exceptionHandler.InvalidDescriptionException;
-import com.thbs.lms.exceptionHandler.InvalidLearningPlanException;
-import com.thbs.lms.exceptionHandler.InvalidLearningPlanPathDataException;
-import com.thbs.lms.exceptionHandler.InvalidLevelException;
-import com.thbs.lms.exceptionHandler.InvalidTopicDataException;
-import com.thbs.lms.exceptionHandler.InvalidTrainerException;
-import com.thbs.lms.exceptionHandler.LearningPlanNotFoundException;
-import com.thbs.lms.exceptionHandler.LearningPlanPathNotFoundException;
-import com.thbs.lms.exceptionHandler.TopicNotFoundException;
+import com.thbs.lms.exception.CourseNotFoundException;
+import com.thbs.lms.exception.DuplicateCourseException;
+import com.thbs.lms.exception.DuplicateLearningPlanException;
+import com.thbs.lms.exception.DuplicateLearningPlanPathException;
+import com.thbs.lms.exception.DuplicateTopicException;
+import com.thbs.lms.exception.ErrorResponse;
+import com.thbs.lms.exception.GlobalExceptionHandler;
+import com.thbs.lms.exception.InvalidCourseDataException;
+import com.thbs.lms.exception.InvalidDescriptionException;
+import com.thbs.lms.exception.InvalidLearningPlanException;
+import com.thbs.lms.exception.InvalidLearningPlanPathDataException;
+import com.thbs.lms.exception.InvalidLevelException;
+import com.thbs.lms.exception.InvalidTopicDataException;
+import com.thbs.lms.exception.InvalidTrainerException;
+import com.thbs.lms.exception.LearningPlanNotFoundException;
+import com.thbs.lms.exception.LearningPlanPathNotFoundException;
+import com.thbs.lms.exception.TopicNotFoundException;
 
 @ExtendWith(SpringExtension.class)
 

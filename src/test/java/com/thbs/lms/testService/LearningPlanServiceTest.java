@@ -1,10 +1,10 @@
 package com.thbs.lms.testService;
 
-import com.thbs.lms.exceptionHandler.DuplicateLearningPlanException;
-import com.thbs.lms.exceptionHandler.InvalidBatchException;
-import com.thbs.lms.exceptionHandler.InvalidLearningPlanException;
-import com.thbs.lms.exceptionHandler.InvalidTypeException;
-import com.thbs.lms.exceptionHandler.LearningPlanNotFoundException;
+import com.thbs.lms.exception.DuplicateLearningPlanException;
+import com.thbs.lms.exception.InvalidBatchException;
+import com.thbs.lms.exception.InvalidLearningPlanException;
+import com.thbs.lms.exception.InvalidTypeException;
+import com.thbs.lms.exception.LearningPlanNotFoundException;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.repository.LearningPlanRepository;
 import com.thbs.lms.service.LearningPlanPathService;

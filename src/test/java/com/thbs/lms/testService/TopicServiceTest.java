@@ -1,6 +1,6 @@
 package com.thbs.lms.testService;
 
-import com.thbs.lms.exceptionHandler.*;
+import com.thbs.lms.exception.*;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.TopicRepository;

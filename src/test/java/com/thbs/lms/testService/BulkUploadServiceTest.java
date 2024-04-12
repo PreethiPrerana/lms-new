@@ -6,9 +6,9 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 
-import com.thbs.lms.exceptionHandler.DuplicateTopicException;
-import com.thbs.lms.exceptionHandler.FileProcessingException;
-import com.thbs.lms.exceptionHandler.InvalidSheetFormatException;
+import com.thbs.lms.exception.DuplicateTopicException;
+import com.thbs.lms.exception.FileProcessingException;
+import com.thbs.lms.exception.InvalidSheetFormatException;
 import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.repository.TopicRepository;
 import com.thbs.lms.service.BulkUploadService;

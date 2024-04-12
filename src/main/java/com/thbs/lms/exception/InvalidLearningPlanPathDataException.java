@@ -1,4 +1,4 @@
-package com.thbs.lms.exceptionHandler;
+package com.thbs.lms.exception;
 
 public class InvalidLearningPlanPathDataException extends RuntimeException {
     public InvalidLearningPlanPathDataException(String message) {

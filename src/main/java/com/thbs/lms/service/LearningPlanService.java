@@ -1,8 +1,8 @@
 package com.thbs.lms.service;
 
+import com.thbs.lms.exception.*;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.repository.LearningPlanRepository;
-import com.thbs.lms.exceptionHandler.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,11 +13,15 @@ import java.util.Optional;
 @Service
 public class LearningPlanService {
 
-    @Autowired
     private LearningPlanRepository learningPlanRepository;
+    private LearningPlanPathService learningPlanPathService;
 
     @Autowired
-    private LearningPlanPathService learningPlanPathService;
+    public LearningPlanService(LearningPlanPathService learningPlanPathService,
+            LearningPlanRepository learningPlanRepository) {
+        this.learningPlanPathService = learningPlanPathService;
+        this.learningPlanRepository = learningPlanRepository;
+    }
 
     public LearningPlan saveLearningPlan(LearningPlan learningPlan) {
         List<LearningPlan> existingLearningPlan = learningPlanRepository.findByBatchID(learningPlan.getBatchID());

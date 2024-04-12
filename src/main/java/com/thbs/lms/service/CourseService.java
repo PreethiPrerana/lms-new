@@ -7,7 +7,7 @@ import com.thbs.lms.model.Course;
 import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.DTO.CourseDTO;
 import com.thbs.lms.DTO.TopicDTO;
-import com.thbs.lms.exceptionHandler.*;
+import com.thbs.lms.exception.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +16,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
-    @Autowired
+
     private CourseRepository courseRepository;
+    private TopicService topicService;
 
     @Autowired
-    private TopicService topicService;
+    public CourseService(CourseRepository courseRepository, TopicService topicService) {
+        this.courseRepository = courseRepository;
+        this.topicService = topicService;
+    }
 
     public Course saveCourse(Course course) {
         if (course.getCourseName() == null || course.getCourseName().isEmpty() ||

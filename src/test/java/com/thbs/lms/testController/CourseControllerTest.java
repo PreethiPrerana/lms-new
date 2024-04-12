@@ -5,10 +5,9 @@ import com.thbs.lms.controller.CourseController;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.service.CourseService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -19,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-public class CourseControllerTest {
+@SpringBootTest
+class CourseControllerTest {
 
     @Mock
     private CourseService courseService;
@@ -29,7 +28,7 @@ public class CourseControllerTest {
     private CourseController courseController;
 
     @Test
-    public void testAddCourse() {
+    void testAddCourse() {
         Course course = new Course();
         course.setCourseName("Test Course");
         course.setLevel("Intermediate");
@@ -43,27 +42,8 @@ public class CourseControllerTest {
     }
 
     @Test
-    public void testAddCourses() {
-        List<Course> courses = new ArrayList<>();
-        Course course1 = new Course();
-        course1.setCourseName("Test Course 1");
-        course1.setLevel("Intermediate");
-        Course course2 = new Course();
-        course2.setCourseName("Test Course 2");
-        course2.setLevel("Advanced");
-        courses.add(course1);
-        courses.add(course2);
 
-        when(courseService.saveCourses(courses)).thenReturn(courses);
-
-        ResponseEntity<?> responseEntity = courseController.addCourses(courses);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(courses, responseEntity.getBody());
-    }
-
-    @Test
-    public void testGetAllCourses() {
+    void testGetAllCourses() {
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
         course1.setCourseName("Test Course 1");
@@ -83,7 +63,8 @@ public class CourseControllerTest {
     }
 
     @Test
-    public void testGetCoursesByLevel() {
+
+    void testGetCoursesByLevel() {
         String level = "Intermediate";
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
@@ -104,7 +85,8 @@ public class CourseControllerTest {
     }
 
     @Test
-    public void testGetCourseById() {
+
+    void testGetCourseById() {
         Long id = 1L;
         Course course = new Course();
         course.setCourseID(id);

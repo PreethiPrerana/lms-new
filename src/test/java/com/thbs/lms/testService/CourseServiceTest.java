@@ -18,7 +18,7 @@ import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.service.CourseService;
 import com.thbs.lms.service.TopicService;
 import com.thbs.lms.DTO.CourseDTO;
-import com.thbs.lms.exceptionHandler.*;
+import com.thbs.lms.exception.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;

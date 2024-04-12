@@ -7,11 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.thbs.lms.controller.LearningPlanPathController;
-import com.thbs.lms.exceptionHandler.DuplicateLearningPlanPathException;
-import com.thbs.lms.exceptionHandler.InvalidLearningPlanPathDataException;
-import com.thbs.lms.exceptionHandler.InvalidTrainerException;
-import com.thbs.lms.exceptionHandler.InvalidTypeException;
-import com.thbs.lms.exceptionHandler.LearningPlanPathNotFoundException;
+import com.thbs.lms.exception.DuplicateLearningPlanPathException;
+import com.thbs.lms.exception.InvalidLearningPlanPathDataException;
+import com.thbs.lms.exception.InvalidTrainerException;
+import com.thbs.lms.exception.InvalidTypeException;
+import com.thbs.lms.exception.LearningPlanPathNotFoundException;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.model.LearningPlanPath;

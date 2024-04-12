@@ -1,4 +1,4 @@
-package com.thbs.lms.exceptionHandler;
+package com.thbs.lms.exception;
 
 public class DuplicateTopicException extends RuntimeException {
     public DuplicateTopicException(String message) {
