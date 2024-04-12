@@ -17,9 +17,12 @@ import com.thbs.lms.model.Course;
 import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.service.CourseService;
 import com.thbs.lms.service.TopicService;
+import com.thbs.lms.DTO.CourseDTO;
 import com.thbs.lms.exceptionHandler.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,20 +40,18 @@ public class CourseServiceTest {
 
     @Test
     void testSaveCourse_InvalidCourseDataException() {
-        Course course = new Course(); // Create a course with null/empty fields
+        Course course = new Course();
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
     }
 
     @Test
     void testSaveCourse_DuplicateCourseException() {
-        // Mock data
         Course course = new Course();
         course.setCourseName("Java Programming");
         course.setLevel("Test type");
-        // Assume this course already exists
+
         when(courseRepository.findByCourseName("Java Programming")).thenReturn(Optional.of(course));
 
-        // Test
         assertThrows(DuplicateCourseException.class, () -> courseService.saveCourse(course));
     }
 
@@ -99,7 +100,7 @@ public class CourseServiceTest {
     @Test
     void testSaveCourses_InvalidCourseDataException() {
         List<Course> courses = new ArrayList<>();
-        Course invalidCourse = new Course(); // Create a course object with null or empty values
+        Course invalidCourse = new Course();
         courses.add(invalidCourse);
 
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
@@ -137,7 +138,6 @@ public class CourseServiceTest {
 
     @Test
     void testSaveCourses_InvalidCourseDataException_NullCourseName() {
-        // Create a list of courses with one course having null course name
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
         course1.setCourseName(null);
@@ -150,13 +150,11 @@ public class CourseServiceTest {
         courses.add(course1);
         courses.add(course2);
 
-        // Test
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
     }
 
     @Test
     void testSaveCourses_InvalidCourseDataException_EmptyCourseName() {
-        // Create a list of courses with one course having empty course name
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
         course1.setCourseName("");
@@ -169,13 +167,11 @@ public class CourseServiceTest {
         courses.add(course1);
         courses.add(course2);
 
-        // Test
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
     }
 
     @Test
     void testSaveCourses_InvalidCourseDataException_NullLevel() {
-        // Create a list of courses with one course having null level
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
         course1.setCourseName("Python Programming");
@@ -188,13 +184,11 @@ public class CourseServiceTest {
         courses.add(course1);
         courses.add(course2);
 
-        // Test
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
     }
 
     @Test
     void testSaveCourses_InvalidCourseDataException_EmptyLevel() {
-        // Create a list of courses with one course having empty level
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
         course1.setCourseName("Python Programming");
@@ -207,13 +201,11 @@ public class CourseServiceTest {
         courses.add(course1);
         courses.add(course2);
 
-        // Test
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
     }
 
     @Test
     void testGetAllCourses_SuccessfulRetrieval() {
-        // Mock data
         List<Course> courses = new ArrayList<>();
         Course course = new Course();
         course.setCourseID(1L);
@@ -230,22 +222,19 @@ public class CourseServiceTest {
 
         when(courseRepository.findAll()).thenReturn(courses);
 
-        // Test
         assertEquals(courses, courseService.getAllCourses());
     }
 
     @Test
     void testGetCoursesByLevel_InvalidLevelException() {
-        // Test with null level
+
         assertThrows(InvalidLevelException.class, () -> courseService.getCoursesByLevel(null));
 
-        // Test with empty level
         assertThrows(InvalidLevelException.class, () -> courseService.getCoursesByLevel(""));
     }
 
     @Test
     void testGetCoursesByLevel_SuccessfulRetrieval() {
-        // Mock data
         String level = "Intermediate";
         List<Course> courses = new ArrayList<>();
         Course course = new Course();
@@ -262,13 +251,11 @@ public class CourseServiceTest {
         courses.add(course2);
         when(courseRepository.findByLevel(level)).thenReturn(courses);
 
-        // Test
         assertEquals(courses, courseService.getCoursesByLevel(level));
     }
 
     @Test
     void testGetCourseById_CourseFound() {
-        // Mock data
         Long courseId = 1L;
         Course course = new Course();
         course.setCourseID(courseId);
@@ -277,17 +264,14 @@ public class CourseServiceTest {
 
         when(courseRepository.findById(courseId)).thenReturn(Optional.of(course));
 
-        // Test
         assertEquals(course, courseService.getCourseById(courseId));
     }
 
     @Test
     void testGetCourseById_CourseNotFoundException() {
-        // Mock behavior to return empty optional (no course found)
         Long courseId = 1L;
         when(courseRepository.findById(courseId)).thenReturn(Optional.empty());
 
-        // Test
         assertThrows(CourseNotFoundException.class, () -> courseService.getCourseById(courseId));
     }
 
@@ -307,6 +291,33 @@ public class CourseServiceTest {
 
         assertEquals("New Course Name", updatedCourse.getCourseName());
 
+    }
+
+    @Test
+    void testGetAllCourseDTOs_SuccessfulRetrieval() {
+        Course course1 = new Course();
+        course1.setCourseID(1L);
+        course1.setCourseName("Java");
+        course1.setLevel("Intermediate");
+
+        Course course2 = new Course();
+        course2.setCourseID(2L);
+        course2.setCourseName("Python");
+        course2.setLevel("Beginner");
+
+        List<Course> courses = Arrays.asList(course1, course2);
+
+        when(courseRepository.findAll()).thenReturn(courses);
+        when(topicService.getTopicsByCourse(any(Course.class))).thenReturn(Collections.emptyList());
+
+        List<CourseDTO> courseDTOs = courseService.getAllCourseDTOs();
+
+        assertEquals(courses.size(), courseDTOs.size());
+        for (int i = 0; i < courses.size(); i++) {
+            assertEquals(courses.get(i).getCourseID(), courseDTOs.get(i).getCourseId());
+            assertEquals(courses.get(i).getCourseName(), courseDTOs.get(i).getCourseName());
+            assertTrue(courseDTOs.get(i).getTopics().isEmpty());
+        }
     }
 
     @Test
@@ -345,73 +356,55 @@ public class CourseServiceTest {
 
     @Test
     void testDeleteCourses_Success() {
-        // Prepare test data
         List<Course> coursesToDelete = new ArrayList<>();
         coursesToDelete.add(new Course(1L, "Course1", "Beginner"));
         coursesToDelete.add(new Course(2L, "Course2", "Intermediate"));
 
-        // Mock behavior of findById and delete methods
         when(courseRepository.findById(1L)).thenReturn(Optional.of(new Course()));
         when(courseRepository.findById(2L)).thenReturn(Optional.of(new Course()));
         doNothing().when(courseRepository).delete(any());
 
-        // Test deleteCourses method
         assertDoesNotThrow(() -> courseService.deleteCourses(coursesToDelete));
 
-        // Verify that delete method is called for each course
         verify(courseRepository, times(2)).delete(any());
     }
 
     @Test
     void testDeleteCourses_MixOfExistingAndNonExisting() {
-        // Prepare test data
         List<Course> coursesToDelete = new ArrayList<>();
-        coursesToDelete.add(new Course(1L, "Course1", "Beginner")); // Existing course
-        coursesToDelete.add(new Course(2L, "Course2", "Intermediate")); // Non-existing course
+        coursesToDelete.add(new Course(1L, "Course1", "Beginner"));
+        coursesToDelete.add(new Course(2L, "Course2", "Intermediate"));
 
-        // Mock behavior of findById method
-        when(courseRepository.findById(1L)).thenReturn(Optional.of(new Course())); // Existing course
-        when(courseRepository.findById(2L)).thenReturn(Optional.empty()); // Non-existing course
+        when(courseRepository.findById(1L)).thenReturn(Optional.of(new Course()));
+        when(courseRepository.findById(2L)).thenReturn(Optional.empty());
 
-        // Test deleteCourses method
         CourseNotFoundException exception = assertThrows(CourseNotFoundException.class,
                 () -> courseService.deleteCourses(coursesToDelete));
 
-        // Verify that CourseNotFoundException is thrown for non-existing course
         assertEquals("Course not found for ID: 2", exception.getMessage());
 
-        // Verify that delete method is called only once for the existing course
         verify(courseRepository, times(1)).delete(any());
     }
 
     @Test
     void testDeleteCourses_EmptyList() {
-        // Test with an empty list of courses
         List<Course> coursesToDelete = new ArrayList<>();
 
-        // No mock behavior needed as no interaction with repository is expected
-
-        // Test deleteCourses method
         assertDoesNotThrow(() -> courseService.deleteCourses(coursesToDelete));
     }
 
     @Test
     void testDeleteCourses_WhenIdNotFound() {
-        // Prepare test data
         List<Course> coursesToDelete = new ArrayList<>();
         coursesToDelete.add(new Course(1L, "Course1", "Beginner"));
 
-        // Mock behavior of findById method to return empty Optional
         when(courseRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Test deleteCourses method
         CourseNotFoundException exception = assertThrows(CourseNotFoundException.class,
                 () -> courseService.deleteCourses(coursesToDelete));
 
-        // Verify that CourseNotFoundException is thrown for non-existing course
         assertEquals("Course not found for ID: 1", exception.getMessage());
 
-        // Verify that delete method is not called
         verify(courseRepository, never()).delete(any());
     }
 }
