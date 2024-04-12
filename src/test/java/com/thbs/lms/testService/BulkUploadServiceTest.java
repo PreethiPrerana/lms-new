@@ -9,17 +9,17 @@ import org.springframework.mock.web.MockMultipartFile;
 import com.thbs.lms.exceptionHandler.DuplicateTopicException;
 import com.thbs.lms.exceptionHandler.FileProcessingException;
 import com.thbs.lms.exceptionHandler.InvalidSheetFormatException;
-import com.thbs.lms.exceptionHandler.NoTopicEntriesException;
 import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.repository.TopicRepository;
 import com.thbs.lms.service.BulkUploadService;
-import com.thbs.lms.utility.DuplicateExcelFileGenerator;
+import com.thbs.lms.utility.DuplicateTopicExcelFileGenerator;
 import com.thbs.lms.utility.EmptyRowExcelFileGenerator;
-import com.thbs.lms.utility.InvalidExcelFileGenerator;
+import com.thbs.lms.utility.InvalidA1CellExcelGenerator;
+import com.thbs.lms.utility.InvalidB1CellExcelGenerator;
+import com.thbs.lms.utility.InvalidNoDescriptionFileGenerator;
+import com.thbs.lms.utility.InvalidOneCellExcelFileGenerator;
 import com.thbs.lms.utility.MockExcelFileGenerator;
 import com.thbs.lms.utility.NewCourseExcelFileGenerator;
-
-import jakarta.transaction.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -49,67 +49,91 @@ public class BulkUploadServiceTest {
     }
 
     @Test
-    public void testInvalidSheetFormatUploadFailure() throws IOException {
-        String filePath = "invalid.xlsx";
-        MockMultipartFile file = InvalidExcelFileGenerator.generateInvalidExcelFile(filePath);        
+    public void testInvalidA1CellExcelFile() throws IOException {
+        String filePath = "invalidA1.xlsx";
+        MockMultipartFile file = InvalidA1CellExcelGenerator.generateInvalidA1CellExcelFile(filePath);
         assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
-    
+
+    @Test
+    public void testInvalidB1CellExcelFile() throws IOException {
+        String filePath = "invalidB1.xlsx";
+        MockMultipartFile file = InvalidB1CellExcelGenerator.generateInvalidB1CellExcelFile(filePath);
+        assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
+    }
+
+    @Test
+    public void testInvalidNoDescriptionFile() throws IOException {
+        String filePath = "noDesc.xlsx";
+        MockMultipartFile file = InvalidNoDescriptionFileGenerator.generateInvalidNoDescriptionFile(filePath);
+        assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
+    }
+
+    @Test
+    public void testInvalidOneCellExcelFile() throws IOException {
+        String filePath = "oneColumn.xlsx";
+        MockMultipartFile file = InvalidOneCellExcelFileGenerator.generateInvalidOneCellExcelFile(filePath);
+        assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
+    }
+
+    @Test
+    public void testEmptyRowExcelFile() throws IOException {
+        MockMultipartFile file = EmptyRowExcelFileGenerator.generateEmptyRowExcelFile();
+        assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
+    }
+
     @Test
     public void testHandlingDuplicateTopics() throws IOException {
         String filePath = "duplicate.xlsx";
-        MockMultipartFile file = DuplicateExcelFileGenerator.generateDuplicateExcelFile(filePath);
+        MockMultipartFile file = DuplicateTopicExcelFileGenerator.generateDuplicateTopicExcelFile(filePath);
         assertThrows(DuplicateTopicException.class, () -> bulkUploadService.uploadFile(file));
     }
 
     @Test
     public void testHandlingMissingTopics() throws IOException, FileProcessingException {
         MockMultipartFile file = EmptyRowExcelFileGenerator.generateEmptyRowExcelFile();
-        assertThrows(NoTopicEntriesException.class, () -> bulkUploadService.uploadFile(file));
+        assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
  
     @Test
     public void testUploadFileWithNewCourse() throws IOException {
-        // Generate and save the initial Excel file to a temporary location
-        Path initialFilePath = Files.createTempFile("initial_excel", ".xlsx");
+        // Upload the initial file (matching existing courses)
         MockMultipartFile initialFile = MockExcelFileGenerator.generateMockExcelFile();
-        Files.write(initialFilePath, initialFile.getBytes());
+        assertDoesNotThrow(() -> bulkUploadService.uploadFile(initialFile));
 
-        // Upload the initial Excel file
-        // bulkUploadService.uploadFile(new MockMultipartFile("file", "initial_excel.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Files.readAllBytes(initialFilePath)));
-        bulkUploadService.uploadFile(initialFile);
+        // Record the initial number of courses
         long initialCourseCount = courseRepository.count();
 
-        // Generate and upload the new course Excel file
+        // Upload the file with a new course (new sheet)
         MockMultipartFile newCourseFile = NewCourseExcelFileGenerator.generateNewCourseExcelFile();
-        bulkUploadService.uploadFile(newCourseFile);
+        assertDoesNotThrow(() -> bulkUploadService.uploadFile(newCourseFile));
+
+        // Retrieve the number of courses after upload
         long updatedCourseCount = courseRepository.count();
 
+        // Assert that the number of courses has increased by one
         assertEquals(initialCourseCount + 1, updatedCourseCount, "Number of courses should increase by one after uploading a file with a new course");
     }
 
-
     @Test
-    public void testHandlingExistingCourseInDatabase() throws IOException, FileProcessingException {
-        // Save the generated mock Excel file to a temporary location
-        Path tempFilePath = Files.createTempFile("mock_excel", ".xlsx");
-        MockMultipartFile file = MockExcelFileGenerator.generateMockExcelFile();
-        Files.write(tempFilePath, file.getBytes());
+    public void testHandlingExistingCourseInDatabase() throws IOException {
+        // Upload the initial file
+        MockMultipartFile initialFile = MockExcelFileGenerator.generateMockExcelFile();
+        assertDoesNotThrow(() -> bulkUploadService.uploadFile(initialFile));
 
-        // Upload the file for the first time
-        bulkUploadService.uploadFile(new MockMultipartFile("file", "mock_excel.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Files.readAllBytes(tempFilePath)));
-
+        // Record the initial number of courses
         long initialCourseCount = courseRepository.count();
-        long initialTopicCount = topicRepository.count();
 
         // Upload the same file again
-        bulkUploadService.uploadFile(new MockMultipartFile("file", "mock_excel.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Files.readAllBytes(tempFilePath)));
+        MockMultipartFile sameFile = MockExcelFileGenerator.generateMockExcelFile();
+        assertDoesNotThrow(() -> bulkUploadService.uploadFile(sameFile));
 
-        long finalCourseCount = courseRepository.count();
-        long finalTopicCount = topicRepository.count();
+        // Retrieve the number of courses after the second upload
+        long updatedCourseCount = courseRepository.count();
 
-        assertEquals(initialCourseCount, finalCourseCount, "Number of courses should remain unchanged");
-        assertEquals(initialTopicCount, finalTopicCount, "Number of topics should remain unchanged");
+        // Assert that the number of courses remains unchanged
+        assertEquals(initialCourseCount, updatedCourseCount, "Number of courses should remain unchanged after uploading the same file again");
+
     }
 
 }

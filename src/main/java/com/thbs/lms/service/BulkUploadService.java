@@ -12,8 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.thbs.lms.exceptionHandler.DuplicateTopicException;
 import com.thbs.lms.exceptionHandler.FileProcessingException;
-import com.thbs.lms.exceptionHandler.InvalidSheetFormatException;
-import com.thbs.lms.exceptionHandler.NoTopicEntriesException;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.CourseRepository;
@@ -43,17 +41,10 @@ public class BulkUploadService {
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             Sheet sheet = workbook.getSheetAt(i);
 
-            if (!SheetValidator.isValidSheetFormat(sheet)) {
-                throw new InvalidSheetFormatException("Sheet format does not match the expected format.");
-            }
-
+            SheetValidator.isValidSheetFormat(sheet);
             // Check if header row exists
             Row headerRow = sheet.getRow(0);
             
-            int lastRowNum = sheet.getLastRowNum();
-            if (lastRowNum < 1) {
-                throw new NoTopicEntriesException("No topics found in the course.");
-            }
             String level = headerRow.getCell(1).getStringCellValue();
             // Extract course name from the sheet name
             String courseName = sheet.getSheetName();
@@ -80,7 +71,6 @@ public class BulkUploadService {
         // Skip header row
         if (iterator.hasNext()) {
             iterator.next();
-            iterator.next();
         }
         while (iterator.hasNext()) {
             Row currentRow = iterator.next();
@@ -90,6 +80,11 @@ public class BulkUploadService {
             String topicName = currentRow.getCell(0).getStringCellValue();
             String description = currentRow.getCell(1).getStringCellValue();
 
+            // Check if the topic already exists in the course
+            if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
+                continue; // Skip adding existing topics
+            }
+            
             if (topicNames.contains(topicName)) {
                 throw new DuplicateTopicException("Duplicate entries present in sheet.");
             }

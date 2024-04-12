@@ -162,11 +162,4 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleInvalidSheetFormatException(InvalidSheetFormatException ex) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
-
-    @ExceptionHandler(NoTopicEntriesException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ErrorResponse handleNoTopicEntriesException(NoTopicEntriesException ex) {
-        return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
 }

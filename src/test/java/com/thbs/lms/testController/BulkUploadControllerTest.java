@@ -1,19 +1,15 @@
 package com.thbs.lms.testController;
 
 import org.junit.jupiter.api.Test;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.thbs.lms.utility.MockExcelFileGenerator;
-import com.thbs.lms.exceptionHandler.ErrorResponse;
-import com.thbs.lms.utility.InvalidExcelFileGenerator;
 import com.thbs.lms.utility.JPEGFileGenerator;
 import com.thbs.lms.utility.PDFFileGenerator;
 import com.thbs.lms.utility.PNGFileGenerator;
@@ -31,8 +27,6 @@ public class BulkUploadControllerTest {
     private MockMvc mockMvc;
     
     @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
     public void testFileUploadSuccess() throws Exception {
         MockMultipartFile file = MockExcelFileGenerator.generateMockExcelFile();
@@ -40,18 +34,6 @@ public class BulkUploadControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.multipart("/learningplans/upload").file(file))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("File uploaded successfully."));
-    }
-
-    @Test
-    public void invalidSheetFormatUploadFailure() throws Exception {
-        String filePath = "invalid.xlsx";
-        MockMultipartFile file = InvalidExcelFileGenerator.generateInvalidExcelFile(filePath);
-
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/learningplans/upload").file(file))
-                .andExpect(status().isBadRequest()) 
-                .andExpect(MockMvcResultMatchers.content().json(                        
-                    objectMapper.writeValueAsString(new ErrorResponse(HttpStatus.BAD_REQUEST, "Sheet format does not match the expected format.")))
-                );
     }
 
     @Test

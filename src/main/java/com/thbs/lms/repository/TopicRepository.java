@@ -1,5 +1,7 @@
 package com.thbs.lms.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +15,7 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
 
     Object existsByTopicName(String anyString);
     boolean existsByCourseAndTopicNameAndDescription(Course course, String topicName, String description);
+
+    List<Topic> findByCourse(Course course);
 
 }
