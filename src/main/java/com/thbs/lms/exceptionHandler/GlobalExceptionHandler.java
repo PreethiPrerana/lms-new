@@ -46,20 +46,6 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    @ResponseBody
-    public ErrorResponse handleAccessDeniedException(AccessDeniedException ex) {
-        return new ErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
-    }
-
-    @ExceptionHandler(RepositoryOperationException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    public ErrorResponse handleRepositoryOperationException(RepositoryOperationException ex) {
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-    }
-
     @ExceptionHandler(CourseNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
@@ -81,13 +67,6 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(FileReadException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    public ErrorResponse handleFileReadException(FileReadException ex) {
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
-    }
-
     @ExceptionHandler(FileFormatException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
@@ -100,13 +79,6 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ErrorResponse handleDuplicateCourseException(DuplicateCourseException ex) {
         return new ErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
-    }
-
-    @ExceptionHandler(UnexpectedErrorException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ResponseBody
-    public ErrorResponse handleUnexpectedErrorException(UnexpectedErrorException ex) {
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     @ExceptionHandler(TopicNotFoundException.class)
