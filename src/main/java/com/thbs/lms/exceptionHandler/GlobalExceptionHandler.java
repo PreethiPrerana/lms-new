@@ -136,6 +136,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidSheetFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     public ErrorResponse handleInvalidSheetFormatException(InvalidSheetFormatException ex) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
