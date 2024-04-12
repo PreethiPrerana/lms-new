@@ -5,11 +5,14 @@ import org.springframework.stereotype.Service;
 
 import com.thbs.lms.model.Course;
 import com.thbs.lms.repository.CourseRepository;
+import com.thbs.lms.DTO.CourseDTO;
+import com.thbs.lms.DTO.TopicDTO;
 import com.thbs.lms.exceptionHandler.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -71,6 +74,22 @@ public class CourseService {
         } else {
             throw new CourseNotFoundException("Course not found for ID: " + courseId);
         }
+    }
+
+    public List<CourseDTO> getAllCourseDTOs() {
+        List<Course> courses = courseRepository.findAll();
+        return courses.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private CourseDTO convertToDTO(Course course) {
+        List<TopicDTO> topicDTOs = topicService.getTopicsByCourse(course)
+                .stream()
+                .map(topic -> new TopicDTO(topic.getTopicID(), topic.getTopicName()))
+                .collect(Collectors.toList());
+
+        return new CourseDTO(course.getCourseID(), course.getCourseName(), topicDTOs);
     }
 
     public Course updateCourseName(Long courseId, String newCourseName) {

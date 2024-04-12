@@ -40,7 +40,7 @@ public class TopicController {
     }
 
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<Topic>> getTopicsByCourse(@PathVariable Long courseId) {
+    public ResponseEntity<?> getTopicsByCourse(@PathVariable Long courseId) {
         Course course = courseService.getCourseById(courseId);
 
         List<Topic> topics = topicService.getTopicsByCourse(course);

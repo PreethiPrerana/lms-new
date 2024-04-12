@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.thbs.lms.DTO.CourseDTO;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.service.CourseService;
 
@@ -32,6 +33,12 @@ public class CourseController {
     public ResponseEntity<?> getAllCourses() {
         List<Course> courses = courseService.getAllCourses();
         return ResponseEntity.ok().body(courses);
+    }
+
+    @GetMapping("/dto")
+    public ResponseEntity<?> getAllCourseDTOs() {
+        List<CourseDTO> courseDTOs = courseService.getAllCourseDTOs();
+        return ResponseEntity.ok().body(courseDTOs);
     }
 
     @GetMapping("/level/{level}")
