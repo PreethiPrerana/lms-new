@@ -67,6 +67,10 @@ public class TopicService {
         return topicRepository.findAll();
     }
 
+    public List<Topic> getTopicsByCourse(Course course) {
+        return topicRepository.findByCourse(course);
+    }
+
     public String updateTopicDescriptionWithValidation(Long topicId, String newDescription) {
         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
         if (optionalTopic.isPresent()) {

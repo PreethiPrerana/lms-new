@@ -36,13 +36,13 @@ public class CourseServiceTest {
     private CourseService courseService;
 
     @Test
-    public void testSaveCourse_InvalidCourseDataException() {
+    void testSaveCourse_InvalidCourseDataException() {
         Course course = new Course(); // Create a course with null/empty fields
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
     }
 
     @Test
-    public void testSaveCourse_DuplicateCourseException() {
+    void testSaveCourse_DuplicateCourseException() {
         // Mock data
         Course course = new Course();
         course.setCourseName("Java Programming");
@@ -55,7 +55,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourse_SuccessfulSaving() {
+    void testSaveCourse_SuccessfulSaving() {
         Course course = new Course();
         course.setCourseName("Python Programming");
         course.setLevel("Test type");
@@ -65,7 +65,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourse_NullCourseName_InvalidCourseDataException() {
+    void testSaveCourse_NullCourseName_InvalidCourseDataException() {
         Course course = new Course();
         course.setCourseName(null);
         course.setLevel("Intermediate");
@@ -73,7 +73,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourse_EmptyCourseName_InvalidCourseDataException() {
+    void testSaveCourse_EmptyCourseName_InvalidCourseDataException() {
         Course course = new Course();
         course.setCourseName("");
         course.setLevel("Intermediate");
@@ -81,7 +81,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourse_NullLevel_InvalidCourseDataException() {
+    void testSaveCourse_NullLevel_InvalidCourseDataException() {
         Course course = new Course();
         course.setCourseName("Java");
         course.setLevel(null);
@@ -89,7 +89,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourse_EmptyLevel_InvalidCourseDataException() {
+    void testSaveCourse_EmptyLevel_InvalidCourseDataException() {
         Course course = new Course();
         course.setCourseName("Java");
         course.setLevel("");
@@ -136,7 +136,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourses_InvalidCourseDataException_NullCourseName() {
+    void testSaveCourses_InvalidCourseDataException_NullCourseName() {
         // Create a list of courses with one course having null course name
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
@@ -155,7 +155,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourses_InvalidCourseDataException_EmptyCourseName() {
+    void testSaveCourses_InvalidCourseDataException_EmptyCourseName() {
         // Create a list of courses with one course having empty course name
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
@@ -174,7 +174,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourses_InvalidCourseDataException_NullLevel() {
+    void testSaveCourses_InvalidCourseDataException_NullLevel() {
         // Create a list of courses with one course having null level
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
@@ -193,7 +193,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testSaveCourses_InvalidCourseDataException_EmptyLevel() {
+    void testSaveCourses_InvalidCourseDataException_EmptyLevel() {
         // Create a list of courses with one course having empty level
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
@@ -212,7 +212,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testGetAllCourses_SuccessfulRetrieval() {
+    void testGetAllCourses_SuccessfulRetrieval() {
         // Mock data
         List<Course> courses = new ArrayList<>();
         Course course = new Course();
@@ -235,7 +235,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testGetCoursesByLevel_InvalidLevelException() {
+    void testGetCoursesByLevel_InvalidLevelException() {
         // Test with null level
         assertThrows(InvalidLevelException.class, () -> courseService.getCoursesByLevel(null));
 
@@ -244,7 +244,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testGetCoursesByLevel_SuccessfulRetrieval() {
+    void testGetCoursesByLevel_SuccessfulRetrieval() {
         // Mock data
         String level = "Intermediate";
         List<Course> courses = new ArrayList<>();
@@ -267,7 +267,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testGetCourseById_CourseFound() {
+    void testGetCourseById_CourseFound() {
         // Mock data
         Long courseId = 1L;
         Course course = new Course();
@@ -282,7 +282,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    public void testGetCourseById_CourseNotFoundException() {
+    void testGetCourseById_CourseNotFoundException() {
         // Mock behavior to return empty optional (no course found)
         Long courseId = 1L;
         when(courseRepository.findById(courseId)).thenReturn(Optional.empty());
@@ -343,7 +343,6 @@ public class CourseServiceTest {
         verify(courseRepository, never()).delete(any(Course.class));
     }
 
-    
     @Test
     void testDeleteCourses_Success() {
         // Prepare test data

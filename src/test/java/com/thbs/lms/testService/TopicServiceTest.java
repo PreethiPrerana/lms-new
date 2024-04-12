@@ -7,10 +7,9 @@ import com.thbs.lms.repository.TopicRepository;
 import com.thbs.lms.service.TopicService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class TopicServiceTest {
 
     @Mock
@@ -235,6 +234,28 @@ public class TopicServiceTest {
         List<Topic> actualTopics = topicService.getAllTopics();
 
         assertEquals(expectedTopics.size(), actualTopics.size());
+    }
+
+    @Test
+    void testGetTopicsByCourse_Success() {
+        Course course = new Course();
+        course.setCourseID(1L);
+
+        Topic topic1 = new Topic();
+        topic1.setCourse(course);
+
+        Topic topic2 = new Topic();
+        topic2.setCourse(course);
+
+        List<Topic> topics = new ArrayList<>();
+        topics.add(topic1);
+        topics.add(topic2);
+
+        when(topicRepository.findByCourse(course)).thenReturn(topics);
+
+        List<Topic> result = topicService.getTopicsByCourse(course);
+
+        assertEquals(2, result.size());
     }
 
     @Test
