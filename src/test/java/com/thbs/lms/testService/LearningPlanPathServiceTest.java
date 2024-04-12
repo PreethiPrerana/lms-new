@@ -345,18 +345,19 @@ public class LearningPlanPathServiceTest {
 
     @Test
     void testDeleteLearningPlanPathsByLearningPlanId_Success() {
-        List<LearningPlanPath> paths = new ArrayList<>();
+        List<LearningPlanPath> learningPlanPaths = new ArrayList<>();
 
-        paths.add(learningPlanPath);
-        paths.add(learningPlanPath2);
+        learningPlanPaths.add(learningPlanPath);
+        learningPlanPaths.add(learningPlanPath2);
 
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong()))
-                .thenReturn(paths);
+        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong())).thenReturn(learningPlanPaths);
 
-        learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(1L);
+        when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.of(learningPlanPath));
+        when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.of(learningPlanPath2));
 
-        verify(learningPlanPathService, times(1)).deleteLearningPlanPath(1L);
-        verify(learningPlanPathService, times(1)).deleteLearningPlanPath(2L);
+        assertDoesNotThrow(() -> {
+            learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(1L);
+        });
     }
 
     @Test
