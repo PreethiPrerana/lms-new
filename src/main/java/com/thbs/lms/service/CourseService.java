@@ -83,7 +83,7 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    private CourseDTO convertToDTO(Course course) {
+    public CourseDTO convertToDTO(Course course) {
         List<TopicDTO> topicDTOs = topicService.getTopicsByCourse(course)
                 .stream()
                 .map(topic -> new TopicDTO(topic.getTopicID(), topic.getTopicName()))

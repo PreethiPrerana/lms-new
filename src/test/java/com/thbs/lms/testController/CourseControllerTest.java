@@ -1,5 +1,6 @@
 package com.thbs.lms.testController;
 
+import com.thbs.lms.DTO.CourseDTO;
 import com.thbs.lms.controller.CourseController;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.service.CourseService;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -115,6 +117,18 @@ public class CourseControllerTest {
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(course, responseEntity.getBody());
+    }
+
+    @Test
+    void testGetAllCourseDTOs_Success() {
+        List<CourseDTO> sampleCourseDTOs = new ArrayList<>();
+
+        when(courseService.getAllCourseDTOs()).thenReturn(sampleCourseDTOs);
+
+        ResponseEntity<?> responseEntity = courseController.getAllCourseDTOs();
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertNotNull(responseEntity.getBody());
     }
 
     @Test
