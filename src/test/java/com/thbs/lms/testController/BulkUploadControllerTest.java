@@ -26,7 +26,6 @@ public class BulkUploadControllerTest {
     @Autowired
     private MockMvc mockMvc;
     
-    @Autowired
     @Test
     public void testFileUploadSuccess() throws Exception {
         MockMultipartFile file = MockExcelFileGenerator.generateMockExcelFile();

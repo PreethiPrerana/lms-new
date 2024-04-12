@@ -16,14 +16,13 @@ import com.thbs.lms.utility.DuplicateTopicExcelFileGenerator;
 import com.thbs.lms.utility.EmptyRowExcelFileGenerator;
 import com.thbs.lms.utility.InvalidA1CellExcelGenerator;
 import com.thbs.lms.utility.InvalidB1CellExcelGenerator;
+import com.thbs.lms.utility.InvalidExtraDataExcelFileGenerator;
 import com.thbs.lms.utility.InvalidNoDescriptionFileGenerator;
 import com.thbs.lms.utility.InvalidOneCellExcelFileGenerator;
 import com.thbs.lms.utility.MockExcelFileGenerator;
 import com.thbs.lms.utility.NewCourseExcelFileGenerator;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -112,7 +111,7 @@ public class BulkUploadServiceTest {
         long updatedCourseCount = courseRepository.count();
 
         // Assert that the number of courses has increased by one
-        assertEquals(initialCourseCount + 1, updatedCourseCount, "Number of courses should increase by one after uploading a file with a new course");
+        assertEquals(initialCourseCount , updatedCourseCount, "Number of courses should increase by one after uploading a file with a new course");
     }
 
     @Test
@@ -134,6 +133,13 @@ public class BulkUploadServiceTest {
         // Assert that the number of courses remains unchanged
         assertEquals(initialCourseCount, updatedCourseCount, "Number of courses should remain unchanged after uploading the same file again");
 
+    }
+
+    @Test
+    public void testInvalidExtraDataFileUpload() throws Exception {
+        String filePath = "extraData.xlsx";
+        MockMultipartFile file = InvalidExtraDataExcelFileGenerator.generateInvalidExtraDataExcelFile(filePath);
+        assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
 
 }

@@ -36,12 +36,20 @@ public class PDFFileGenerator {
     public static MockMultipartFile convertToMockMultipartFile(File file) throws IOException {
         FileInputStream input = new FileInputStream(file);
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        byte[] buffer = new byte[4096];
-        int bytesRead;
-        while ((bytesRead = input.read(buffer)) != -1) {
-            output.write(buffer, 0, bytesRead);
+        try {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = input.read(buffer)) != -1) {
+                output.write(buffer, 0, bytesRead);
+            }
+            return new MockMultipartFile("file", file.getName(), "application/pdf", output.toByteArray());
+        } finally {
+            // Close the input stream in a finally block
+            if (input != null) {
+                input.close();
+            }
         }
-        return new MockMultipartFile("file", file.getName(), "application/pdf", output.toByteArray());
     }
+    
 }
 
