@@ -8,13 +8,13 @@ import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.TopicRepository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TopicService {
 
+    private static final String NOT_FOUND_MSG = "Topic not found for ID: ";
     private final TopicRepository topicRepository;
 
     @Autowired
@@ -22,49 +22,44 @@ public class TopicService {
         this.topicRepository = topicRepository;
     }
 
+    private void validateTopicData(String topicName, String description) {
+        if (topicName == null || topicName.isEmpty() || description == null ||
+                description.isEmpty()) {
+            throw new InvalidTopicDataException("Topic name and description cannot be null or empty.");
+        }
+    }
+
+    private Topic createTopic(String topicName, String description, Course course) {
+        Topic newTopic = new Topic();
+        newTopic.setTopicName(topicName);
+        newTopic.setDescription(description);
+        newTopic.setCourse(course);
+        return newTopic;
+    }
+
     public Topic addTopicWithValidation(String topicName, String description,
             Course course) {
+
+        validateTopicData(topicName, description);
 
         if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
             throw new DuplicateTopicException("Topic '" + topicName + "' already exists for this course.");
         }
 
-        if (topicName == null || topicName.isEmpty() || description == null ||
-                description.isEmpty()) {
-            throw new InvalidTopicDataException("Topic name and description cannot be null or empty.");
-        }
-
-        Topic newTopic = new Topic();
-        newTopic.setTopicName(topicName);
-        newTopic.setDescription(description);
-        newTopic.setCourse(course);
-        return topicRepository.save(newTopic);
+        return topicRepository.save(createTopic(topicName, description, course));
     }
 
     public List<Topic> addTopicsWithValidation(List<Topic> topics) {
-        List<Topic> addedTopics = new ArrayList<>();
-        for (Topic topic : topics) {
-            String topicName = topic.getTopicName();
-            String description = topic.getDescription();
-            Course course = topic.getCourse();
-
-            if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
-                throw new DuplicateTopicException("Topic '" + topicName + "' already exists for this course.");
-            }
-
-            if (topicName == null || topicName.isEmpty() || description == null ||
-                    description.isEmpty()) {
-                throw new InvalidTopicDataException("Topic name and description cannot be null or empty.");
-            }
-
-            Topic newTopic = new Topic();
-            newTopic.setTopicName(topicName);
-            newTopic.setDescription(description);
-            newTopic.setCourse(course);
-
-            addedTopics.add(topicRepository.save(newTopic));
-        }
-        return addedTopics;
+        return topics.stream()
+                .map(topic -> {
+                    validateTopicData(topic.getTopicName(), topic.getDescription());
+                    if (topicRepository.existsByTopicNameAndCourse(topic.getTopicName(), topic.getCourse())) {
+                        throw new DuplicateTopicException(
+                                "Topic '" + topic.getTopicName() + "' already exists for this course.");
+                    }
+                    return createTopic(topic.getTopicName(), topic.getDescription(), topic.getCourse());
+                })
+                .collect(Collectors.toList());
     }
 
     public List<Topic> getAllTopics() {
@@ -75,65 +70,58 @@ public class TopicService {
         return topicRepository.findByCourse(course);
     }
 
+    private void validateDescription(String newDescription) {
+        if (newDescription == null || newDescription.isEmpty()) {
+            throw new InvalidDescriptionException("Description cannot be null or empty.");
+        }
+    }
+
     public String updateTopicDescriptionWithValidation(Long topicId, String newDescription) {
-        Optional<Topic> optionalTopic = topicRepository.findById(topicId);
-        if (optionalTopic.isPresent()) {
-            Topic topic = optionalTopic.get();
-
-            if (newDescription == null || newDescription.isEmpty()) {
-                throw new InvalidDescriptionException("Description cannot be null or empty.");
-            }
-
-            topic.setDescription(newDescription);
-            topicRepository.save(topic);
-            return "Description updated successfully";
-        } else {
-            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
-        }
+        return topicRepository.findById(topicId)
+                .map(topic -> {
+                    validateDescription(newDescription);
+                    topic.setDescription(newDescription);
+                    topicRepository.save(topic);
+                    return "Description updated successfully";
+                })
+                .orElseThrow(() -> new TopicNotFoundException(NOT_FOUND_MSG + topicId));
     }
 
-    public void deleteTopicById(Long topicId) {
-        Optional<Topic> optionalTopic = topicRepository.findById(topicId);
-        if (optionalTopic.isPresent()) {
-            topicRepository.delete(optionalTopic.get());
-        } else {
-            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
-        }
-    }
-
-    public void deleteTopics(List<Topic> topics) {
-        for (Topic topic : topics) {
-            Long topicId = topic.getTopicID();
-            Optional<Topic> optionalTopic = topicRepository.findById(topicId);
-            if (optionalTopic.isPresent()) {
-                topicRepository.delete(topic);
-            } else {
-                throw new TopicNotFoundException("Topic not found for ID: " + topicId);
-            }
-        }
-    }
-
-    public void deleteTopicsByCourse(Course course) {
-        List<Topic> topics = topicRepository.findByCourse(course);
-        for (Topic topic : topics) {
-            topicRepository.delete(topic);
+    private void validateName(String newName) {
+        if (newName == null || newName.isEmpty()) {
+            throw new InvalidTopicDataException("Topic Name cannot be null or empty.");
         }
     }
 
     public String updateTopicNameWithValidation(Long topicId, String newName) {
-        Optional<Topic> optionalTopic = topicRepository.findById(topicId);
-        if (optionalTopic.isPresent()) {
-            Topic topic = optionalTopic.get();
+        return topicRepository.findById(topicId)
+                .map(topic -> {
+                    validateName(newName);
+                    topic.setTopicName(newName);
+                    topicRepository.save(topic);
+                    return "Topic name updated successfully";
+                })
+                .orElseThrow(() -> new TopicNotFoundException(NOT_FOUND_MSG + topicId));
+    }
 
-            if (newName == null || newName.isEmpty()) {
-                throw new InvalidTopicDataException("Topic Name cannot be null or empty.");
-            }
+    public void deleteTopicById(Long topicId) {
+        topicRepository.findById(topicId)
+                .ifPresentOrElse(topicRepository::delete,
+                        () -> {
+                            throw new TopicNotFoundException(NOT_FOUND_MSG + topicId);
+                        });
+    }
 
-            topic.setTopicName(newName);
-            topicRepository.save(topic);
-            return "Topic name updated successfully";
-        } else {
-            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
-        }
+    public void deleteTopics(List<Topic> topics) {
+        topics.forEach(topic -> topicRepository.findById(topic.getTopicID())
+                .ifPresentOrElse(topicRepository::delete,
+                        () -> {
+                            throw new TopicNotFoundException(NOT_FOUND_MSG + topic.getTopicID());
+                        }));
+    }
+
+    public void deleteTopicsByCourse(Course course) {
+        topicRepository.findByCourse(course)
+                .forEach(topicRepository::delete);
     }
 }

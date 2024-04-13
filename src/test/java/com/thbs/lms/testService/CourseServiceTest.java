@@ -9,6 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
-public class CourseServiceTest {
+class CourseServiceTest {
 
     @Mock
     private CourseRepository courseRepository;
@@ -39,8 +41,26 @@ public class CourseServiceTest {
     private CourseService courseService;
 
     @Test
-    void testSaveCourse_InvalidCourseDataException() {
+    void testSaveCourse_Success() {
         Course course = new Course();
+        course.setCourseName("Python Programming");
+        course.setLevel("Test type");
+        when(courseRepository.findByCourseName("Python Programming")).thenReturn(Optional.empty());
+        when(courseRepository.save(course)).thenReturn(course);
+        assertEquals(course, courseService.saveCourse(course));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            ", Intermediate", // null course name
+            "empty, Intermediate", // empty course name
+            "Java, ", // null level
+            "Java,empty" // empty level
+    })
+    void testSaveCourse_InvalidCourseDataException(String courseName, String level) {
+        Course course = new Course();
+        course.setCourseName("empty".equals(courseName) ? "" : courseName);
+        course.setLevel("empty".equals(level) ? "" : level);
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
     }
 
@@ -56,52 +76,41 @@ public class CourseServiceTest {
     }
 
     @Test
-    void testSaveCourse_SuccessfulSaving() {
-        Course course = new Course();
-        course.setCourseName("Python Programming");
-        course.setLevel("Test type");
-        when(courseRepository.findByCourseName("Python Programming")).thenReturn(Optional.empty());
-        when(courseRepository.save(course)).thenReturn(course);
-        assertEquals(course, courseService.saveCourse(course));
-    }
-
-    @Test
-    void testSaveCourse_NullCourseName_InvalidCourseDataException() {
-        Course course = new Course();
-        course.setCourseName(null);
-        course.setLevel("Intermediate");
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
-    }
-
-    @Test
-    void testSaveCourse_EmptyCourseName_InvalidCourseDataException() {
-        Course course = new Course();
-        course.setCourseName("");
-        course.setLevel("Intermediate");
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
-    }
-
-    @Test
-    void testSaveCourse_NullLevel_InvalidCourseDataException() {
-        Course course = new Course();
-        course.setCourseName("Java");
-        course.setLevel(null);
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
-    }
-
-    @Test
-    void testSaveCourse_EmptyLevel_InvalidCourseDataException() {
-        Course course = new Course();
-        course.setCourseName("Java");
-        course.setLevel("");
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
-    }
-
-    @Test
-    void testSaveCourses_InvalidCourseDataException() {
+    void testSaveCourses_Success() {
         List<Course> courses = new ArrayList<>();
-        Course invalidCourse = new Course();
-        courses.add(invalidCourse);
+        Course newCourse = new Course();
+        newCourse.setCourseName("Python Programming");
+        newCourse.setLevel("Intermediate");
+        courses.add(newCourse);
+
+        when(courseRepository.findByCourseName("Python Programming")).thenReturn(Optional.empty());
+        when(courseRepository.save(newCourse)).thenReturn(newCourse);
+
+        List<Course> savedCourses = courseService.saveCourses(courses);
+
+        assertEquals(1, savedCourses.size());
+        assertEquals(newCourse, savedCourses.get(0));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            ", Intermediate", // Null course name
+            "empty, Intermediate", // Empty course name
+            "Python Programming, ", // Null level
+            "Python Programming, empty" // Empty level
+    })
+    void testSaveCourses_InvalidCourseDataException(String courseName, String level) {
+        List<Course> courses = new ArrayList<>();
+        Course course1 = new Course();
+        course1.setCourseName("empty".equals(courseName) ? "" : courseName);
+        course1.setLevel("empty".equals(level) ? "" : level);
+
+        Course course2 = new Course();
+        course2.setCourseName("Java Programming");
+        course2.setLevel("Intermediate");
+
+        courses.add(course1);
+        courses.add(course2);
 
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
     }
@@ -120,92 +129,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    void testSaveCourses_SuccessfulSaving() {
-        List<Course> courses = new ArrayList<>();
-        Course newCourse = new Course();
-        newCourse.setCourseName("Python Programming");
-        newCourse.setLevel("Intermediate");
-        courses.add(newCourse);
-
-        when(courseRepository.findByCourseName("Python Programming")).thenReturn(Optional.empty());
-        when(courseRepository.save(newCourse)).thenReturn(newCourse);
-
-        List<Course> savedCourses = courseService.saveCourses(courses);
-
-        assertEquals(1, savedCourses.size());
-        assertEquals(newCourse, savedCourses.get(0));
-    }
-
-    @Test
-    void testSaveCourses_InvalidCourseDataException_NullCourseName() {
-        List<Course> courses = new ArrayList<>();
-        Course course1 = new Course();
-        course1.setCourseName(null);
-        course1.setLevel("Intermediate");
-
-        Course course2 = new Course();
-        course2.setCourseName("Java Programming");
-        course2.setLevel("Intermediate");
-
-        courses.add(course1);
-        courses.add(course2);
-
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
-    }
-
-    @Test
-    void testSaveCourses_InvalidCourseDataException_EmptyCourseName() {
-        List<Course> courses = new ArrayList<>();
-        Course course1 = new Course();
-        course1.setCourseName("");
-        course1.setLevel("Intermediate");
-
-        Course course2 = new Course();
-        course2.setCourseName("Java Programming");
-        course2.setLevel("Intermediate");
-
-        courses.add(course1);
-        courses.add(course2);
-
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
-    }
-
-    @Test
-    void testSaveCourses_InvalidCourseDataException_NullLevel() {
-        List<Course> courses = new ArrayList<>();
-        Course course1 = new Course();
-        course1.setCourseName("Python Programming");
-        course1.setLevel(null);
-
-        Course course2 = new Course();
-        course2.setCourseName("Java Programming");
-        course2.setLevel("Intermediate");
-
-        courses.add(course1);
-        courses.add(course2);
-
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
-    }
-
-    @Test
-    void testSaveCourses_InvalidCourseDataException_EmptyLevel() {
-        List<Course> courses = new ArrayList<>();
-        Course course1 = new Course();
-        course1.setCourseName("Python Programming");
-        course1.setLevel("");
-
-        Course course2 = new Course();
-        course2.setCourseName("Java Programming");
-        course2.setLevel("Intermediate");
-
-        courses.add(course1);
-        courses.add(course2);
-
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
-    }
-
-    @Test
-    void testGetAllCourses_SuccessfulRetrieval() {
+    void testGetAllCourses_Success() {
         List<Course> courses = new ArrayList<>();
         Course course = new Course();
         course.setCourseID(1L);
@@ -226,15 +150,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    void testGetCoursesByLevel_InvalidLevelException() {
-
-        assertThrows(InvalidLevelException.class, () -> courseService.getCoursesByLevel(null));
-
-        assertThrows(InvalidLevelException.class, () -> courseService.getCoursesByLevel(""));
-    }
-
-    @Test
-    void testGetCoursesByLevel_SuccessfulRetrieval() {
+    void testGetCoursesByLevel_Success() {
         String level = "Intermediate";
         List<Course> courses = new ArrayList<>();
         Course course = new Course();
@@ -255,7 +171,15 @@ public class CourseServiceTest {
     }
 
     @Test
-    void testGetCourseById_CourseFound() {
+    void testGetCoursesByLevel_InvalidLevelException() {
+
+        assertThrows(InvalidLevelException.class, () -> courseService.getCoursesByLevel(null));
+
+        assertThrows(InvalidLevelException.class, () -> courseService.getCoursesByLevel(""));
+    }
+
+    @Test
+    void testGetCourseById_Success() {
         Long courseId = 1L;
         Course course = new Course();
         course.setCourseID(courseId);
@@ -294,7 +218,19 @@ public class CourseServiceTest {
     }
 
     @Test
-    void testGetAllCourseDTOs_SuccessfulRetrieval() {
+    void testUpdateCourseName_CourseNotFoundException() {
+        when(courseRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(CourseNotFoundException.class, () -> {
+            courseService.updateCourseName(1L, "New Course Name");
+        });
+
+        verify(courseRepository, times(1)).findById(1L);
+        verify(courseRepository, never()).save(any(Course.class));
+    }
+
+    @Test
+    void testGetAllCourseDTOs_Success() {
         Course course1 = new Course();
         course1.setCourseID(1L);
         course1.setCourseName("Java");
@@ -321,18 +257,6 @@ public class CourseServiceTest {
     }
 
     @Test
-    void testUpdateCourseName_NotFound() {
-        when(courseRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(CourseNotFoundException.class, () -> {
-            courseService.updateCourseName(1L, "New Course Name");
-        });
-
-        verify(courseRepository, times(1)).findById(1L);
-        verify(courseRepository, never()).save(any(Course.class));
-    }
-
-    @Test
     void testDeleteCourse_Success() {
         when(courseRepository.findById(1L)).thenReturn(Optional.of(new Course()));
 
@@ -343,7 +267,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    void testDeleteCourse_NotFound() {
+    void testDeleteCourse_CourseNotFoundException() {
         when(courseRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(CourseNotFoundException.class, () -> {
@@ -394,7 +318,7 @@ public class CourseServiceTest {
     }
 
     @Test
-    void testDeleteCourses_WhenIdNotFound() {
+    void testDeleteCourses_CourseNotFoundException() {
         List<Course> coursesToDelete = new ArrayList<>();
         coursesToDelete.add(new Course(1L, "Course1", "Beginner"));
 
