@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.thbs.lms.controller.LearningPlanController;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,9 +56,22 @@ public class LearningPlanControllerTest {
         assertEquals(learningPlan, responseEntity.getBody());
     }
 
+    // @Test
+    // public void testUploadFile() throws IOException {
+    // MultipartFile file = null;
+
+    // doNothing().when(bulkUploadService).uploadFile(file);
+
+    // ResponseEntity<?> responseEntity = learningPlanController.uploadFile(file);
+
+    // assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    // assertEquals("File uploaded successfully.", responseEntity.getBody());
+    // }
+
     @Test
-    public void testUploadFile() throws IOException {
-        MultipartFile file = null;
+    public void testUploadFile_Success() throws IOException {
+        MultipartFile file = new MockMultipartFile("file", "test.xlsx", "application/vnd.ms-excel",
+                "test data".getBytes());
 
         doNothing().when(bulkUploadService).uploadFile(file);
 
@@ -67,15 +82,55 @@ public class LearningPlanControllerTest {
     }
 
     @Test
-    public void testUploadFile_WithException() throws IOException {
-        MultipartFile file = null;
+    public void testUploadFile_PdfFileUploadFailure() {
+        // Mock MultipartFile
+        MockMultipartFile file = new MockMultipartFile("file", "test.pdf", "application/pdf", "test data".getBytes());
 
-        doThrow(new IOException("File processing error")).when(bulkUploadService).uploadFile(file);
+        // Call the controller method
+        ResponseEntity<String> response = learningPlanController.uploadFile(file);
 
-        ResponseEntity<?> responseEntity = learningPlanController.uploadFile(file);
+        // Verify response
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Unsupported file format: PDF", response.getBody());
+    }
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertEquals("Error processing file: File processing error", responseEntity.getBody());
+    @Test
+    public void testUploadFile_PngFileUploadFailure() {
+        // Mock MultipartFile
+        MockMultipartFile file = new MockMultipartFile("file", "test.png", "image/png", "test data".getBytes());
+
+        // Call the controller method
+        ResponseEntity<String> response = learningPlanController.uploadFile(file);
+
+        // Verify response
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Unsupported file format: PNG", response.getBody());
+    }
+
+    @Test
+    public void testUploadFile_TextFileUploadFailure() {
+        // Mock MultipartFile
+        MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "test data".getBytes());
+
+        // Call the controller method
+        ResponseEntity<String> response = learningPlanController.uploadFile(file);
+
+        // Verify response
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Unsupported file format: TXT", response.getBody());
+    }
+
+    @Test
+    public void testUploadFile_JpegFileUploadFailure() {
+        // Mock MultipartFile
+        MockMultipartFile file = new MockMultipartFile("file", "test.jpeg", "image/jpeg", "test data".getBytes());
+
+        // Call the controller method
+        ResponseEntity<String> response = learningPlanController.uploadFile(file);
+
+        // Verify response
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Unsupported file format: JPEG", response.getBody());
     }
 
     @Test

@@ -33,9 +33,28 @@ public class LearningPlanController {
         return ResponseEntity.ok().body(addedLearningPlan);
     }
 
+    // @PostMapping("/upload")
+    // public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    //     try {
+    //         bulkUploadService.uploadFile(file);
+    //         return ResponseEntity.ok().body("File uploaded successfully.");
+    //     } catch (IOException e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body("Error processing file: " + e.getMessage());
+    //     }
+    // }
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
+            String fileName = file.getOriginalFilename();
+            if (fileName != null) {
+                String[] parts = fileName.split("\\.");
+                String fileExtension = parts[parts.length - 1].toUpperCase(); // Get the last part which represents the file extension
+                if (fileExtension.equals("PDF") || fileExtension.equals("PNG") || fileExtension.equals("TXT") || fileExtension.equals("JPEG")) {
+                    return ResponseEntity.badRequest().body("Unsupported file format: " + fileExtension);
+                }
+            }
             bulkUploadService.uploadFile(file);
             return ResponseEntity.ok().body("File uploaded successfully.");
         } catch (IOException e) {
@@ -43,6 +62,12 @@ public class LearningPlanController {
                     .body("Error processing file: " + e.getMessage());
         }
     }
+    
+
+    
+
+    
+    
 
     @GetMapping
     public ResponseEntity<List<LearningPlan>> getAllLearningPlans() {
