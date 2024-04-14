@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-public class BulkUploadServiceTest {
+class BulkUploadServiceTest {
 
     @Mock
     private CourseRepository courseRepository;
@@ -40,61 +40,61 @@ public class BulkUploadServiceTest {
     private BulkUploadService bulkUploadService;
 
     @Test
-    public void testValidExcelFileUpload() throws IOException, FileProcessingException {
+    void testValidExcelFileUpload() throws IOException, FileProcessingException {
         MockMultipartFile file = MockExcelFileGenerator.generateMockExcelFile();
         // Call the uploadFile method and ensure no exceptions are thrown
         assertDoesNotThrow(() -> bulkUploadService.uploadFile(file));
     }
 
     @Test
-    public void testInvalidA1CellExcelFile() throws IOException {
+    void testInvalidA1CellExcelFile() throws IOException {
         String filePath = "invalidA1.xlsx";
         MockMultipartFile file = InvalidA1CellExcelGenerator.generateInvalidA1CellExcelFile(filePath);
         assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
 
     @Test
-    public void testInvalidB1CellExcelFile() throws IOException {
+    void testInvalidB1CellExcelFile() throws IOException {
         String filePath = "invalidB1.xlsx";
         MockMultipartFile file = InvalidB1CellExcelGenerator.generateInvalidB1CellExcelFile(filePath);
         assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
 
     @Test
-    public void testInvalidNoDescriptionFile() throws IOException {
+    void testInvalidNoDescriptionFile() throws IOException {
         String filePath = "noDesc.xlsx";
         MockMultipartFile file = InvalidNoDescriptionFileGenerator.generateInvalidNoDescriptionFile(filePath);
         assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
 
     @Test
-    public void testInvalidOneCellExcelFile() throws IOException {
+    void testInvalidOneCellExcelFile() throws IOException {
         String filePath = "oneColumn.xlsx";
         MockMultipartFile file = InvalidOneCellExcelFileGenerator.generateInvalidOneCellExcelFile(filePath);
         assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
 
     @Test
-    public void testEmptyRowExcelFile() throws IOException {
+    void testEmptyRowExcelFile() throws IOException {
         MockMultipartFile file = EmptyRowExcelFileGenerator.generateEmptyRowExcelFile();
         assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
 
     @Test
-    public void testHandlingDuplicateTopics() throws IOException {
+    void testHandlingDuplicateTopics() throws IOException {
         String filePath = "duplicate.xlsx";
         MockMultipartFile file = DuplicateTopicExcelFileGenerator.generateDuplicateTopicExcelFile(filePath);
         assertThrows(DuplicateTopicException.class, () -> bulkUploadService.uploadFile(file));
     }
 
     @Test
-    public void testHandlingMissingTopics() throws IOException, FileProcessingException {
+    void testHandlingMissingTopics() throws IOException, FileProcessingException {
         MockMultipartFile file = EmptyRowExcelFileGenerator.generateEmptyRowExcelFile();
         assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
 
     @Test
-    public void testUploadFileWithNewCourse() throws IOException {
+    void testUploadFileWithNewCourse() throws IOException {
         // Upload the initial file (matching existing courses)
         MockMultipartFile initialFile = MockExcelFileGenerator.generateMockExcelFile();
         assertDoesNotThrow(() -> bulkUploadService.uploadFile(initialFile));
@@ -115,7 +115,7 @@ public class BulkUploadServiceTest {
     }
 
     @Test
-    public void testHandlingExistingCourseInDatabase() throws IOException {
+    void testHandlingExistingCourseInDatabase() throws IOException {
         // Upload the initial file
         MockMultipartFile initialFile = MockExcelFileGenerator.generateMockExcelFile();
         assertDoesNotThrow(() -> bulkUploadService.uploadFile(initialFile));

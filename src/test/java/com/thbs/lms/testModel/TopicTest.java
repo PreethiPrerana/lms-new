@@ -4,11 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 
-public class TopicTest {
+@SpringBootTest
+class TopicTest {
     @Test
     void testGettersAndSetters() {
         // Initialize a Topic object

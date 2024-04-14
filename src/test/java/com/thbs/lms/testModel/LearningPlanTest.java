@@ -5,10 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.thbs.lms.model.LearningPlan;
 
-public class LearningPlanTest {
+@SpringBootTest
+class LearningPlanTest {
 
     @Test
     void testGettersAndSetters() {

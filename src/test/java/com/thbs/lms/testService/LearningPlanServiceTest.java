@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class LearningPlanServiceTest {
+class LearningPlanServiceTest {
 
     @Mock
     private LearningPlanRepository learningPlanRepository;
@@ -55,7 +55,7 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    public void testSaveLearningPlan_NullBatchID() {
+    void testSaveLearningPlan_NullBatchID() {
         learningPlan.setBatchID(null);
         assertThrows(InvalidLearningPlanException.class, () -> {
             learningPlanService.saveLearningPlan(learningPlan);
@@ -63,7 +63,7 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    public void testSaveLearningPlan_NullType() {
+    void testSaveLearningPlan_NullType() {
         learningPlan.setType(null);
 
         assertThrows(InvalidLearningPlanException.class, () -> {
@@ -72,7 +72,7 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    public void testSaveLearningPlan_EmptyType() {
+    void testSaveLearningPlan_EmptyType() {
         learningPlan.setType("");
 
         assertThrows(InvalidLearningPlanException.class, () -> {
@@ -198,7 +198,7 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    public void testGetLearningPlansByBatchID_NullBatchID() {
+    void testGetLearningPlansByBatchID_NullBatchID() {
         assertThrows(InvalidBatchException.class, () -> {
             learningPlanService.getLearningPlansByBatchID(null);
         });

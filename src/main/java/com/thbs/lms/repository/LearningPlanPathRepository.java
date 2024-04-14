@@ -20,4 +20,6 @@ public interface LearningPlanPathRepository extends JpaRepository<LearningPlanPa
 
     Optional<LearningPlanPath> findByLearningPlanLearningPlanIDAndCourseAndType(Long learningPlanId, Course course,
             String type);
+
+    boolean existsByLearningPlanLearningPlanIDAndCourseAndType(Long learningPlanId, Course course, String type);
 }

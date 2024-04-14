@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class LearningPlanPathServiceTest {
+class LearningPlanPathServiceTest {
 
     @Mock
     private LearningPlanPathRepository learningPlanPathRepository;
@@ -151,8 +151,8 @@ public class LearningPlanPathServiceTest {
 
     @Test
     void testSaveLearningPlanPath_DuplicateEntry() {
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanIDAndCourseAndType(anyLong(), any(Course.class),
-                anyString())).thenReturn(Optional.of(learningPlanPath));
+        when(learningPlanPathRepository.existsByLearningPlanLearningPlanIDAndCourseAndType(anyLong(), any(Course.class),
+                anyString())).thenReturn(true);
 
         assertThrows(DuplicateLearningPlanPathException.class, () -> {
             learningPlanPathService.saveLearningPlanPath(learningPlanPath);
@@ -312,15 +312,17 @@ public class LearningPlanPathServiceTest {
 
     @Test
     void testUpdateLearningPlanPathDates_NullStartDate() {
+        Date date = new Date();
         assertThrows(InvalidLearningPlanPathDataException.class, () -> {
-            learningPlanPathService.updateLearningPlanPathDates(1L, null, new Date());
+            learningPlanPathService.updateLearningPlanPathDates(1L, null, date);
         });
     }
 
     @Test
     void testUpdateLearningPlanPathDates_NullEndDate() {
+        Date date = new Date();
         assertThrows(InvalidLearningPlanPathDataException.class, () -> {
-            learningPlanPathService.updateLearningPlanPathDates(1L, new Date(), null);
+            learningPlanPathService.updateLearningPlanPathDates(1L, date, null);
         });
     }
 
@@ -336,10 +338,12 @@ public class LearningPlanPathServiceTest {
 
     @Test
     void testUpdateLearningPlanPathDates_LearningPlanPathNotFound() {
+        Date date = new Date();
+
         when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(LearningPlanPathNotFoundException.class, () -> {
-            learningPlanPathService.updateLearningPlanPathDates(2L, new Date(), new Date());
+            learningPlanPathService.updateLearningPlanPathDates(2L, date, date);
         });
     }
 

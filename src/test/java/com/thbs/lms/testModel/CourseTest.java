@@ -4,10 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.thbs.lms.model.Course;
 
-public class CourseTest {
+@SpringBootTest
+class CourseTest {
     @Test
     void testGettersAndSetters() {
         // Initialize a Course object

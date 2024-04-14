@@ -6,8 +6,6 @@ public class ErrorResponse {
     private HttpStatus status;
     private String message;
 
-    // Constructor, getters, and setters
-
     public ErrorResponse(HttpStatus status, String message) {
         this.status = status;
         this.message = message;

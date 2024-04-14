@@ -1,4 +1,4 @@
-package com.thbs.lms.DTO;
+package com.thbs.lms.dto;
 
 import java.util.List;
 
