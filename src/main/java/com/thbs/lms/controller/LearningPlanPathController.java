@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/learning-plan-path")
-@CrossOrigin("*")
+// @CrossOrigin("*")
 public class LearningPlanPathController {
 
     private final LearningPlanPathService learningPlanPathService;

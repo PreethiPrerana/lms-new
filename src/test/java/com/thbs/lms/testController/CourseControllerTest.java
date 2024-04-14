@@ -1,6 +1,6 @@
 package com.thbs.lms.testController;
 
-import com.thbs.lms.DTO.CourseDTO;
+import com.thbs.lms.dto.CourseDTO;
 import com.thbs.lms.controller.CourseController;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.service.CourseService;

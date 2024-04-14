@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.thbs.lms.DTO.CourseDTO;
+import com.thbs.lms.dto.CourseDTO;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.service.CourseService;
 

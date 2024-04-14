@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.thbs.lms.model.Course;
 import com.thbs.lms.repository.CourseRepository;
-import com.thbs.lms.DTO.CourseDTO;
-import com.thbs.lms.DTO.TopicDTO;
+import com.thbs.lms.dto.CourseDTO;
+import com.thbs.lms.dto.TopicDTO;
 import com.thbs.lms.exception.*;
 
 import java.util.ArrayList;
