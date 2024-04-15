@@ -26,9 +26,12 @@ public class CourseService {
         this.topicService = topicService;
     }
 
+    // Saves a single course
     public Course saveCourse(Course course) {
+        // Validation checks
         if (course.getCourseName() == null || course.getCourseName().isEmpty() ||
                 course.getLevel() == null || course.getLevel().isEmpty()) {
+            // Throws exceptions for invalid data or duplicate course
             throw new InvalidCourseDataException("Course name, and level cannot be null or empty.");
         }
 
@@ -40,12 +43,14 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
+    // Saves multiple courses
     public List<Course> saveCourses(List<Course> courses) {
         List<Course> savedCourses = new ArrayList<>();
-
+        // Validation checks
         for (Course course : courses) {
             if (course.getCourseName() == null || course.getCourseName().isEmpty() ||
                     course.getLevel() == null || course.getLevel().isEmpty()) {
+                // Throws exceptions for invalid data or duplicate course
                 throw new InvalidCourseDataException("Course name, and level cannot be null or empty.");
             }
 
@@ -60,19 +65,25 @@ public class CourseService {
 
     }
 
+    // Retrieves all courses
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
 
+    // Retrieves courses by level
     public List<Course> getCoursesByLevel(String level) {
+        // Validation checks for level
+
         if (level == null || level.isEmpty()) {
             throw new InvalidLevelException("Level cannot be null or empty.");
         }
         return courseRepository.findByLevel(level);
     }
 
+    // Retrieves a course by its ID
     public Course getCourseById(Long courseId) {
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
+        // Retrieves a course by ID or throws exception if not found
         if (optionalCourse.isPresent()) {
             return optionalCourse.get();
         } else {
@@ -80,14 +91,18 @@ public class CourseService {
         }
     }
 
+    // Retrieves all courses as DTOs
     public List<CourseDTO> getAllCourseDTOs() {
+        // Converts each course to DTO and returns a list of DTOs
         List<Course> courses = courseRepository.findAll();
         return courses.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
+    // Converts course entity to a DTO
     public CourseDTO convertToDTO(Course course) {
+        // Converts course entity to DTO format with associated topics
         List<TopicDTO> topicDTOs = topicService.getTopicsByCourse(course)
                 .stream()
                 .map(topic -> new TopicDTO(topic.getTopicID(), topic.getTopicName()))
@@ -96,6 +111,7 @@ public class CourseService {
         return new CourseDTO(course.getCourseID(), course.getCourseName(), topicDTOs);
     }
 
+    // Updates the name of the course with the given ID
     public Course updateCourseName(Long courseId, String newCourseName) {
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -107,6 +123,7 @@ public class CourseService {
         }
     }
 
+    // Deletes a course by its ID along with its associated Topics
     public void deleteCourse(Long courseId) {
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -118,6 +135,7 @@ public class CourseService {
         }
     }
 
+    // Deletes multiple courses by its ID's along with its associated Topics
     public void deleteCourses(List<Course> courses) {
         for (Course course : courses) {
             Long courseId = course.getCourseID();
