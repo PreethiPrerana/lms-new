@@ -11,8 +11,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    Optional<Course> findByCourseName(String courseName);
 
     List<Course> findByLevel(String level);
+
+    Optional<Course> findByCourseNameIgnoreCase(String courseName);
 
 }

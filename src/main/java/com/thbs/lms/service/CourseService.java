@@ -35,7 +35,7 @@ public class CourseService {
             throw new InvalidCourseDataException("Course name, and level cannot be null or empty.");
         }
 
-        Optional<Course> existingCourse = courseRepository.findByCourseName(course.getCourseName());
+        Optional<Course> existingCourse = courseRepository.findByCourseNameIgnoreCase(course.getCourseName());
         if (existingCourse.isPresent()) {
             throw new DuplicateCourseException("Course with name '" + course.getCourseName() + "' already exists.");
         }
@@ -54,7 +54,7 @@ public class CourseService {
                 throw new InvalidCourseDataException("Course name, and level cannot be null or empty.");
             }
 
-            Optional<Course> existingCourse = courseRepository.findByCourseName(course.getCourseName());
+            Optional<Course> existingCourse = courseRepository.findByCourseNameIgnoreCase(course.getCourseName());
             if (existingCourse.isPresent()) {
                 throw new DuplicateCourseException(
                         "Course with name '" + course.getCourseName() + "' already exists.");

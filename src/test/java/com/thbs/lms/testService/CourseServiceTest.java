@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
-public class CourseServiceTest {
+class CourseServiceTest {
 
     @Mock
     private CourseRepository courseRepository;
@@ -50,7 +50,7 @@ public class CourseServiceTest {
         course.setCourseName("Java Programming");
         course.setLevel("Test type");
 
-        when(courseRepository.findByCourseName("Java Programming")).thenReturn(Optional.of(course));
+        when(courseRepository.findByCourseNameIgnoreCase("Java Programming")).thenReturn(Optional.of(course));
 
         assertThrows(DuplicateCourseException.class, () -> courseService.saveCourse(course));
     }
@@ -60,7 +60,7 @@ public class CourseServiceTest {
         Course course = new Course();
         course.setCourseName("Python Programming");
         course.setLevel("Test type");
-        when(courseRepository.findByCourseName("Python Programming")).thenReturn(Optional.empty());
+        when(courseRepository.findByCourseNameIgnoreCase("Python Programming")).thenReturn(Optional.empty());
         when(courseRepository.save(course)).thenReturn(course);
         assertEquals(course, courseService.saveCourse(course));
     }
@@ -114,7 +114,7 @@ public class CourseServiceTest {
         existingCourse.setLevel("Intermediate");
         courses.add(existingCourse);
 
-        when(courseRepository.findByCourseName("Java Programming")).thenReturn(Optional.of(existingCourse));
+        when(courseRepository.findByCourseNameIgnoreCase("Java Programming")).thenReturn(Optional.of(existingCourse));
 
         assertThrows(DuplicateCourseException.class, () -> courseService.saveCourses(courses));
     }
@@ -127,7 +127,7 @@ public class CourseServiceTest {
         newCourse.setLevel("Intermediate");
         courses.add(newCourse);
 
-        when(courseRepository.findByCourseName("Python Programming")).thenReturn(Optional.empty());
+        when(courseRepository.findByCourseNameIgnoreCase("Python Programming")).thenReturn(Optional.empty());
         when(courseRepository.save(newCourse)).thenReturn(newCourse);
 
         List<Course> savedCourses = courseService.saveCourses(courses);

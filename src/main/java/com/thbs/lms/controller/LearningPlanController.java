@@ -1,6 +1,6 @@
 package com.thbs.lms.controller;
 
-import com.thbs.lms.dto.LearningPlanPathDTO;
+import com.thbs.lms.dto.LearningPlanDTO;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.service.BulkUploadService;
 import com.thbs.lms.service.LearningPlanService;
@@ -48,7 +48,7 @@ public class LearningPlanController {
     }
 
     @GetMapping("/dto")
-    public List<LearningPlanPathDTO> getAllLearningPlanPathDTOs() {
+    public List<LearningPlanDTO> getAllLearningPlanPathDTOs() {
         return learningPlanService.getAllLearningPlanPathDTOs();
     }
 

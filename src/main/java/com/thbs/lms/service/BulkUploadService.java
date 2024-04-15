@@ -66,7 +66,7 @@ public class BulkUploadService {
                 String courseName = sheet.getSheetName();
 
                 // Create or get the course from the database
-                Course course = courseRepository.findByCourseName(courseName)
+                Course course = courseRepository.findByCourseNameIgnoreCase(courseName)
                         .orElseGet(() -> {
                             Course newCourse = new Course();
                             newCourse.setCourseName(courseName);
