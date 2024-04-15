@@ -16,6 +16,7 @@ import com.thbs.lms.utility.DuplicateTopicExcelFileGenerator;
 import com.thbs.lms.utility.EmptyRowExcelFileGenerator;
 import com.thbs.lms.utility.InvalidA1CellExcelGenerator;
 import com.thbs.lms.utility.InvalidB1CellExcelGenerator;
+import com.thbs.lms.utility.InvalidExtraDataExcelFileGenerator;
 import com.thbs.lms.utility.InvalidNoDescriptionFileGenerator;
 import com.thbs.lms.utility.InvalidOneCellExcelFileGenerator;
 import com.thbs.lms.utility.MockExcelFileGenerator;
@@ -134,6 +135,13 @@ public class BulkUploadServiceTest {
         assertEquals(initialCourseCount, updatedCourseCount,
                 "Number of courses should remain unchanged after uploading the same file again");
 
+    }
+
+    @Test
+    public void testInvalidExtraDataFileUpload() throws Exception {
+        String filePath = "extraData.xlsx";
+        MockMultipartFile file = InvalidExtraDataExcelFileGenerator.generateInvalidExtraDataExcelFile(filePath);
+        assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
 
 }

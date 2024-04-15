@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.thbs.lms.exception.DuplicateTopicException;
 import com.thbs.lms.exception.FileProcessingException;
+import com.thbs.lms.exception.InvalidSheetFormatException;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.CourseRepository;
@@ -37,7 +38,8 @@ public class BulkUploadService {
         this.topicRepository = topicRepository;
     }
 
-    public void uploadFile(MultipartFile file) throws IOException, FileProcessingException {
+    public void uploadFile(MultipartFile file) {
+        try {
         Workbook workbook = WorkbookFactory.create(file.getInputStream());
 
         // Process each sheet
@@ -64,6 +66,10 @@ public class BulkUploadService {
 
             topicRepository.saveAll(topics);
         }
+        }catch(IOException | IllegalArgumentException e){
+            e.printStackTrace();
+            throw new FileProcessingException("Error processing the uploaded file.");
+        }
     }
 
     private List<Topic> processTopics(Sheet sheet, Course course) {
@@ -80,25 +86,32 @@ public class BulkUploadService {
             if (isRowEmpty(currentRow)) {
                 continue;
             }
-            String topicName = currentRow.getCell(0).getStringCellValue();
-            String description = currentRow.getCell(1).getStringCellValue();
+            try {
+                String topicName = currentRow.getCell(0).getStringCellValue();
+                String description = currentRow.getCell(1).getStringCellValue();
 
             // Check if the topic already exists in the course
             if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
                 continue; // Skip adding existing topics
             }
-
+            System.out.println("check duplicate");
             if (topicNames.contains(topicName)) {
+                System.out.println("Duplicate entries present.");
                 throw new DuplicateTopicException("Duplicate entries present in sheet.");
             }
             topicNames.add(topicName);
 
-            Topic topic = new Topic();
-            topic.setTopicName(topicName);
-            topic.setDescription(description);
-            topic.setCourse(course);
-            topics.add(topic);
-            System.out.println("Topic:" + topic);
+                Topic topic = new Topic();
+                topic.setTopicName(topicName);
+                topic.setDescription(description);
+                topic.setCourse(course);
+                topics.add(topic);
+                System.out.println("Topic:" + topic);
+            }catch (DuplicateTopicException e) {
+                throw e; // Re-throw DuplicateTopicException
+            }catch (Exception e){
+                throw new InvalidSheetFormatException("Sheet may have extra cells or invalid data.");
+            }
         }
         return topics;
     }
