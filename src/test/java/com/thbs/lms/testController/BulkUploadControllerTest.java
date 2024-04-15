@@ -17,6 +17,7 @@ import com.thbs.lms.utility.TextFileGenerator;
 
 import java.io.File;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest 
@@ -30,7 +31,7 @@ public class BulkUploadControllerTest {
     public void testFileUploadSuccess() throws Exception {
         MockMultipartFile file = MockExcelFileGenerator.generateMockExcelFile();
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/learningplans/upload").file(file))
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().string("File uploaded successfully."));
     }
@@ -42,9 +43,9 @@ public class BulkUploadControllerTest {
 
         MockMultipartFile file = PDFFileGenerator.convertToMockMultipartFile(pdfFile);
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/learningplans/upload").file(file))
-                .andExpect(status().isInternalServerError()) 
-                .andExpect(MockMvcResultMatchers.content().string("Error processing file: Can't open workbook - unsupported file type: PDF"));
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
     }
 
     @Test
@@ -54,9 +55,9 @@ public class BulkUploadControllerTest {
 
         MockMultipartFile file = PNGFileGenerator.convertToMockMultipartFile(pngFile);
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/learningplans/upload").file(file))
-                .andExpect(status().isInternalServerError())
-                .andExpect(MockMvcResultMatchers.content().string("Error processing file: Can't open workbook - unsupported file type: PNG"));
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
     }
 
     @Test
@@ -66,9 +67,9 @@ public class BulkUploadControllerTest {
 
         MockMultipartFile file = TextFileGenerator.convertToMockMultipartFile(textFile);
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/learningplans/upload").file(file))
-                .andExpect(status().isInternalServerError()) 
-                .andExpect(MockMvcResultMatchers.content().string("Error processing file: Can't open workbook - unsupported file type: UNKNOWN"));
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
     }
 
     @Test
@@ -78,9 +79,9 @@ public class BulkUploadControllerTest {
 
         MockMultipartFile file = JPEGFileGenerator.convertToMockMultipartFile(jpegFile);
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/learningplans/upload").file(file))
-                .andExpect(status().isInternalServerError()) 
-                .andExpect(MockMvcResultMatchers.content().string("Error processing file: Can't open workbook - unsupported file type: JPEG"));
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
     }
 
 }

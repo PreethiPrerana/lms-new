@@ -6,9 +6,9 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 
-import com.thbs.lms.exceptionHandler.DuplicateTopicException;
-import com.thbs.lms.exceptionHandler.FileProcessingException;
-import com.thbs.lms.exceptionHandler.InvalidSheetFormatException;
+import com.thbs.lms.exception.DuplicateTopicException;
+import com.thbs.lms.exception.FileProcessingException;
+import com.thbs.lms.exception.InvalidSheetFormatException;
 import com.thbs.lms.repository.CourseRepository;
 import com.thbs.lms.repository.TopicRepository;
 import com.thbs.lms.service.BulkUploadService;
@@ -93,7 +93,7 @@ public class BulkUploadServiceTest {
         MockMultipartFile file = EmptyRowExcelFileGenerator.generateEmptyRowExcelFile();
         assertThrows(InvalidSheetFormatException.class, () -> bulkUploadService.uploadFile(file));
     }
- 
+
     @Test
     public void testUploadFileWithNewCourse() throws IOException {
         // Upload the initial file (matching existing courses)
@@ -111,7 +111,8 @@ public class BulkUploadServiceTest {
         long updatedCourseCount = courseRepository.count();
 
         // Assert that the number of courses has increased by one
-        assertEquals(initialCourseCount , updatedCourseCount, "Number of courses should increase by one after uploading a file with a new course");
+        assertEquals(initialCourseCount + 1, updatedCourseCount,
+                "Number of courses should increase by one after uploading a file with a new course");
     }
 
     @Test
@@ -131,7 +132,8 @@ public class BulkUploadServiceTest {
         long updatedCourseCount = courseRepository.count();
 
         // Assert that the number of courses remains unchanged
-        assertEquals(initialCourseCount, updatedCourseCount, "Number of courses should remain unchanged after uploading the same file again");
+        assertEquals(initialCourseCount, updatedCourseCount,
+                "Number of courses should remain unchanged after uploading the same file again");
 
     }
 

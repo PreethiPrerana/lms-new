@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.thbs.lms.exceptionHandler.DuplicateTopicException;
-import com.thbs.lms.exceptionHandler.FileProcessingException;
-import com.thbs.lms.exceptionHandler.InvalidSheetFormatException;
+import com.thbs.lms.exception.DuplicateTopicException;
+import com.thbs.lms.exception.FileProcessingException;
+import com.thbs.lms.exception.InvalidSheetFormatException;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.CourseRepository;
@@ -29,13 +29,17 @@ import java.util.Set;
 @Service
 public class BulkUploadService {
 
-    @Autowired
-    private CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
+    private final TopicRepository topicRepository;
 
     @Autowired
-    private TopicRepository topicRepository;
+    public BulkUploadService(CourseRepository courseRepository, TopicRepository topicRepository) {
+        this.courseRepository = courseRepository;
+        this.topicRepository = topicRepository;
+    }
 
-    public void uploadFile(MultipartFile file) throws IOException, FileProcessingException {
+    public void uploadFile(MultipartFile file) {
+        try {
         Workbook workbook = WorkbookFactory.create(file.getInputStream());
 
         // Process each sheet
@@ -45,7 +49,7 @@ public class BulkUploadService {
             SheetValidator.isValidSheetFormat(sheet);
             // Check if header row exists
             Row headerRow = sheet.getRow(0);
-            
+
             String level = headerRow.getCell(1).getStringCellValue();
             // Extract course name from the sheet name
             String courseName = sheet.getSheetName();
@@ -61,6 +65,10 @@ public class BulkUploadService {
             List<Topic> topics = processTopics(sheet, course);
 
             topicRepository.saveAll(topics);
+        }
+        }catch(IOException | IllegalArgumentException e){
+            e.printStackTrace();
+            throw new FileProcessingException("Error processing the uploaded file.");
         }
     }
 
@@ -82,15 +90,16 @@ public class BulkUploadService {
                 String topicName = currentRow.getCell(0).getStringCellValue();
                 String description = currentRow.getCell(1).getStringCellValue();
 
-                // Check if the topic already exists in the course
-                if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
-                    continue; // Skip adding existing topics
-                }
-                
-                if (topicNames.contains(topicName)) {
-                    throw new DuplicateTopicException("Duplicate entries present in sheet.");
-                }
-                topicNames.add(topicName);
+            // Check if the topic already exists in the course
+            if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
+                continue; // Skip adding existing topics
+            }
+            System.out.println("check duplicate");
+            if (topicNames.contains(topicName)) {
+                System.out.println("Duplicate entries present.");
+                throw new DuplicateTopicException("Duplicate entries present in sheet.");
+            }
+            topicNames.add(topicName);
 
                 Topic topic = new Topic();
                 topic.setTopicName(topicName);
@@ -98,8 +107,10 @@ public class BulkUploadService {
                 topic.setCourse(course);
                 topics.add(topic);
                 System.out.println("Topic:" + topic);
+            }catch (DuplicateTopicException e) {
+                throw e; // Re-throw DuplicateTopicException
             }catch (Exception e){
-            throw new InvalidSheetFormatException("Sheet may have extra cells or invalid data.");
+                throw new InvalidSheetFormatException("Sheet may have extra cells or invalid data.");
             }
         }
         return topics;

@@ -1,161 +1,36 @@
-// // package com.thbs.lms.service;
-
-// // import org.springframework.beans.factory.annotation.Autowired;
-// // import org.springframework.stereotype.Service;
-
-// // import com.thbs.lms.model.Course;
-// // import com.thbs.lms.model.Topic;
-// // import com.thbs.lms.repository.TopicRepository;
-
-// // import java.util.List;
-// // import java.util.Optional;
-
-// // @Service
-// // public class TopicService {
-
-// //     @Autowired
-// //     private TopicRepository topicRepository;
-
-// //     public void addNewTopic(String topicName, String description, String resourceTag, Course course) {
-// //         Topic newTopic = new Topic();
-// //         newTopic.setTopicName(topicName);
-// //         newTopic.setDescription(description);
-// //         newTopic.setCourse(course);
-// //         topicRepository.save(newTopic);
-// //     }
-
-// //     public Topic saveTopic(Topic topic) {
-// //         return topicRepository.save(topic);
-// //     }
-
-// //     public List<Topic> getAllTopics() {
-// //         return topicRepository.findAll();
-// //     }
-
-// //     public String updateDescription(Long topicId, String newDescription) {
-// //         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
-// //         if (optionalTopic.isPresent()) {
-// //             Topic topic = optionalTopic.get();
-// //             topic.setDescription(newDescription);
-// //             topicRepository.save(topic);
-// //             return "Description updated successfully.";
-// //         } else {
-// //             throw new IllegalArgumentException("Topic not found for ID: " + topicId);
-// //         }
-// //     }
-// // }
-
-// package com.thbs.lms.service;
-
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.stereotype.Service;
-
-// import com.thbs.lms.model.Course;
-// import com.thbs.lms.model.Topic;
-// import com.thbs.lms.repository.TopicRepository;
-// import com.thbs.lms.exceptionHandler.*;
-
-// import java.util.List;
-// import java.util.Optional;
-
-// @Service
-// public class TopicService {
-
-//     @Autowired
-//     private TopicRepository topicRepository;
-
-//     public void addNewTopic(String topicName, String description, String resourceTag, Course course) {
-//         Topic newTopic = new Topic();
-//         newTopic.setTopicName(topicName);
-//         newTopic.setDescription(description);
-//         newTopic.setCourse(course);
-//         topicRepository.save(newTopic);
-//     }
-
-//     public Topic saveTopic(Topic topic) {
-//         try {
-//             return topicRepository.save(topic);
-//         } catch (Exception e) {
-//             throw new RepositoryOperationException("Error saving topic: " + e.getMessage());
-//         }
-//     }
-
-//     public List<Topic> getAllTopics() {
-//         try {
-//             return topicRepository.findAll();
-//         } catch (Exception e) {
-//             throw new RepositoryOperationException("Error retrieving topics: " + e.getMessage());
-//         }
-//     }
-
-//     public String updateDescription(Long topicId, String newDescription) {
-//         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
-//         if (optionalTopic.isPresent()) {
-//             Topic topic = optionalTopic.get();
-//             topic.setDescription(newDescription);
-//             try {
-//                 topicRepository.save(topic);
-//                 return "Description updated successfully.";
-//             } catch (Exception e) {
-//                 throw new RepositoryOperationException("Error updating description: " + e.getMessage());
-//             }
-//         } else {
-//             throw new TopicNotFoundException("Topic not found for ID: " + topicId);
-//         }
-//     }
-// }
-
 package com.thbs.lms.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.thbs.lms.exception.*;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.TopicRepository;
-import com.thbs.lms.exceptionHandler.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class TopicService {
 
+    private final TopicRepository topicRepository;
+
     @Autowired
-    private TopicRepository topicRepository;
-
-    public List<Topic> getAllTopics() {
-        try {
-            return topicRepository.findAll();
-        } catch (Exception e) {
-            throw new RepositoryOperationException("Error retrieving topics: " + e.getMessage());
-        }
+    public TopicService(TopicRepository topicRepository) {
+        this.topicRepository = topicRepository;
     }
 
-    public String updateDescription(Long topicId, String newDescription) {
-        Optional<Topic> optionalTopic = topicRepository.findById(topicId);
-        if (optionalTopic.isPresent()) {
-            Topic topic = optionalTopic.get();
-            topic.setDescription(newDescription);
-            try {
-                topicRepository.save(topic);
-                return "Description updated successfully.";
-            } catch (Exception e) {
-                throw new RepositoryOperationException("Error updating description: " + e.getMessage());
-            }
-        } else {
-            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
-        }
-    }
+    public Topic addTopicWithValidation(String topicName, String description,
+            Course course) {
 
-    public Topic addTopicWithValidation(String topicName, String description, Course course) {
-        // Check for duplicate topic
         if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
             throw new DuplicateTopicException("Topic '" + topicName + "' already exists for this course.");
         }
 
-        // Validate topic data
-        if (topicName == null || topicName.isEmpty() || description == null || description.isEmpty()) {
+        if (topicName == null || topicName.isEmpty() || description == null ||
+                description.isEmpty()) {
             throw new InvalidTopicDataException("Topic name and description cannot be null or empty.");
         }
 
@@ -166,18 +41,97 @@ public class TopicService {
         return topicRepository.save(newTopic);
     }
 
-    public Topic updateTopicDescriptionWithValidation(Long topicId, String newDescription) {
+    public List<Topic> addTopicsWithValidation(List<Topic> topics) {
+        List<Topic> addedTopics = new ArrayList<>();
+        for (Topic topic : topics) {
+            String topicName = topic.getTopicName();
+            String description = topic.getDescription();
+            Course course = topic.getCourse();
+
+            if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
+                throw new DuplicateTopicException("Topic '" + topicName + "' already exists for this course.");
+            }
+
+            if (topicName == null || topicName.isEmpty() || description == null ||
+                    description.isEmpty()) {
+                throw new InvalidTopicDataException("Topic name and description cannot be null or empty.");
+            }
+
+            Topic newTopic = new Topic();
+            newTopic.setTopicName(topicName);
+            newTopic.setDescription(description);
+            newTopic.setCourse(course);
+
+            addedTopics.add(topicRepository.save(newTopic));
+        }
+        return addedTopics;
+    }
+
+    public List<Topic> getAllTopics() {
+        return topicRepository.findAll();
+    }
+
+    public List<Topic> getTopicsByCourse(Course course) {
+        return topicRepository.findByCourse(course);
+    }
+
+    public String updateTopicDescriptionWithValidation(Long topicId, String newDescription) {
         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
         if (optionalTopic.isPresent()) {
             Topic topic = optionalTopic.get();
 
-            // Validate new description
             if (newDescription == null || newDescription.isEmpty()) {
                 throw new InvalidDescriptionException("Description cannot be null or empty.");
             }
 
             topic.setDescription(newDescription);
-            return topicRepository.save(topic);
+            topicRepository.save(topic);
+            return "Description updated successfully";
+        } else {
+            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+        }
+    }
+
+    public void deleteTopicById(Long topicId) {
+        Optional<Topic> optionalTopic = topicRepository.findById(topicId);
+        if (optionalTopic.isPresent()) {
+            topicRepository.delete(optionalTopic.get());
+        } else {
+            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+        }
+    }
+
+    public void deleteTopics(List<Topic> topics) {
+        for (Topic topic : topics) {
+            Long topicId = topic.getTopicID();
+            Optional<Topic> optionalTopic = topicRepository.findById(topicId);
+            if (optionalTopic.isPresent()) {
+                topicRepository.delete(topic);
+            } else {
+                throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+            }
+        }
+    }
+
+    public void deleteTopicsByCourse(Course course) {
+        List<Topic> topics = topicRepository.findByCourse(course);
+        for (Topic topic : topics) {
+            topicRepository.delete(topic);
+        }
+    }
+
+    public String updateTopicNameWithValidation(Long topicId, String newName) {
+        Optional<Topic> optionalTopic = topicRepository.findById(topicId);
+        if (optionalTopic.isPresent()) {
+            Topic topic = optionalTopic.get();
+
+            if (newName == null || newName.isEmpty()) {
+                throw new InvalidTopicDataException("Topic Name cannot be null or empty.");
+            }
+
+            topic.setTopicName(newName);
+            topicRepository.save(topic);
+            return "Topic name updated successfully";
         } else {
             throw new TopicNotFoundException("Topic not found for ID: " + topicId);
         }

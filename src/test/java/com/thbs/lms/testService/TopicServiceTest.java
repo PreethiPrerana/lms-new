@@ -1,125 +1,389 @@
-// import com.thbs.lms.exceptionHandler.*;
-// import com.thbs.lms.model.Topic;
-// import com.thbs.lms.repository.TopicRepository;
-// import com.thbs.lms.service.TopicService;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.extension.ExtendWith;
-// import org.mockito.InjectMocks;
-// import org.mockito.Mock;
-// import org.mockito.junit.jupiter.MockitoExtension;
+package com.thbs.lms.testService;
 
-// import java.util.ArrayList;
-// import java.util.List;
-// import java.util.Optional;
+import com.thbs.lms.exception.*;
+import com.thbs.lms.model.Course;
+import com.thbs.lms.model.Topic;
+import com.thbs.lms.repository.TopicRepository;
+import com.thbs.lms.service.TopicService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
 
-// import static org.junit.jupiter.api.Assertions.*;
-// import static org.mockito.Mockito.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-// @ExtendWith(MockitoExtension.class)
-// public class TopicServiceTest {
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-//     @Mock
-//     private TopicRepository topicRepository;
+@SpringBootTest
+public class TopicServiceTest {
 
-//     @InjectMocks
-//     private TopicService topicService;
+    @Mock
+    private TopicRepository topicRepository;
 
-//     private Topic topic;
+    @InjectMocks
+    private TopicService topicService;
 
-//     @BeforeEach
-//     void setUp() {
-//         topic = new Topic();
-//         topic.setTopicName("Test Topic");
-//         topic.setDescription("Test Description");
-//     }
+    private Topic topic;
 
-//     @Test
-//     void testGetAllTopics() {
-//         List<Topic> expectedTopics = new ArrayList<>();
-//         expectedTopics.add(topic);
-//         when(topicRepository.findAll()).thenReturn(expectedTopics);
+    @BeforeEach
+    void setUp() {
+        topic = new Topic();
+        topic.setTopicName("Test Topic");
+        topic.setDescription("Test Description");
+    }
 
-//         List<Topic> actualTopics = topicService.getAllTopics();
+    @Test
+    void testAddTopicWithValidation_Success() {
+        when(topicRepository.existsByTopicNameAndCourse(anyString(), any(Course.class))).thenReturn(false);
 
-//         assertEquals(expectedTopics.size(), actualTopics.size());
-//         assertEquals(expectedTopics.get(0), actualTopics.get(0));
-//     }
+        when(topicRepository.save(any(Topic.class))).thenReturn(topic);
 
-//     @Test
-//     void testUpdateDescription() {
-//         Long topicId = 1L;
-//         String newDescription = "Updated Description";
+        Topic addedTopic = topicService.addTopicWithValidation("New Topic", "Description", new Course());
 
-//         when(topicRepository.findById(topicId)).thenReturn(Optional.of(topic));
-//         when(topicRepository.save(any(Topic.class))).thenReturn(topic);
+        assertNotNull(addedTopic);
+        assertEquals(topic, addedTopic);
+    }
 
-//         String result = topicService.updateDescription(topicId, newDescription);
+    @Test
+    void testAddTopicWithValidation_EmptyTopicName() {
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicWithValidation("", "Description", new Course()));
+    }
 
-//         assertEquals("Description updated successfully.", result);
-//         assertEquals(newDescription, topic.getDescription());
-//     }
+    @Test
+    void testAddTopicWithValidation_NullTopicName() {
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicWithValidation(null, "Description", new Course()));
+    }
 
-//     @Test
-//     void testAddTopicWithValidation() {
-//         when(topicRepository.existsByTopicName(anyString())).thenReturn(false);
-//         when(topicRepository.save(any(Topic.class))).thenReturn(topic);
+    @Test
+    void testAddTopicWithValidation_EmptyDescription() {
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicWithValidation("New Tpoic", "", new Course()));
+    }
 
-//         Topic addedTopic = topicService.addTopicWithValidation(topic.getTopicName(), topic.getDescription());
+    @Test
+    void testAddTopicWithValidation_NullDescription() {
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicWithValidation("New Tpoic", null, new Course()));
+    }
 
-//         assertNotNull(addedTopic);
-//         assertEquals(topic, addedTopic);
-//     }
+    @Test
+    void testAddTopicWithValidation_DuplicateTopic() {
+        when(topicRepository.existsByTopicNameAndCourse(anyString(), any(Course.class))).thenReturn(true);
 
-//     @Test
-//     void testAddTopicWithValidation_DuplicateTopic() {
-//         when(topicRepository.existsByTopicName(anyString())).thenReturn(true);
+        assertThrows(DuplicateTopicException.class,
+                () -> topicService.addTopicWithValidation("Existing Topic", "Description", new Course()));
+    }
 
-//         assertThrows(DuplicateTopicException.class, () -> {
-//             topicService.addTopicWithValidation(topic.getTopicName(), topic.getDescription());
-//         });
-//     }
+    @Test
+    void testAddTopicsWithValidation_Success() {
+        List<Topic> topics = new ArrayList<>();
 
-//     @Test
-//     void testAddTopicWithValidation_InvalidData() {
-//         assertThrows(InvalidTopicDataException.class, () -> {
-//             topicService.addTopicWithValidation(null, null);
-//         });
-//     }
+        Topic validTopic1 = new Topic();
+        validTopic1.setTopicName("Topic 1");
+        validTopic1.setDescription("Description 1");
+        Course course = new Course();
+        validTopic1.setCourse(course);
 
-//     @Test
-//     void testUpdateTopicDescriptionWithValidation() {
-//         Long topicId = 1L;
-//         String newDescription = "Updated Description";
+        Topic validTopic2 = new Topic();
+        validTopic2.setTopicName("Topic 2");
+        validTopic2.setDescription("Description 2");
+        validTopic2.setCourse(course);
+        topics.add(validTopic1);
+        topics.add(validTopic2);
 
-//         when(topicRepository.findById(topicId)).thenReturn(Optional.of(topic));
-//         when(topicRepository.save(any(Topic.class))).thenReturn(topic);
+        when(topicRepository.existsByTopicNameAndCourse(any(), any())).thenReturn(false);
 
-//         Topic updatedTopic = topicService.updateTopicDescriptionWithValidation(topicId, newDescription);
+        List<Topic> addedTopics = assertDoesNotThrow(() -> {
+            return topicService.addTopicsWithValidation(topics);
+        });
 
-//         assertNotNull(updatedTopic);
-//         assertEquals(newDescription, updatedTopic.getDescription());
-//     }
+        assertEquals(topics.size(), addedTopics.size());
+    }
 
-//     @Test
-//     void testUpdateTopicDescriptionWithValidation_TopicNotFound() {
-//         Long topicId = 1L;
+    @Test
+    void testAddTopicsWithValidation_DuplicateTopics() {
+        List<Topic> topics = new ArrayList<>();
 
-//         when(topicRepository.findById(topicId)).thenReturn(Optional.empty());
+        Topic validTopic1 = new Topic();
+        validTopic1.setTopicName("Topic 1");
+        validTopic1.setDescription("Description 1");
+        Course course = new Course();
+        validTopic1.setCourse(course);
 
-//         assertThrows(TopicNotFoundException.class, () -> {
-//             topicService.updateTopicDescriptionWithValidation(topicId, "Updated Description");
-//         });
-//     }
+        Topic duplicateTopic = new Topic();
+        duplicateTopic.setTopicName("Topic 1");
+        duplicateTopic.setDescription("Description 1");
+        duplicateTopic.setCourse(course);
 
-//     @Test
-//     void testUpdateTopicDescriptionWithValidation_InvalidDescription() {
-//         Long topicId = 1L;
+        topics.add(validTopic1);
+        topics.add(duplicateTopic);
 
-//         when(topicRepository.findById(topicId)).thenReturn(Optional.of(topic));
+        when(topicRepository.existsByTopicNameAndCourse(any(), any())).thenReturn(true);
 
-//         assertThrows(InvalidDescriptionException.class, () -> {
-//             topicService.updateTopicDescriptionWithValidation(topicId, null);
-//         });
-//     }
-// }
+        assertThrows(DuplicateTopicException.class, () -> {
+            topicService.addTopicsWithValidation(topics);
+        });
+    }
+
+    @Test
+    void testAddTopicsWithValidation_EmptyTopicName() {
+        List<Topic> topics = new ArrayList<>();
+
+        Topic validTopic1 = new Topic();
+        validTopic1.setTopicName("");
+        validTopic1.setDescription("Description 1");
+        Course course = new Course();
+        validTopic1.setCourse(course);
+
+        Topic validTopic2 = new Topic();
+        validTopic2.setTopicName("");
+        validTopic2.setDescription("Description 2");
+        Course course2 = new Course();
+        validTopic2.setCourse(course2);
+
+        topics.add(validTopic1);
+        topics.add(validTopic2);
+
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicsWithValidation(topics));
+    }
+
+    @Test
+    void testAddTopicsWithValidation_NullTopicName() {
+        List<Topic> topics = new ArrayList<>();
+
+        Topic validTopic1 = new Topic();
+        validTopic1.setTopicName(null);
+        validTopic1.setDescription("Description 1");
+        Course course = new Course();
+        validTopic1.setCourse(course);
+
+        Topic validTopic2 = new Topic();
+        validTopic2.setTopicName(null);
+        validTopic2.setDescription("Description 2");
+        Course course2 = new Course();
+        validTopic2.setCourse(course2);
+
+        topics.add(validTopic1);
+        topics.add(validTopic2);
+
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicsWithValidation(topics));
+    }
+
+    @Test
+    void testAddTopicsWithValidation_EmptyDescription() {
+        List<Topic> topics = new ArrayList<>();
+
+        Topic validTopic1 = new Topic();
+        validTopic1.setTopicName("Topic 1");
+        validTopic1.setDescription("");
+        Course course = new Course();
+        validTopic1.setCourse(course);
+
+        Topic validTopic2 = new Topic();
+        validTopic2.setTopicName("Topic 2");
+        validTopic2.setDescription("");
+        Course course2 = new Course();
+        validTopic2.setCourse(course2);
+
+        topics.add(validTopic1);
+        topics.add(validTopic2);
+
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicsWithValidation(topics));
+    }
+
+    @Test
+    void testAddTopicsWithValidation_NullDescription() {
+        List<Topic> topics = new ArrayList<>();
+
+        Topic validTopic1 = new Topic();
+        validTopic1.setTopicName("Topic 1");
+        validTopic1.setDescription(null);
+        Course course = new Course();
+        validTopic1.setCourse(course);
+
+        Topic validTopic2 = new Topic();
+        validTopic2.setTopicName("Topic 2");
+        validTopic2.setDescription(null);
+        Course course2 = new Course();
+        validTopic2.setCourse(course2);
+
+        topics.add(validTopic1);
+        topics.add(validTopic2);
+
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.addTopicsWithValidation(topics));
+    }
+
+    @Test
+    void testGetAllTopics_Success() {
+        List<Topic> expectedTopics = new ArrayList<>();
+
+        expectedTopics.add(new Topic());
+
+        when(topicRepository.findAll()).thenReturn(expectedTopics);
+
+        List<Topic> actualTopics = topicService.getAllTopics();
+
+        assertEquals(expectedTopics.size(), actualTopics.size());
+    }
+
+    @Test
+    void testGetTopicsByCourse_Success() {
+        Course course = new Course();
+        course.setCourseID(1L);
+
+        Topic topic1 = new Topic();
+        topic1.setCourse(course);
+
+        Topic topic2 = new Topic();
+        topic2.setCourse(course);
+
+        List<Topic> topics = new ArrayList<>();
+        topics.add(topic1);
+        topics.add(topic2);
+
+        when(topicRepository.findByCourse(course)).thenReturn(topics);
+
+        List<Topic> result = topicService.getTopicsByCourse(course);
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void testUpdateTopicDescriptionWithValidation_Success() {
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
+
+        when(topicRepository.save(any(Topic.class))).thenReturn(topic);
+
+        String updatedTopic = topicService.updateTopicDescriptionWithValidation(1L, "New Description");
+
+        assertEquals("Description updated successfully", updatedTopic);
+    }
+
+    @Test
+    void testUpdateTopicDescriptionWithValidation_InvalidDescription() {
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
+
+        assertThrows(InvalidDescriptionException.class,
+                () -> topicService.updateTopicDescriptionWithValidation(1L, ""));
+    }
+
+    @Test
+    void testUpdateTopicDescriptionWithValidation_NullDescription() {
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
+
+        assertThrows(InvalidDescriptionException.class,
+                () -> topicService.updateTopicDescriptionWithValidation(1L, null));
+    }
+
+    @Test
+    void testUpdateTopicDescriptionWithValidation_TopicNotFoundException() {
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(TopicNotFoundException.class,
+                () -> topicService.updateTopicDescriptionWithValidation(1L, "New Description"));
+    }
+
+    @Test
+    void testDeleteTopicById_Success() {
+        when(topicRepository.findById(1L)).thenReturn(Optional.of(topic));
+
+        assertDoesNotThrow(() -> {
+            topicService.deleteTopicById(1L);
+        });
+
+        verify(topicRepository, times(1)).delete(topic);
+    }
+
+    @Test
+    void testDeleteTopicById_TopicNotFoundException() {
+        when(topicRepository.findById(eq(1L))).thenReturn(Optional.empty());
+
+        TopicNotFoundException exception = assertThrows(TopicNotFoundException.class, () -> {
+            topicService.deleteTopicById(1L);
+        });
+
+        assertEquals("Topic not found for ID: 1", exception.getMessage());
+
+        verify(topicRepository).findById(eq(1L));
+
+        verify(topicRepository, never()).delete(any());
+    }
+
+    @Test
+    void testDeleteTopics_Success() {
+        List<Topic> topics = new ArrayList<>();
+
+        Topic topic1 = new Topic();
+        topic1.setTopicID(1L);
+
+        Topic topic2 = new Topic();
+        topic2.setTopicID(2L);
+
+        topics.add(topic1);
+        topics.add(topic2);
+
+        when(topicRepository.findById(1L)).thenReturn(Optional.of(topic1));
+
+        when(topicRepository.findById(2L)).thenReturn(Optional.of(topic2));
+
+        assertDoesNotThrow(() -> {
+            topicService.deleteTopics(topics);
+        });
+
+        verify(topicRepository, times(1)).delete(topic1);
+        verify(topicRepository, times(1)).delete(topic2);
+    }
+
+    @Test
+    void testDeleteTopics_TopicNotFoundException() {
+        when(topicRepository.findById(1L)).thenReturn(Optional.empty());
+
+        List<Topic> topicsToDelete = new ArrayList<Topic>();
+        Topic topic1 = new Topic();
+        topic1.setTopicID(1L);
+        topicsToDelete.add(topic1);
+
+        Topic topic2 = new Topic();
+        topic2.setTopicID(1L);
+        topicsToDelete.add(topic2);
+
+        TopicNotFoundException exception = assertThrows(TopicNotFoundException.class, () -> {
+            topicService.deleteTopics(topicsToDelete);
+        });
+
+        assertEquals("Topic not found for ID: 1", exception.getMessage());
+    }
+
+    @Test
+    void testDeleteTopicsByCourse_Success() {
+        List<Topic> topics = new ArrayList<>();
+
+        topics.add(new Topic());
+        topics.add(new Topic());
+
+        when(topicRepository.findByCourse(any(Course.class))).thenReturn(topics);
+
+        assertDoesNotThrow(() -> topicService.deleteTopicsByCourse(new Course()));
+
+        verify(topicRepository, times(2)).delete(any(Topic.class));
+    }
+
+    @Test
+    void testDeleteTopicsByCourse_NoTopicsFound() {
+        when(topicRepository.findByCourse(any(Course.class))).thenReturn(new ArrayList<>());
+
+        assertDoesNotThrow(() -> topicService.deleteTopicsByCourse(new Course()));
+
+        verify(topicRepository, never()).delete(any(Topic.class));
+    }
+}

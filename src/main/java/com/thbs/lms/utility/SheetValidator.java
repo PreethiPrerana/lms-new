@@ -6,7 +6,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
-import com.thbs.lms.exceptionHandler.InvalidSheetFormatException;
+import com.thbs.lms.exception.InvalidSheetFormatException;
 
 public class SheetValidator {
     public static boolean isValidSheetFormat(Sheet sheet) {
