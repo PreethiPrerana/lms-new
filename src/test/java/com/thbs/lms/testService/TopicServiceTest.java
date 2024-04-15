@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class TopicServiceTest {
+class TopicServiceTest {
 
     @Mock
     private TopicRepository topicRepository;
@@ -63,13 +63,13 @@ public class TopicServiceTest {
     @Test
     void testAddTopicWithValidation_EmptyDescription() {
         assertThrows(InvalidTopicDataException.class,
-                () -> topicService.addTopicWithValidation("New Tpoic", "", new Course()));
+                () -> topicService.addTopicWithValidation("New Topic", "", new Course()));
     }
 
     @Test
     void testAddTopicWithValidation_NullDescription() {
         assertThrows(InvalidTopicDataException.class,
-                () -> topicService.addTopicWithValidation("New Tpoic", null, new Course()));
+                () -> topicService.addTopicWithValidation("New Topic", null, new Course()));
     }
 
     @Test
@@ -291,6 +291,41 @@ public class TopicServiceTest {
 
         assertThrows(TopicNotFoundException.class,
                 () -> topicService.updateTopicDescriptionWithValidation(1L, "New Description"));
+    }
+
+    @Test
+    void testUpdateTopicNameWithValidation_Success() {
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
+
+        when(topicRepository.save(any(Topic.class))).thenReturn(topic);
+
+        String updatedTopic = topicService.updateTopicNameWithValidation(1L, "New Name");
+
+        assertEquals("Topic name updated successfully", updatedTopic);
+    }
+
+    @Test
+    void testUpdateTopicNameWithValidation_InvalidName() {
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
+
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.updateTopicNameWithValidation(1L, ""));
+    }
+
+    @Test
+    void testUpdateTopicNameWithValidation_NullName() {
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
+
+        assertThrows(InvalidTopicDataException.class,
+                () -> topicService.updateTopicNameWithValidation(1L, null));
+    }
+
+    @Test
+    void testUpdateTopicNameWithValidation_TopicNotFoundException() {
+        when(topicRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(TopicNotFoundException.class,
+                () -> topicService.updateTopicNameWithValidation(1L, "New Name"));
     }
 
     @Test

@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/learning-plan")
-// @CrossOrigin("*")
+@CrossOrigin("172.18.4.113:5173")
 public class LearningPlanController {
 
     private final LearningPlanService learningPlanService;
@@ -25,39 +25,45 @@ public class LearningPlanController {
         this.bulkUploadService = bulkUploadService;
     }
 
+    // Add a learningPlan
     @PostMapping
     public ResponseEntity<LearningPlan> saveLearningPlan(@RequestBody LearningPlan learningPlan) {
         LearningPlan addedLearningPlan = learningPlanService.saveLearningPlan(learningPlan);
         return ResponseEntity.ok().body(addedLearningPlan);
     }
 
+    // Bulk upload
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
             bulkUploadService.uploadFile(file);
             return ResponseEntity.ok().body("File uploaded successfully.");
     }
 
+    // Get all LearningPlans
     @GetMapping
     public ResponseEntity<List<LearningPlan>> getAllLearningPlans() {
         List<LearningPlan> learningPlans = learningPlanService.getAllLearningPlans();
         return ResponseEntity.ok().body(learningPlans);
     }
 
+    // Get all LearningPlans by type(ON-DEMAND, BOOTCAMP, ORG-WIDE, MANDATORY)
     @GetMapping("/type/{type}")
     public ResponseEntity<List<LearningPlan>> getLearningPlansByType(@PathVariable String type) {
         List<LearningPlan> learningPlan = learningPlanService.getLearningPlansByType(type);
         return ResponseEntity.ok().body(learningPlan);
     }
 
+    // Get all LearningPlans for a particular Batch
     @GetMapping("/batch/{batchId}")
     public ResponseEntity<List<LearningPlan>> getLearningPlansByBatchID(@PathVariable Long batchId) {
         List<LearningPlan> learningPlan = learningPlanService.getLearningPlansByBatchID(batchId);
         return ResponseEntity.ok().body(learningPlan);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteLearningPlan(@PathVariable Long id) {
-        learningPlanService.deleteLearningPlan(id);
+    // delete a LearningPlan by learningPlanId
+    @DeleteMapping("/{learningPlanId}")
+    public ResponseEntity<String> deleteLearningPlan(@PathVariable Long learningPlanId) {
+        learningPlanService.deleteLearningPlan(learningPlanId);
         return ResponseEntity.ok().body("LearningPlan deleted successfully.");
     }
 }

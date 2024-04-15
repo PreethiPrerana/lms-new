@@ -9,11 +9,11 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.thbs.lms.DTO.CourseDTO;
-import com.thbs.lms.DTO.TopicDTO;
+import com.thbs.lms.dto.CourseDTO;
+import com.thbs.lms.dto.TopicDTO;
 
 @SpringBootTest
-public class CourseDTOTest {
+class CourseDTOTest {
 
     @Test
     void testGetterAndSetter() {

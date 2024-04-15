@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -39,34 +40,42 @@ public class BulkUploadService {
     }
 
     public void uploadFile(MultipartFile file) {
+        System.out.println("uploadFile() method called.");
         try {
-        Workbook workbook = WorkbookFactory.create(file.getInputStream());
-
-        // Process each sheet
-        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            Sheet sheet = workbook.getSheetAt(i);
-
-            SheetValidator.isValidSheetFormat(sheet);
-            // Check if header row exists
-            Row headerRow = sheet.getRow(0);
-
-            String level = headerRow.getCell(1).getStringCellValue();
-            // Extract course name from the sheet name
-            String courseName = sheet.getSheetName();
-            // Create or get the course from the database
-            Course course = courseRepository.findByCourseName(courseName)
-                    .orElseGet(() -> {
-                        Course newCourse = new Course();
-                        newCourse.setCourseName(courseName);
-                        newCourse.setLevel(level);
-                        return courseRepository.save(newCourse);
-                    });
-
-            List<Topic> topics = processTopics(sheet, course);
-
-            topicRepository.saveAll(topics);
-        }
-        }catch(IOException | IllegalArgumentException e){
+            Workbook workbook = WorkbookFactory.create(file.getInputStream());
+    
+            // Process each sheet
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                Sheet sheet = workbook.getSheetAt(i);
+    
+                SheetValidator.isValidSheetFormat(sheet);
+                // Check if header row exists
+                Row headerRow = sheet.getRow(0);
+    
+                String level = headerRow.getCell(1).getStringCellValue();
+                // Extract course name from the sheet name
+                String courseName = sheet.getSheetName();
+                
+                // Check if the course already exists in the database
+                Optional<Course> existingCourseOptional = courseRepository.findByCourseName(courseName);
+                Course course;
+                if (existingCourseOptional.isPresent()) {
+                    course = existingCourseOptional.get();
+                    System.out.println("Course: "+ course.getCourseName() + " already present.");
+                } else {
+                    // Create a new course and save it to the database
+                    Course newCourse = new Course();
+                    newCourse.setCourseName(courseName);
+                    newCourse.setLevel(level);
+                    System.out.println("New Course: "+ newCourse);
+                    course = courseRepository.save(newCourse);
+                }
+    
+                List<Topic> topics = processTopics(sheet, course);
+    
+                topicRepository.saveAll(topics);
+            }
+        } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
             throw new FileProcessingException("Error processing the uploaded file.");
         }

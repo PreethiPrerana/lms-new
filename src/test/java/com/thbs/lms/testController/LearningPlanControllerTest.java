@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class LearningPlanControllerTest {
+class LearningPlanControllerTest {
 
     @Mock
     private LearningPlanService learningPlanService;
@@ -46,7 +46,7 @@ public class LearningPlanControllerTest {
     }
 
     @Test
-    public void testSaveLearningPlan() {
+    void testSaveLearningPlan() {
         when(learningPlanService.saveLearningPlan(learningPlan)).thenReturn(learningPlan);
 
         ResponseEntity<?> responseEntity = learningPlanController.saveLearningPlan(learningPlan);
@@ -56,7 +56,7 @@ public class LearningPlanControllerTest {
     }
 
     @Test
-    public void testUploadFile() throws IOException {
+    void testUploadFile() throws IOException {
         MultipartFile file = null;
 
         doNothing().when(bulkUploadService).uploadFile(file);
@@ -68,7 +68,7 @@ public class LearningPlanControllerTest {
     }
 
     @Test
-    public void testUploadFile_WithException() throws IOException {
+    void testUploadFile_WithException() throws IOException {
         MultipartFile file = null;
 
         doThrow(new IOException("File processing error")).when(bulkUploadService).uploadFile(file);
@@ -80,7 +80,7 @@ public class LearningPlanControllerTest {
     }
 
     @Test
-    public void testGetAllLearningPlans() {
+    void testGetAllLearningPlans() {
         List<LearningPlan> learningPlans = new ArrayList<>();
 
         LearningPlan learningPlan2 = new LearningPlan();
@@ -98,7 +98,7 @@ public class LearningPlanControllerTest {
     }
 
     @Test
-    public void testFindByType() {
+    void testFindByType() {
         String type = "Type";
 
         List<LearningPlan> learningPlans = new ArrayList<>();
@@ -121,7 +121,7 @@ public class LearningPlanControllerTest {
     }
 
     @Test
-    public void testFindByBatchID() {
+    void testFindByBatchID() {
         Long batchID = 123L;
 
         List<LearningPlan> learningPlans = new ArrayList<>();
@@ -144,7 +144,7 @@ public class LearningPlanControllerTest {
     }
 
     @Test
-    public void testDeleteLearningPlan() {
+    void testDeleteLearningPlan() {
         Long idToDelete = 1L;
 
         ResponseEntity<?> responseEntity = learningPlanController.deleteLearningPlan(idToDelete);

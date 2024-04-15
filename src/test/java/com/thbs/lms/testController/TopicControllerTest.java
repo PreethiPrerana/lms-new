@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TopicControllerTest {
+class TopicControllerTest {
 
     @Mock
     private TopicService topicService;
@@ -32,7 +32,7 @@ public class TopicControllerTest {
     private TopicController topicController;
 
     @Test
-    public void testAddTopic() {
+    void testAddTopic() {
         Topic topic = new Topic();
 
         topic.setTopicName("Test Topic");
@@ -48,7 +48,7 @@ public class TopicControllerTest {
     }
 
     @Test
-    public void testAddTopics() {
+    void testAddTopics() {
         List<Topic> topics = new ArrayList<>();
 
         Topic topic1 = new Topic();
@@ -71,7 +71,7 @@ public class TopicControllerTest {
     }
 
     @Test
-    public void testGetAllTopics() {
+    void testGetAllTopics() {
         List<Topic> topics = new ArrayList<>();
 
         Topic topic1 = new Topic();
@@ -94,7 +94,7 @@ public class TopicControllerTest {
     }
 
     @Test
-    public void testGetAllTopicsByCourse() {
+    void testGetAllTopicsByCourse() {
         List<Topic> topics = new ArrayList<>();
 
         Topic topic1 = new Topic();
@@ -112,8 +112,6 @@ public class TopicControllerTest {
 
         when(topicService.getTopicsByCourse(any(Course.class))).thenReturn(topics);
 
-        
-
         ResponseEntity<?> responseEntity = topicController.getTopicsByCourse(1L);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -121,7 +119,7 @@ public class TopicControllerTest {
     }
 
     @Test
-    public void testUpdateDescription() {
+    void testUpdateDescription() {
         Long topicId = 1L;
         String newDescription = "Updated Description";
 
@@ -135,7 +133,24 @@ public class TopicControllerTest {
     }
 
     @Test
-    public void testDeleteTopic() {
+    void testUpdateName() {
+        Long topicId = 1L;
+        String newName = "New Topic Name";
+        String expectedResult = "Topic name updated successfully";
+
+        when(topicService.updateTopicNameWithValidation(topicId, newName))
+                .thenReturn(expectedResult);
+
+        ResponseEntity<String> responseEntity = topicController.updateName(topicId, newName);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(expectedResult, responseEntity.getBody());
+
+        verify(topicService, times(1)).updateTopicNameWithValidation(topicId, newName);
+    }
+
+    @Test
+    void testDeleteTopic() {
         Long topicId = 1L;
 
         ResponseEntity<?> responseEntity = topicController.deleteTopic(topicId);
@@ -147,7 +162,7 @@ public class TopicControllerTest {
     }
 
     @Test
-    public void testDeleteTopics() {
+    void testDeleteTopics() {
         List<Topic> topics = new ArrayList<>();
 
         Topic topic1 = new Topic();

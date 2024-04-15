@@ -6,10 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.thbs.lms.DTO.TopicDTO;
+import com.thbs.lms.dto.TopicDTO;
 
 @SpringBootTest
-public class TopicDTOTest {
+class TopicDTOTest {
     @Test
     void testGetterAndSetter() {
         TopicDTO topicDTO = new TopicDTO();

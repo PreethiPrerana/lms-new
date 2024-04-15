@@ -23,9 +23,12 @@ public class LearningPlanService {
         this.learningPlanRepository = learningPlanRepository;
     }
 
+    // Saves a new learning plan
     public LearningPlan saveLearningPlan(LearningPlan learningPlan) {
         List<LearningPlan> existingLearningPlan = learningPlanRepository.findByBatchID(learningPlan.getBatchID());
+        // Checks if a learning plan already exists for the given batch
         if (!existingLearningPlan.isEmpty()) {
+            // Throws exception if duplicate learning plan or invalid data
             throw new DuplicateLearningPlanException(
                     "Learning plan for this batch " + learningPlan.getBatchID() + " already exists.");
         }
@@ -35,10 +38,12 @@ public class LearningPlanService {
         return learningPlanRepository.save(learningPlan);
     }
 
+    // Retrieves all learning plans
     public List<LearningPlan> getAllLearningPlans() {
         return learningPlanRepository.findAll();
     }
 
+    // Retrieves a learning plan by its ID or throws exception if not found
     public LearningPlan getLearningPlanById(Long id) {
         Optional<LearningPlan> optionalLearningPlan = learningPlanRepository.findById(id);
         if (optionalLearningPlan.isPresent()) {
@@ -48,7 +53,9 @@ public class LearningPlanService {
         }
     }
 
+    // Retrieves learning plans by type
     public List<LearningPlan> getLearningPlansByType(String type) {
+        // Validates type and retrieves learning plans by type
         if (type == null || type.isEmpty()) {
             throw new InvalidTypeException("LearningPlan Type cannot be null");
         }
@@ -56,12 +63,16 @@ public class LearningPlanService {
         if (!learningPlan.isEmpty()) {
             return learningPlan;
         } else {
+            // Throws exception if type is invalid or no learning plans found
             throw new LearningPlanNotFoundException("Learning plan with Type " + type + " not found.");
         }
     }
 
+    // Retrieves learning plans by batch ID
     public List<LearningPlan> getLearningPlansByBatchID(Long batchID) {
+        // Validates batch ID and retrieves learning plans by batch ID
         if (batchID == null) {
+            // Throws exception if batch ID is invalid or no learning plans found
             throw new InvalidBatchException("LearningPlan Type cannot be null");
         }
         List<LearningPlan> learningPlan = learningPlanRepository.findByBatchID(batchID);
@@ -72,9 +83,11 @@ public class LearningPlanService {
         }
     }
 
+    // Deletes the learning plan by ID along with associated paths
     public void deleteLearningPlan(Long id) {
         Optional<LearningPlan> optionalLearningPlan = learningPlanRepository.findById(id);
         if (optionalLearningPlan.isPresent()) {
+            // Throws exception if learning plan with given ID is not found
             learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(id);
             learningPlanRepository.delete(optionalLearningPlan.get());
         } else {
