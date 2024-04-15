@@ -1,7 +1,12 @@
 package com.thbs.lms.service;
 
+import com.thbs.lms.dto.LearningPlanDTO;
 import com.thbs.lms.exception.*;
+import com.thbs.lms.model.Course;
 import com.thbs.lms.model.LearningPlan;
+import com.thbs.lms.model.LearningPlanPath;
+import com.thbs.lms.model.Topic;
+import com.thbs.lms.repository.LearningPlanPathRepository;
 import com.thbs.lms.repository.LearningPlanRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,18 +14,23 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class LearningPlanService {
 
     private LearningPlanRepository learningPlanRepository;
     private LearningPlanPathService learningPlanPathService;
+    private LearningPlanPathRepository learningPlanPathRepository;
+    private TopicService topicService;
 
     @Autowired
-    public LearningPlanService(LearningPlanPathService learningPlanPathService,
-            LearningPlanRepository learningPlanRepository) {
+    public LearningPlanService(LearningPlanPathService learningPlanPathService, TopicService topicService,
+            LearningPlanRepository learningPlanRepository, LearningPlanPathRepository learningPlanPathRepository) {
         this.learningPlanPathService = learningPlanPathService;
         this.learningPlanRepository = learningPlanRepository;
+        this.learningPlanPathRepository = learningPlanPathRepository;
+        this.topicService = topicService;
     }
 
     // Saves a new learning plan
@@ -36,6 +46,50 @@ public class LearningPlanService {
             throw new InvalidLearningPlanException("Batch ID or LearningPlan Type cannot be null");
         }
         return learningPlanRepository.save(learningPlan);
+    }
+
+    // Converts a LearningPlanPath entity to a LearningPlanPathDTO
+    private LearningPlanDTO convertToDTO(Long learningPlanId) {
+        LearningPlanDTO dto = new LearningPlanDTO();
+
+        dto.setBatchId(getLearningPlanById(learningPlanId).getBatchID());
+
+        // Fetch relevant LearningPlanPaths based on the provided LearningPlanID
+        List<LearningPlanPath> relatedPaths = learningPlanPathRepository
+                .findByLearningPlanLearningPlanID(learningPlanId);
+
+        dto.setLearningPlanId(learningPlanId);
+
+        List<Long> learningPlanPathIds = relatedPaths.stream()
+                .map(LearningPlanPath::getPathID)
+                .collect(Collectors.toList());
+        dto.setLearningPlanPathIds(learningPlanPathIds);
+
+        List<Course> relatedCourses = relatedPaths.stream()
+                .map(LearningPlanPath::getCourse)
+                .collect(Collectors.toList());
+        List<Long> courseIds = relatedCourses.stream()
+                .map(Course::getCourseID)
+                .collect(Collectors.toList());
+        dto.setCourseIds(courseIds);
+
+        List<List<Long>> topicIdsList = relatedCourses.stream()
+                .map(course -> topicService.getTopicsByCourse(course))
+                .map(topics -> topics.stream().map(Topic::getTopicID)
+                        .collect(Collectors.toList()))
+                .collect(Collectors.toList());
+        dto.setTopicIds(topicIdsList);
+
+        return dto;
+    }
+
+    // Retrieves all learning plan paths as DTOs
+    public List<LearningPlanDTO> getAllLearningPlanPathDTOs() {
+        List<LearningPlan> learningPlans = learningPlanRepository.findAll();
+        return learningPlans.stream()
+                .map(LearningPlan::getLearningPlanID)
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     // Retrieves all learning plans

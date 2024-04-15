@@ -1,5 +1,6 @@
 package com.thbs.lms.controller;
 
+import com.thbs.lms.dto.LearningPlanPathDTO;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.service.BulkUploadService;
 import com.thbs.lms.service.LearningPlanService;
@@ -35,8 +36,8 @@ public class LearningPlanController {
     // Bulk upload
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-            bulkUploadService.uploadFile(file);
-            return ResponseEntity.ok().body("File uploaded successfully.");
+        bulkUploadService.uploadFile(file);
+        return ResponseEntity.ok().body("File uploaded successfully.");
     }
 
     // Get all LearningPlans
@@ -44,6 +45,11 @@ public class LearningPlanController {
     public ResponseEntity<List<LearningPlan>> getAllLearningPlans() {
         List<LearningPlan> learningPlans = learningPlanService.getAllLearningPlans();
         return ResponseEntity.ok().body(learningPlans);
+    }
+
+    @GetMapping("/dto")
+    public List<LearningPlanPathDTO> getAllLearningPlanPathDTOs() {
+        return learningPlanService.getAllLearningPlanPathDTOs();
     }
 
     // Get all LearningPlans by type(ON-DEMAND, BOOTCAMP, ORG-WIDE, MANDATORY)
