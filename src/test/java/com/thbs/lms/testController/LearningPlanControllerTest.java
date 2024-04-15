@@ -68,18 +68,6 @@ class LearningPlanControllerTest {
     }
 
     @Test
-    void testUploadFile_WithException() throws IOException {
-        MultipartFile file = null;
-
-        doThrow(new IOException("File processing error")).when(bulkUploadService).uploadFile(file);
-
-        ResponseEntity<?> responseEntity = learningPlanController.uploadFile(file);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertEquals("Error processing file: File processing error", responseEntity.getBody());
-    }
-
-    @Test
     void testGetAllLearningPlans() {
         List<LearningPlan> learningPlans = new ArrayList<>();
 

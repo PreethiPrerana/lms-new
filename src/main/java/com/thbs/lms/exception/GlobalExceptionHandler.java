@@ -67,13 +67,6 @@ public class GlobalExceptionHandler {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(FileFormatException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public ErrorResponse handleFileFormatException(FileFormatException ex) {
-        return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
     @ExceptionHandler(DuplicateCourseException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
@@ -136,12 +129,12 @@ public class GlobalExceptionHandler {
     public ErrorResponse handleFileProcessingException(FileProcessingException ex) {
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
-    
+
     @ExceptionHandler(InvalidSheetFormatException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleInvalidSheetFormatException(InvalidSheetFormatException ex) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
-    
+
 }
