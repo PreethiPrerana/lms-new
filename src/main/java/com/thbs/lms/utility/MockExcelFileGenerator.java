@@ -7,11 +7,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class MockExcelFileGenerator {
+    // Private constructor to prevent instantiation
+    private MockExcelFileGenerator() {
+        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static MockMultipartFile generateMockExcelFile() throws IOException {
         // Create a new workbook
-        Workbook workbook = new XSSFWorkbook();
-        
+        try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+
         // Create a new sheet
         Sheet sheet = workbook.createSheet("Sheet1");
         
@@ -35,16 +40,13 @@ public class MockExcelFileGenerator {
         byte[] content = outputStream.toByteArray();
         
         // Create MockMultipartFile
-        MockMultipartFile file = new MockMultipartFile(
+        return new MockMultipartFile(
                 "file",
                 "mock_excel.xlsx",
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 content);
-        
-        // Close the workbook
-        workbook.close();
-        
-        return file;
+                
+        }
     }
 }
 

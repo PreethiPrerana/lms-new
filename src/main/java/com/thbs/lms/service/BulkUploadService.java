@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -49,34 +50,40 @@ public class BulkUploadService {
      * Processes an Excel file, handling I/O errors and processing issues.
      */
     public void uploadFile(MultipartFile file) {
-        try {
-
-            Workbook workbook = WorkbookFactory.create(file.getInputStream());
-
+        System.out.println("uploadFile() method called.");
+        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             // Process each sheet
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 Sheet sheet = workbook.getSheetAt(i);
-                SheetValidator.isValidSheetFormat(sheet);
 
+                SheetValidator.isValidSheetFormat(sheet);
                 // Check if header row exists
                 Row headerRow = sheet.getRow(0);
-                String level = headerRow.getCell(1).getStringCellValue();
 
+                String level = headerRow.getCell(1).getStringCellValue();
                 // Extract course name from the sheet name
                 String courseName = sheet.getSheetName();
 
-                // Create or get the course from the database
-                Course course = courseRepository.findByCourseNameIgnoreCase(courseName)
-                        .orElseGet(() -> {
-                            Course newCourse = new Course();
-                            newCourse.setCourseName(courseName);
-                            newCourse.setLevel(level);
-                            return courseRepository.save(newCourse);
-                        });
+                // Check if the course already exists in the database
+                Optional<Course> existingCourseOptional = courseRepository.findByCourseNameIgnoreCase(courseName);
+                Course course;
+                if (existingCourseOptional.isPresent()) {
+                    course = existingCourseOptional.get();
+                    System.out.println("Course: " + course.getCourseName() + " already present.");
+                } else {
+                    // Create a new course and save it to the database
+                    Course newCourse = new Course();
+                    newCourse.setCourseName(courseName);
+                    newCourse.setLevel(level);
+                    System.out.println("New Course: " + newCourse.getCourseName());
+                    course = courseRepository.save(newCourse);
+                    System.out.println("Course saved!");
+                }
 
                 List<Topic> topics = processTopics(sheet, course);
 
                 topicRepository.saveAll(topics);
+                System.out.println("Topics saved!");
             }
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
@@ -111,11 +118,6 @@ public class BulkUploadService {
                     continue; // Skip adding existing topics
                 }
 
-                // Check for duplicate topic names in the set.
-                if (topicNames.contains(topicName)) {
-                    throw new DuplicateTopicException("Duplicate entries present in sheet."); // If found, throw an
-                                                                                              // exception
-                }
                 topicNames.add(topicName); // otherwise, add to the set.
 
                 Topic topic = new Topic(); // Create a new Topic with extracted data.
