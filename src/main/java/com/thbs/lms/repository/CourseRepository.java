@@ -15,4 +15,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     List<Course> findByLevel(String level);
 
+    Object save(Optional<Course> course);
+
 }
