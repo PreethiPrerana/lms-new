@@ -27,28 +27,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Service class responsible for bulk uploading topics from Excel files.
- */
-
 @Service
 public class BulkUploadService {
 
     private final CourseRepository courseRepository;
     private final TopicRepository topicRepository;
 
-    /**
-     * Constructs a BulkUploadService with repositories for courses and topics.
-     */
     @Autowired
     public BulkUploadService(CourseRepository courseRepository, TopicRepository topicRepository) {
         this.courseRepository = courseRepository;
         this.topicRepository = topicRepository;
     }
 
-    /**
-     * Processes an Excel file, handling I/O errors and processing issues.
-     */
     public void uploadFile(MultipartFile file) {
         System.out.println("uploadFile() method called.");
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
@@ -91,10 +81,6 @@ public class BulkUploadService {
         }
     }
 
-    /**
-     * Processes topics from a sheet and associates them with a course, returning
-     * the list of topics.
-     */
     private List<Topic> processTopics(Sheet sheet, Course course) {
         List<Topic> topics = new ArrayList<>();
         Set<String> topicNames = new HashSet<>();
@@ -117,15 +103,19 @@ public class BulkUploadService {
                 if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
                     continue; // Skip adding existing topics
                 }
+                System.out.println("check duplicate");
+                if (topicNames.contains(topicName)) {
+                    System.out.println("Duplicate entries present.");
+                    throw new DuplicateTopicException("Duplicate entries present in sheet.");
+                }
+                topicNames.add(topicName);
 
-                topicNames.add(topicName); // otherwise, add to the set.
-
-                Topic topic = new Topic(); // Create a new Topic with extracted data.
-                topic.setTopicName(topicName); // Set topic name.
-                topic.setDescription(description); // Set description.
-                topic.setCourse(course); // Set associated course.
-                topics.add(topic); // Add topic to the list.
-                System.out.println("Topic:" + topic); // Print topic for debugging.
+                Topic topic = new Topic();
+                topic.setTopicName(topicName);
+                topic.setDescription(description);
+                topic.setCourse(course);
+                topics.add(topic);
+                System.out.println("Topic:" + topic.getTopicName());
             } catch (DuplicateTopicException e) {
                 throw e; // Re-throw DuplicateTopicException
             } catch (Exception e) {
@@ -135,9 +125,6 @@ public class BulkUploadService {
         return topics;
     }
 
-    /**
-     * Checks if a row in an Excel sheet is empty.
-     */
     private boolean isRowEmpty(Row row) {
         if (row == null) {
             return true;
@@ -146,10 +133,11 @@ public class BulkUploadService {
         while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
             if (cell != null && cell.getCellType() != CellType.BLANK) {
-                // Found a non-empty cell
-                return false; // so the row is not empty
+                // Found a non-empty cell, so the row is not empty
+                return false;
             }
         }
-        return true; // All cells in the row are empty
+        // All cells in the row are empty
+        return true;
     }
 }
