@@ -237,6 +237,44 @@ class TopicServiceTest {
     }
 
     @Test
+    void testGetTopicById_Success() {
+        // Mock data
+        Long topicId = 123L;
+        Topic expectedTopic = new Topic(/* Add constructor parameters here */);
+        Optional<Topic> optionalTopic = Optional.of(expectedTopic);
+
+        // Mock repository method
+        when(topicRepository.findById(topicId)).thenReturn(optionalTopic);
+
+        // Call service method
+        Topic topic = topicService.getTopicById(topicId);
+
+        // Verify that repository method was called with correct parameter
+        verify(topicRepository).findById(topicId);
+
+        // Verify returned topic
+        assertEquals(expectedTopic, topic);
+    }
+
+    @Test
+    void testGetTopicById_TopicNotFound() {
+        // Mock data
+        Long topicId = 123L;
+        Optional<Topic> optionalTopic = Optional.empty();
+
+        // Mock repository method
+        when(topicRepository.findById(topicId)).thenReturn(optionalTopic);
+
+        // Call service method - should throw TopicNotFoundException
+        TopicNotFoundException exception = assertThrows(TopicNotFoundException.class, () -> {
+            topicService.getTopicById(topicId);
+        });
+
+        // Optionally, assert the exception message or properties
+        assertEquals("Topic not found for ID: " + topicId, exception.getMessage());
+    }
+
+    @Test
     void testGetTopicsByCourse_Success() {
         Course course = new Course();
         course.setCourseID(1L);

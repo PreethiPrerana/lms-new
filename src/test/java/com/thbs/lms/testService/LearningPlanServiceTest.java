@@ -1,14 +1,21 @@
 package com.thbs.lms.testService;
 
+import com.thbs.lms.dto.LearningPlanDTO;
 import com.thbs.lms.exception.DuplicateLearningPlanException;
 import com.thbs.lms.exception.InvalidBatchException;
 import com.thbs.lms.exception.InvalidLearningPlanException;
 import com.thbs.lms.exception.InvalidTypeException;
 import com.thbs.lms.exception.LearningPlanNotFoundException;
+import com.thbs.lms.model.Course;
 import com.thbs.lms.model.LearningPlan;
+import com.thbs.lms.model.LearningPlanPath;
+import com.thbs.lms.model.Topic;
+import com.thbs.lms.repository.LearningPlanPathRepository;
 import com.thbs.lms.repository.LearningPlanRepository;
 import com.thbs.lms.service.LearningPlanPathService;
 import com.thbs.lms.service.LearningPlanService;
+import com.thbs.lms.service.TopicService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,20 +23,29 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class LearningPlanServiceTest {
+class LearningPlanServiceTest {
 
     @Mock
     private LearningPlanRepository learningPlanRepository;
 
     @Mock
     private LearningPlanPathService learningPlanPathService;
+
+    @Mock
+    private LearningPlanPathRepository learningPlanPathRepository;
+
+    @Mock
+    private TopicService topicService;
 
     @InjectMocks
     private LearningPlanService learningPlanService;
@@ -55,7 +71,7 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    public void testSaveLearningPlan_NullBatchID() {
+    void testSaveLearningPlan_NullBatchID() {
         learningPlan.setBatchID(null);
         assertThrows(InvalidLearningPlanException.class, () -> {
             learningPlanService.saveLearningPlan(learningPlan);
@@ -63,7 +79,7 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    public void testSaveLearningPlan_NullType() {
+    void testSaveLearningPlan_NullType() {
         learningPlan.setType(null);
 
         assertThrows(InvalidLearningPlanException.class, () -> {
@@ -72,7 +88,7 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    public void testSaveLearningPlan_EmptyType() {
+    void testSaveLearningPlan_EmptyType() {
         learningPlan.setType("");
 
         assertThrows(InvalidLearningPlanException.class, () -> {
@@ -107,6 +123,86 @@ public class LearningPlanServiceTest {
 
         assertEquals(expectedLearningPlans.size(), actualLearningPlans.size());
         assertEquals(expectedLearningPlans.get(0), actualLearningPlans.get(0));
+    }
+
+    @Test
+    void testConvertToDTO() {
+        // Mock data
+        Long learningPlanId = 123L;
+        LearningPlan learningPlan = new LearningPlan(/* Add constructor parameters here */);
+        // Mock behavior of getLearningPlanById method
+        when(learningPlanService.getLearningPlanById(learningPlanId)).thenReturn(learningPlan);
+
+        // Mock behavior of findByLearningPlanLearningPlanID method
+        List<LearningPlanPath> relatedPaths = new ArrayList<>();
+        // Add mock data to relatedPaths
+        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(learningPlanId)).thenReturn(relatedPaths);
+
+        // Mock behavior of getTopicsByCourse method
+        List<Topic> topics = new ArrayList<>();
+        // Add mock data to topics
+        when(topicService.getTopicsByCourse(any(Course.class))).thenReturn(topics);
+
+        // Call convertToDTO method
+        LearningPlanDTO dto = learningPlanService.convertToDTO(learningPlanId);
+
+        // Verify the correctness of dto
+        assertEquals(learningPlan.getBatchID(), dto.getBatchId());
+        // Add more assertions to verify other properties of dto
+    }
+
+    @Test
+    void testGetAllLearningPlanPathDTOs() {
+        // Mock data
+        List<LearningPlan> learningPlans = new ArrayList<>();
+        // Add mock data to learningPlans
+        LearningPlan learningPlan1 = new LearningPlan(/* Add constructor parameters here */);
+        LearningPlan learningPlan2 = new LearningPlan(/* Add constructor parameters here */);
+        learningPlan1.setLearningPlanID(1L);
+        learningPlan2.setLearningPlanID(2L);
+
+        learningPlans.add(learningPlan1);
+        learningPlans.add(learningPlan2);
+        when(learningPlanRepository.findAll()).thenReturn(learningPlans);
+
+        // Mock the behavior of convertToDTO method
+        LearningPlanDTO dto1 = new LearningPlanDTO(/* Add constructor parameters here */);
+        LearningPlanDTO dto2 = new LearningPlanDTO(/* Add constructor parameters here */);
+
+        when(learningPlanRepository.findById(anyLong())).thenReturn(Optional.of(learningPlan1));
+        when(learningPlanService.convertToDTO(learningPlan1.getLearningPlanID())).thenReturn(dto1);
+        when(learningPlanService.convertToDTO(learningPlan2.getLearningPlanID())).thenReturn(dto2);
+
+        // Call getAllLearningPlanPathDTOs method
+        List<LearningPlanDTO> dtos = learningPlanService.getAllLearningPlanPathDTOs();
+
+        // Verify the correctness of dtos
+        assertEquals(learningPlans.size(), dtos.size());
+
+        // Verify that convertToDTO is called for each learning plan
+        verify(learningPlanService, times(1)).convertToDTO(learningPlan1.getLearningPlanID());
+        verify(learningPlanService, times(1)).convertToDTO(learningPlan2.getLearningPlanID());
+
+        // Add more assertions to verify the correctness of dtos
+        // ...
+    }
+
+    @Test
+    void testGetAllLearningPlanPathDTOsByBatchId() {
+        // Mock data
+        Long batchId = 123L;
+        List<LearningPlanDTO> allDTO = new ArrayList<>();
+        // Add mock data to allDTO
+        when(learningPlanService.getAllLearningPlanPathDTOs()).thenReturn(allDTO);
+
+        // Call getAllLearningPlanPathDTOsByBatchId method
+        List<LearningPlanDTO> dtoByBatch = learningPlanService.getAllLearningPlanPathDTOsByBatchId(batchId);
+
+        // Verify the correctness of dtoByBatch
+        // Add assertions to verify that only DTOs with the correct batchId are returned
+        for (LearningPlanDTO dto : dtoByBatch) {
+            assertEquals(batchId, dto.getBatchId());
+        }
     }
 
     @Test
@@ -198,7 +294,7 @@ public class LearningPlanServiceTest {
     }
 
     @Test
-    public void testGetLearningPlansByBatchID_NullBatchID() {
+    void testGetLearningPlansByBatchID_NullBatchID() {
         assertThrows(InvalidBatchException.class, () -> {
             learningPlanService.getLearningPlansByBatchID(null);
         });

@@ -9,6 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -65,35 +67,17 @@ class CourseServiceTest {
         assertEquals(course, courseService.saveCourse(course));
     }
 
-    @Test
-    void testSaveCourse_NullCourseName_InvalidCourseDataException() {
+    @ParameterizedTest
+    @CsvSource({
+            ", Intermediate", // null course name
+            "empty, Intermediate", // empty course name
+            "Java, ", // null level
+            "Java,empty" // empty level
+    })
+    void testSaveCourse_InvalidCourseDataException(String courseName, String level) {
         Course course = new Course();
-        course.setCourseName(null);
-        course.setLevel("Intermediate");
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
-    }
-
-    @Test
-    void testSaveCourse_EmptyCourseName_InvalidCourseDataException() {
-        Course course = new Course();
-        course.setCourseName("");
-        course.setLevel("Intermediate");
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
-    }
-
-    @Test
-    void testSaveCourse_NullLevel_InvalidCourseDataException() {
-        Course course = new Course();
-        course.setCourseName("Java");
-        course.setLevel(null);
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
-    }
-
-    @Test
-    void testSaveCourse_EmptyLevel_InvalidCourseDataException() {
-        Course course = new Course();
-        course.setCourseName("Java");
-        course.setLevel("");
+        course.setCourseName("empty".equals(courseName) ? "" : courseName);
+        course.setLevel("empty".equals(level) ? "" : level);
         assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourse(course));
     }
 
@@ -136,63 +120,18 @@ class CourseServiceTest {
         assertEquals(newCourse, savedCourses.get(0));
     }
 
-    @Test
-    void testSaveCourses_InvalidCourseDataException_NullCourseName() {
+    @ParameterizedTest
+    @CsvSource({
+            ", Intermediate", // Null course name
+            "empty, Intermediate", // Empty course name
+            "Python Programming, ", // Null level
+            "Python Programming, empty" // Empty level
+    })
+    void testSaveCourses_InvalidCourseDataException(String courseName, String level) {
         List<Course> courses = new ArrayList<>();
         Course course1 = new Course();
-        course1.setCourseName(null);
-        course1.setLevel("Intermediate");
-
-        Course course2 = new Course();
-        course2.setCourseName("Java Programming");
-        course2.setLevel("Intermediate");
-
-        courses.add(course1);
-        courses.add(course2);
-
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
-    }
-
-    @Test
-    void testSaveCourses_InvalidCourseDataException_EmptyCourseName() {
-        List<Course> courses = new ArrayList<>();
-        Course course1 = new Course();
-        course1.setCourseName("");
-        course1.setLevel("Intermediate");
-
-        Course course2 = new Course();
-        course2.setCourseName("Java Programming");
-        course2.setLevel("Intermediate");
-
-        courses.add(course1);
-        courses.add(course2);
-
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
-    }
-
-    @Test
-    void testSaveCourses_InvalidCourseDataException_NullLevel() {
-        List<Course> courses = new ArrayList<>();
-        Course course1 = new Course();
-        course1.setCourseName("Python Programming");
-        course1.setLevel(null);
-
-        Course course2 = new Course();
-        course2.setCourseName("Java Programming");
-        course2.setLevel("Intermediate");
-
-        courses.add(course1);
-        courses.add(course2);
-
-        assertThrows(InvalidCourseDataException.class, () -> courseService.saveCourses(courses));
-    }
-
-    @Test
-    void testSaveCourses_InvalidCourseDataException_EmptyLevel() {
-        List<Course> courses = new ArrayList<>();
-        Course course1 = new Course();
-        course1.setCourseName("Python Programming");
-        course1.setLevel("");
+        course1.setCourseName("empty".equals(courseName) ? "" : courseName);
+        course1.setLevel("empty".equals(level) ? "" : level);
 
         Course course2 = new Course();
         course2.setCourseName("Java Programming");

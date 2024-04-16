@@ -16,4 +16,6 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     Optional<Course> findByCourseNameIgnoreCase(String courseName);
 
+    Object save(Optional<Course> course);
+
 }

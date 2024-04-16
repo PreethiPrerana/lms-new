@@ -15,9 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.thbs.lms.controller.LearningPlanController;
+import com.thbs.lms.dto.LearningPlanDTO;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,6 +85,43 @@ class LearningPlanControllerTest {
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(learningPlans, responseEntity.getBody());
+    }
+
+    @Test
+    void testGetAllLearningPlanPathDTOs() {
+        // Sample data
+        List<LearningPlanDTO> expectedDTOs = Arrays.asList(
+                new LearningPlanDTO(),
+                new LearningPlanDTO());
+
+        // Mock service method to return sample data
+        when(learningPlanService.getAllLearningPlanPathDTOs()).thenReturn(expectedDTOs);
+
+        // Call the controller method
+        ResponseEntity<List<LearningPlanDTO>> response = learningPlanController.getAllLearningPlanPathDTOs();
+
+        // Verify response status code
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedDTOs, response.getBody());
+    }
+
+    @Test
+    void testGetAllLearningPlanPathDTOsByBatchId() {
+        // Mock data
+        Long batchId = 123L;
+        List<LearningPlanDTO> expectedDtos = new ArrayList<>();
+        expectedDtos.add(new LearningPlanDTO());
+
+        // Mock service method
+        when(learningPlanService.getAllLearningPlanPathDTOsByBatchId(batchId)).thenReturn(expectedDtos);
+
+        // Call controller method
+        ResponseEntity<List<LearningPlanDTO>> response = learningPlanController
+                .getAllLearningPlanPathDTOsByBatchId(batchId);
+
+        // Verify response
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedDtos, response.getBody());
     }
 
     @Test

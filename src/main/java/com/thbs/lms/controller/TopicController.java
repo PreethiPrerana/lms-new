@@ -47,6 +47,12 @@ public class TopicController {
         return ResponseEntity.ok().body(topics);
     }
 
+    @GetMapping("/id/{topicId}")
+    public ResponseEntity<Topic> getTopicById(@PathVariable Long topicId) {
+        Topic topic = topicService.getTopicById(topicId);
+        return ResponseEntity.ok().body(topic);
+    }
+
     // Get all topics related to a course
     @GetMapping("/course/{courseId}")
     public ResponseEntity<List<Topic>> getTopicsByCourse(@PathVariable Long courseId) {

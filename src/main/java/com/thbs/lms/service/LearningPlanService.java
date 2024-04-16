@@ -12,9 +12,9 @@ import com.thbs.lms.repository.LearningPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class LearningPlanService {
@@ -49,35 +49,35 @@ public class LearningPlanService {
     }
 
     // Converts a LearningPlanPath entity to a LearningPlanPathDTO
-    private LearningPlanDTO convertToDTO(Long learningPlanId) {
+    public LearningPlanDTO convertToDTO(Long learningPlanId) {
         LearningPlanDTO dto = new LearningPlanDTO();
 
-        dto.setBatchId(getLearningPlanById(learningPlanId).getBatchID());
-
-        // Fetch relevant LearningPlanPaths based on the provided LearningPlanID
-        List<LearningPlanPath> relatedPaths = learningPlanPathRepository
-                .findByLearningPlanLearningPlanID(learningPlanId);
-
+        LearningPlan learningPlan = getLearningPlanById(learningPlanId);
+        dto.setBatchId(learningPlan.getBatchID());
         dto.setLearningPlanId(learningPlanId);
 
-        List<Long> learningPlanPathIds = relatedPaths.stream()
-                .map(LearningPlanPath::getPathID)
-                .collect(Collectors.toList());
+        List<LearningPlanPath> relatedPaths = learningPlanPathRepository
+                .findByLearningPlanLearningPlanID(learningPlanId);
+        List<Long> learningPlanPathIds = new ArrayList<>();
+        List<Long> courseIds = new ArrayList<>();
+        List<List<Long>> topicIdsList = new ArrayList<>();
+
+        for (LearningPlanPath path : relatedPaths) {
+            if (path.getType().equalsIgnoreCase("Course")) {
+                learningPlanPathIds.add(path.getPathID());
+            }
+            Course course = path.getCourse();
+            courseIds.add(course.getCourseID());
+            List<Long> topicIds = new ArrayList<>();
+            List<Topic> topics = topicService.getTopicsByCourse(course);
+            for (Topic topic : topics) {
+                topicIds.add(topic.getTopicID());
+            }
+            topicIdsList.add(topicIds);
+        }
+
         dto.setLearningPlanPathIds(learningPlanPathIds);
-
-        List<Course> relatedCourses = relatedPaths.stream()
-                .map(LearningPlanPath::getCourse)
-                .collect(Collectors.toList());
-        List<Long> courseIds = relatedCourses.stream()
-                .map(Course::getCourseID)
-                .collect(Collectors.toList());
         dto.setCourseIds(courseIds);
-
-        List<List<Long>> topicIdsList = relatedCourses.stream()
-                .map(course -> topicService.getTopicsByCourse(course))
-                .map(topics -> topics.stream().map(Topic::getTopicID)
-                        .collect(Collectors.toList()))
-                .collect(Collectors.toList());
         dto.setTopicIds(topicIdsList);
 
         return dto;
@@ -85,11 +85,24 @@ public class LearningPlanService {
 
     // Retrieves all learning plan paths as DTOs
     public List<LearningPlanDTO> getAllLearningPlanPathDTOs() {
+        List<LearningPlanDTO> dtos = new ArrayList<>();
         List<LearningPlan> learningPlans = learningPlanRepository.findAll();
-        return learningPlans.stream()
-                .map(LearningPlan::getLearningPlanID)
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        for (LearningPlan learningPlan : learningPlans) {
+            LearningPlanDTO dto = convertToDTO(learningPlan.getLearningPlanID());
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    public List<LearningPlanDTO> getAllLearningPlanPathDTOsByBatchId(Long batchId) {
+        List<LearningPlanDTO> dtoByBatch = new ArrayList<>();
+        List<LearningPlanDTO> allDTO = getAllLearningPlanPathDTOs();
+        for (LearningPlanDTO DTO : allDTO) {
+            if (batchId.equals(DTO.getBatchId()))
+                dtoByBatch.add(DTO);
+        }
+
+        return dtoByBatch;
     }
 
     // Retrieves all learning plans

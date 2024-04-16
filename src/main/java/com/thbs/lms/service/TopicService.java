@@ -78,6 +78,15 @@ public class TopicService {
         return topicRepository.findAll();
     }
 
+    public Topic getTopicById(Long topicId) {
+        Optional<Topic> optionalTopic = topicRepository.findById(topicId);
+        if (optionalTopic.isPresent()) {
+            return optionalTopic.get();
+        } else {
+            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+        }
+    }
+
     // Retrieves topics by course
     public List<Topic> getTopicsByCourse(Course course) {
         return topicRepository.findByCourse(course);
@@ -154,4 +163,5 @@ public class TopicService {
             throw new TopicNotFoundException("Topic not found for ID: " + topicId);
         }
     }
+
 }

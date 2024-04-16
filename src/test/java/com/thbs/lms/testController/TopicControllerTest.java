@@ -94,6 +94,23 @@ class TopicControllerTest {
     }
 
     @Test
+    void testGetTopicById() {
+        // Mock data
+        Long topicId = 123L;
+        Topic expectedTopic = new Topic(/* Add constructor parameters here */);
+
+        // Mock service method
+        when(topicService.getTopicById(topicId)).thenReturn(expectedTopic);
+
+        // Call controller method
+        ResponseEntity<Topic> response = topicController.getTopicById(topicId);
+
+        // Verify response
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expectedTopic, response.getBody());
+    }
+
+    @Test
     void testGetAllTopicsByCourse() {
         List<Topic> topics = new ArrayList<>();
 

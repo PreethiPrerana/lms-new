@@ -47,9 +47,17 @@ public class LearningPlanController {
         return ResponseEntity.ok().body(learningPlans);
     }
 
+    // Get learningPlanPath DTO
     @GetMapping("/dto")
-    public List<LearningPlanDTO> getAllLearningPlanPathDTOs() {
-        return learningPlanService.getAllLearningPlanPathDTOs();
+    public ResponseEntity<List<LearningPlanDTO>> getAllLearningPlanPathDTOs() {
+        List<LearningPlanDTO> dto = learningPlanService.getAllLearningPlanPathDTOs();
+        return ResponseEntity.ok().body(dto);
+    }
+
+    @GetMapping("/dto/{batchId}")
+    public ResponseEntity<List<LearningPlanDTO>> getAllLearningPlanPathDTOsByBatchId(@PathVariable Long batchId) {
+        List<LearningPlanDTO> dtos = learningPlanService.getAllLearningPlanPathDTOsByBatchId(batchId);
+        return ResponseEntity.ok().body(dtos);
     }
 
     // Get all LearningPlans by type(ON-DEMAND, BOOTCAMP, ORG-WIDE, MANDATORY)
