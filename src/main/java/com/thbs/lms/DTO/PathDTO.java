@@ -10,6 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PathDTO {
-    private Long learningPlanPathIds;
+    private Long learningPlanPathId;
     private String type;
 }
