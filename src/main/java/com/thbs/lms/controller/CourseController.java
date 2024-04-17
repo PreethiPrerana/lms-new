@@ -12,7 +12,7 @@ import com.thbs.lms.service.CourseService;
 
 @RestController
 @RequestMapping("/course")
-@CrossOrigin("172.18.4.186:5173, 172.18.4.113:5173, 172.18.4.30:5173")
+@CrossOrigin("172.18.4.186:5173, 172.18.4.113:5173, 172.18.4.30:5173, 172.18.4.195:5173")
 public class CourseController {
 
     private final CourseService courseService;
