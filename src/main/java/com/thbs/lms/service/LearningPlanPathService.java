@@ -15,6 +15,7 @@ import java.util.Optional;
 @Service
 public class LearningPlanPathService {
 
+    private static final String NOT_FOUND_MSG = "Learning Plan Path not found for ID: ";
     private LearningPlanPathRepository learningPlanPathRepository;
 
     @Autowired
@@ -95,7 +96,7 @@ public class LearningPlanPathService {
         }
         LearningPlanPath learningPlanPath = learningPlanPathRepository.findById(pathId)
                 .orElseThrow(() -> new LearningPlanPathNotFoundException(
-                        "Learning Plan Path not found for ID: " + pathId));
+                        NOT_FOUND_MSG + pathId));
         learningPlanPath.setTrainer(newTrainer);
         return learningPlanPathRepository.save(learningPlanPath);
     }
@@ -122,7 +123,7 @@ public class LearningPlanPathService {
             return Optional.of(learningPlanPathRepository.save(learningPlanPath));
         } else {
             throw new LearningPlanPathNotFoundException(
-                    "Learning Plan Path not found for ID: " + learningPlanPathID);
+                    NOT_FOUND_MSG + learningPlanPathID);
         }
     }
 
@@ -148,7 +149,7 @@ public class LearningPlanPathService {
             learningPlanPathRepository.delete(learningPlanPath.get());
         } else {
             throw new LearningPlanPathNotFoundException(
-                    "Learning Plan Path not found for ID: " + learningPlanPathId);
+                    NOT_FOUND_MSG + learningPlanPathId);
         }
     }
 }

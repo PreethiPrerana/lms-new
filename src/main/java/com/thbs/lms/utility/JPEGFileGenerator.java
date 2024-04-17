@@ -11,6 +11,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class JPEGFileGenerator {
+    // Private constructor to prevent instantiation
+    private JPEGFileGenerator() {
+        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static File generateJPEGFile(String filePath) throws IOException {
         BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
@@ -27,4 +32,3 @@ public class JPEGFileGenerator {
         return new MockMultipartFile("file", file.getName(), "image/jpeg", output.toByteArray());
     }
 }
-

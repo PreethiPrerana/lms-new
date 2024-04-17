@@ -10,6 +10,11 @@ import javax.imageio.ImageIO;
 import org.springframework.mock.web.MockMultipartFile;
 
 public class PNGFileGenerator {
+    // Private constructor to prevent instantiation
+    private PNGFileGenerator() {
+        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static File generatePNGFile(String filePath) throws IOException {
         BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
@@ -26,4 +31,3 @@ public class PNGFileGenerator {
         return new MockMultipartFile("file", file.getName(), "image/png", output.toByteArray());
     }
 }
-

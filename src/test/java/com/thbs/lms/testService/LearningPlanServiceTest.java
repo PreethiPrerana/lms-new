@@ -23,8 +23,6 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,128 +123,6 @@ class LearningPlanServiceTest {
         assertEquals(expectedLearningPlans.get(0), actualLearningPlans.get(0));
     }
 
-    // @Test
-    // void testConvertToDTO() {
-    // // Mock data
-    // Long learningPlanId = 123L;
-    // LearningPlan learningPlan = new LearningPlan(/* Add constructor parameters
-    // here */);
-    // // Mock behavior of getLearningPlanById method
-    // when(learningPlanService.getLearningPlanById(learningPlanId)).thenReturn(learningPlan);
-
-    // // Mock behavior of findByLearningPlanLearningPlanID method
-    // List<LearningPlanPath> relatedPaths = new ArrayList<>();
-    // // Add mock data to relatedPaths
-    // when(learningPlanPathRepository.findByLearningPlanLearningPlanID(learningPlanId)).thenReturn(relatedPaths);
-
-    // // Mock behavior of getTopicsByCourse method
-    // List<Topic> topics = new ArrayList<>();
-    // // Add mock data to topics
-    // when(topicService.getTopicsByCourse(any(Course.class))).thenReturn(topics);
-
-    // // Call convertToDTO method
-    // LearningPlanDTO dto = learningPlanService.convertToDTO(learningPlanId);
-
-    // // Verify the correctness of dto
-    // assertEquals(learningPlan.getBatchID(), dto.getBatchId());
-    // // Add more assertions to verify other properties of dto
-    // }
-
-    // @Test
-    // void testGetAllLearningPlanPathDTOs() {
-    // // Mock data
-    // List<LearningPlan> learningPlans = new ArrayList<>();
-    // // Add mock data to learningPlans
-    // LearningPlan learningPlan1 = new LearningPlan(/* Add constructor parameters
-    // here */);
-    // LearningPlan learningPlan2 = new LearningPlan(/* Add constructor parameters
-    // here */);
-    // learningPlan1.setLearningPlanID(1L);
-    // learningPlan2.setLearningPlanID(2L);
-
-    // Course course = new Course(1L, "abc", "BASIC");
-
-    // List<LearningPlanPath> paths = new ArrayList<>();
-    // LearningPlanPath path1 = new LearningPlanPath();
-    // path1.setType("Course");
-    // path1.setCourse(course);
-    // LearningPlanPath path2 = new LearningPlanPath();
-    // path2.setType("Course");
-    // path1.setCourse(course);
-    // paths.add(path1);
-    // paths.add(path2);
-
-    // learningPlans.add(learningPlan1);
-    // learningPlans.add(learningPlan2);
-    // when(learningPlanRepository.findAll()).thenReturn(learningPlans);
-
-    // // Mock the behavior of convertToDTO method
-    // LearningPlanDTO dto1 = new LearningPlanDTO(/* Add constructor parameters here
-    // */);
-    // LearningPlanDTO dto2 = new LearningPlanDTO(/* Add constructor parameters here
-    // */);
-
-    // when(learningPlanRepository.findById(anyLong())).thenReturn(Optional.of(learningPlan1));
-    // when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong())).thenReturn(paths);
-    // when(learningPlanService.convertToDTO(learningPlan1.getLearningPlanID())).thenReturn(dto1);
-    // when(learningPlanService.convertToDTO(learningPlan2.getLearningPlanID())).thenReturn(dto2);
-
-    // // Call getAllLearningPlanPathDTOs method
-    // List<LearningPlanDTO> dtos =
-    // learningPlanService.getAllLearningPlanPathDTOs();
-
-    // // Verify the correctness of dtos
-    // assertEquals(learningPlans.size(), dtos.size());
-
-    // // Verify that convertToDTO is called for each learning plan
-    // verify(learningPlanService,
-    // times(1)).convertToDTO(learningPlan1.getLearningPlanID());
-    // verify(learningPlanService,
-    // times(1)).convertToDTO(learningPlan2.getLearningPlanID());
-
-    // // Add more assertions to verify the correctness of dtos
-    // // ...
-    // }
-
-    // to be done
-
-    // @Test
-    // void testGetAllLearningPlanPathDTOs() {
-    // // Mock data
-    // List<LearningPlan> learningPlans = new ArrayList<>();
-    // // Add mock data to learningPlans
-    // LearningPlan learningPlan1 = new LearningPlan(/* Add constructor parameters
-    // here */);
-    // LearningPlan learningPlan2 = new LearningPlan(/* Add constructor parameters
-    // here */);
-    // learningPlans.add(learningPlan1);
-    // learningPlans.add(learningPlan2);
-    // learningPlan1.setLearningPlanID(1L);
-    // learningPlan2.setLearningPlanID(2L);
-
-    // when(learningPlanRepository.findAll()).thenReturn(learningPlans);
-
-    // // Mock conversion of LearningPlan to LearningPlanDTO
-    // LearningPlanDTO dto1 = new LearningPlanDTO(/* Add constructor parameters here
-    // */);
-    // LearningPlanDTO dto2 = new LearningPlanDTO(/* Add constructor parameters here
-    // */);
-    // when(learningPlanService.convertToDTO(anyLong())).thenReturn(dto1, dto2);
-
-    // // Call getAllLearningPlanPathDTOs method
-    // List<LearningPlanDTO> dtos =
-    // learningPlanService.getAllLearningPlanPathDTOs();
-
-    // // Verify the correctness of dtos
-    // assertEquals(learningPlans.size(), dtos.size());
-    // // Add more assertions to verify the correctness of dtos
-    // for (int i = 0; i < learningPlans.size(); i++) {
-    // assertEquals(learningPlans.get(i).getLearningPlanID(),
-    // dtos.get(i).getLearningPlanId());
-    // // Add more assertions to verify other properties of dtos
-    // }
-    // }
-
     @Test
     void testGetAllLearningPlanPathDTOs() {
         // Sample data
@@ -263,12 +139,72 @@ class LearningPlanServiceTest {
 
         // Calling the method to test
         List<LearningPlanDTO> learningPlanDTOs = learningPlanService.getAllLearningPlanPathDTOs();
+        assertNotNull(learningPlans);
+        assertNotNull(learningPlanDTOs);
 
         // Assertions
         // assertEquals(learningPlans.size(), learningPlanDTOs.size());
         // for (int i = 0; i < learningPlans.size(); i++) {
         // assertEquals(learningPlans.get(i).getLearningPlanID(),
         // learningPlanDTOs.get(i).getLearningPlanId());
+    }
+
+    @Test
+    void testConvertToDTO() {
+        // Mock data
+        Long learningPlanId = 1L;
+        LearningPlan learningPlan = new LearningPlan();
+        learningPlan.setBatchID(123L);
+
+        LearningPlanPath path1 = new LearningPlanPath();
+        path1.setPathID(101L);
+        path1.setType("Course");
+
+        LearningPlanPath path2 = new LearningPlanPath();
+        path2.setPathID(102L);
+        path2.setType("Module");
+
+        List<LearningPlanPath> relatedPaths = new ArrayList<>();
+        relatedPaths.add(path1);
+        relatedPaths.add(path2);
+
+        Course course1 = new Course(202L, "course2", "level");
+        path1.setCourse(course1);
+
+        Course course2 = new Course(202L, "course2", "level");
+        path2.setCourse(course2);
+
+        List<Course> relatedCourses = new ArrayList<>();
+        relatedCourses.add(course1);
+        relatedCourses.add(course2);
+
+        Topic topic1 = new Topic();
+        topic1.setTopicID(301L);
+
+        Topic topic2 = new Topic();
+        topic2.setTopicID(302L);
+
+        List<Topic> topics = new ArrayList<>();
+        topics.add(topic1);
+        topics.add(topic2);
+
+        // Mock interactions
+        when(learningPlanRepository.findById(learningPlanId)).thenReturn(Optional.of(learningPlan));
+        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(learningPlanId)).thenReturn(relatedPaths);
+        // when(path1.getCourse()).thenReturn(course1);
+        // when(path2.getCourse()).thenReturn(course2);
+        when(topicService.getTopicsByCourse(course1)).thenReturn(topics);
+        when(topicService.getTopicsByCourse(course2)).thenReturn(topics);
+
+        // Call the method
+        LearningPlanDTO dto = learningPlanService.convertToDTO(learningPlanId);
+
+        // Assertions
+        assertEquals(learningPlan.getBatchID(), dto.getBatchId());
+        assertEquals(learningPlanId, dto.getLearningPlanId());
+        assertEquals(2, dto.getPath().size());
+        assertEquals(2, dto.getCourseIds().size());
+        assertEquals(2, dto.getTopicIds().size());
     }
 
     @Test

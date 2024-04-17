@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class LearningPlanPathControllerTest {
+class LearningPlanPathControllerTest {
 
     @Mock
     private LearningPlanPathService learningPlanPathService;
@@ -46,7 +46,7 @@ public class LearningPlanPathControllerTest {
     }
 
     @Test
-    public void testCreateLearningPlanPaths() {
+    void testCreateLearningPlanPaths() {
         List<LearningPlanPath> learningPlanPaths = new ArrayList<>();
 
         LearningPlanPath learningPlanPath1 = new LearningPlanPath();

@@ -7,10 +7,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class InvalidNoDescriptionFileGenerator {
+    // Private constructor to prevent instantiation
+    private InvalidNoDescriptionFileGenerator() {
+        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static MockMultipartFile generateInvalidNoDescriptionFile(String filePath) throws IOException {
         // Create a new workbook
         Workbook workbook = new XSSFWorkbook();
-                
+
         // Create a new sheet
         Sheet sheet = workbook.createSheet("Sheet1");
 
@@ -45,4 +51,3 @@ public class InvalidNoDescriptionFileGenerator {
         return file;
     }
 }
-
