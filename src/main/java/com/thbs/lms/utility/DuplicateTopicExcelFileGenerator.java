@@ -15,40 +15,35 @@ public class DuplicateTopicExcelFileGenerator {
     }
 
     public static MockMultipartFile generateDuplicateTopicExcelFile(String filePath) throws IOException {
-        Workbook workbook = new XSSFWorkbook();
+        try(Workbook workbook = new XSSFWorkbook()){
+            // Create a new sheet
+            Sheet sheet = workbook.createSheet("Sheet1");
 
-        // Create a new sheet
-        Sheet sheet = workbook.createSheet("Sheet1");
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("Level");
+            headerRow.createCell(1).setCellValue("BASIC");
 
-        // Create header row
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("Level");
-        headerRow.createCell(1).setCellValue("BASIC");
+            // Create data rows with duplicate topic names
+            Row dataRow1 = sheet.createRow(1);
+            dataRow1.createCell(0).setCellValue("DuplicateTopic");
+            dataRow1.createCell(1).setCellValue("Data1Desc");
 
-        // Create data rows with duplicate topic names
-        Row dataRow1 = sheet.createRow(1);
-        dataRow1.createCell(0).setCellValue("DuplicateTopic");
-        dataRow1.createCell(1).setCellValue("Data1Desc");
+            Row dataRow2 = sheet.createRow(2);
+            dataRow2.createCell(0).setCellValue("DuplicateTopic");
+            dataRow2.createCell(1).setCellValue("Data2Desc");
 
-        Row dataRow2 = sheet.createRow(2);
-        dataRow2.createCell(0).setCellValue("DuplicateTopic");
-        dataRow2.createCell(1).setCellValue("Data2Desc");
+            // Write workbook content to ByteArrayOutputStream
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            byte[] content = outputStream.toByteArray();
 
-        // Write workbook content to ByteArrayOutputStream
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        workbook.write(outputStream);
-        byte[] content = outputStream.toByteArray();
-
-        // Create MockMultipartFile
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "duplicate_topic_excel.xlsx",
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                content);
-
-        // Close the workbook
-        workbook.close();
-
-        return file;
+            // Create MockMultipartFile
+            return new MockMultipartFile(
+                    "file",
+                    "duplicate_topic_excel.xlsx",
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    content);
+        }
     }
 }

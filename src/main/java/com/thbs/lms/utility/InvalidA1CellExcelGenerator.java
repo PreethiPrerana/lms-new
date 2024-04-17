@@ -15,7 +15,7 @@ public class InvalidA1CellExcelGenerator {
 
     public static MockMultipartFile generateInvalidA1CellExcelFile(String filePath) throws IOException {
         // Create a new workbook
-        Workbook workbook = new XSSFWorkbook();
+        try(Workbook workbook = new XSSFWorkbook()){
 
         // Create a new sheet
         Sheet sheet = workbook.createSheet("Sheet1");
@@ -40,15 +40,12 @@ public class InvalidA1CellExcelGenerator {
         byte[] content = outputStream.toByteArray();
 
         // Create MockMultipartFile
-        MockMultipartFile file = new MockMultipartFile(
+        return new MockMultipartFile(
                 "file",
                 "mock_excel.xlsx",
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 content);
+        }
 
-        // Close the workbook
-        workbook.close();
-
-        return file;
     }
 }
