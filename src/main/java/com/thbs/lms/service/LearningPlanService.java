@@ -74,7 +74,6 @@ public class LearningPlanService {
                 }
                 topicIdsList.add(topicIds);
             }
-
         }
 
         dto.setLearningPlanPathIds(learningPlanPathIds);
