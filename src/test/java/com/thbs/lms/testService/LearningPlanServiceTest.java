@@ -248,6 +248,30 @@ class LearningPlanServiceTest {
     // }
 
     @Test
+    void testGetAllLearningPlanPathDTOs() {
+        // Sample data
+        LearningPlan learningPlan1 = new LearningPlan();
+        learningPlan1.setLearningPlanID(1L);
+
+        LearningPlan learningPlan2 = new LearningPlan();
+        learningPlan2.setLearningPlanID(2L);
+
+        List<LearningPlan> learningPlans = List.of(learningPlan1, learningPlan2);
+
+        // Mocking repository method
+        when(learningPlanPathRepository.findAll()).thenReturn(List.of(new LearningPlanPath(), new LearningPlanPath()));
+
+        // Calling the method to test
+        List<LearningPlanDTO> learningPlanDTOs = learningPlanService.getAllLearningPlanPathDTOs();
+
+        // Assertions
+        assertEquals(learningPlans.size(), learningPlanDTOs.size());
+        for (int i = 0; i < learningPlans.size(); i++) {
+            assertEquals(learningPlans.get(i).getLearningPlanID(), learningPlanDTOs.get(i).getLearningPlanId());
+        }
+    }
+
+    @Test
     void testGetAllLearningPlanPathDTOsByBatchId() {
         // Mock data
         Long batchId = 123L;
