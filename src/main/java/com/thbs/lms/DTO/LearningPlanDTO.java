@@ -14,7 +14,7 @@ import lombok.Setter;
 public class LearningPlanDTO {
     private Long batchId;
     private Long learningPlanId;
-    private List<Long> learningPlanPathIds;
+    private List<PathDTO> path;
     private List<Long> courseIds;
     private List<List<Long>> topicIds;
 

@@ -1,6 +1,7 @@
 package com.thbs.lms.service;
 
 import com.thbs.lms.dto.LearningPlanDTO;
+import com.thbs.lms.dto.PathDTO;
 import com.thbs.lms.exception.*;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.LearningPlan;
@@ -49,6 +50,51 @@ public class LearningPlanService {
     }
 
     // Converts a LearningPlanPath entity to a LearningPlanPathDTO
+    // public LearningPlanDTO convertToDTO(Long learningPlanId) {
+    // LearningPlanDTO dto = new LearningPlanDTO();
+
+    // LearningPlan learningPlan = getLearningPlanById(learningPlanId);
+    // dto.setBatchId(learningPlan.getBatchID());
+    // dto.setLearningPlanId(learningPlanId);
+
+    // List<LearningPlanPath> relatedPaths = learningPlanPathRepository
+    // .findByLearningPlanLearningPlanID(learningPlanId);
+    // List<Long> learningPlanPathIds = new ArrayList<>();
+    // List<Long> courseIds = new ArrayList<>();
+    // List<List<Long>> topicIdsList = new ArrayList<>();
+
+    // for (LearningPlanPath path : relatedPaths) {
+    // if (path.getType().equalsIgnoreCase("Course")) {
+    // learningPlanPathIds.add(path.getPathID());
+    // Course course = path.getCourse();
+    // courseIds.add(course.getCourseID());
+    // List<Long> topicIds = new ArrayList<>();
+    // List<Topic> topics = topicService.getTopicsByCourse(course);
+    // for (Topic topic : topics) {
+    // topicIds.add(topic.getTopicID());
+    // }
+    // topicIdsList.add(topicIds);
+    // }
+    // }
+
+    // dto.setLearningPlanPathIds(learningPlanPathIds);
+    // dto.setCourseIds(courseIds);
+    // dto.setTopicIds(topicIdsList);
+
+    // return dto;
+    // }
+
+    // // Retrieves all learning plan paths as DTOs
+    // public List<LearningPlanDTO> getAllLearningPlanPathDTOs() {
+    // List<LearningPlanDTO> dtos = new ArrayList<>();
+    // List<LearningPlan> learningPlans = learningPlanRepository.findAll();
+    // for (LearningPlan learningPlan : learningPlans) {
+    // LearningPlanDTO dto = convertToDTO(learningPlan.getLearningPlanID());
+    // dtos.add(dto);
+    // }
+    // return dtos;
+    // }
+
     public LearningPlanDTO convertToDTO(Long learningPlanId) {
         LearningPlanDTO dto = new LearningPlanDTO();
 
@@ -58,13 +104,17 @@ public class LearningPlanService {
 
         List<LearningPlanPath> relatedPaths = learningPlanPathRepository
                 .findByLearningPlanLearningPlanID(learningPlanId);
-        List<Long> learningPlanPathIds = new ArrayList<>();
+        List<PathDTO> paths = new ArrayList<>();
         List<Long> courseIds = new ArrayList<>();
         List<List<Long>> topicIdsList = new ArrayList<>();
 
         for (LearningPlanPath path : relatedPaths) {
+            PathDTO pathDTO = new PathDTO();
+            pathDTO.setLearningPlanPathIds(path.getPathID());
+            pathDTO.setType(path.getType());
+            paths.add(pathDTO);
+
             if (path.getType().equalsIgnoreCase("Course")) {
-                learningPlanPathIds.add(path.getPathID());
                 Course course = path.getCourse();
                 courseIds.add(course.getCourseID());
                 List<Long> topicIds = new ArrayList<>();
@@ -76,7 +126,7 @@ public class LearningPlanService {
             }
         }
 
-        dto.setLearningPlanPathIds(learningPlanPathIds);
+        dto.setPath(paths);
         dto.setCourseIds(courseIds);
         dto.setTopicIds(topicIdsList);
 
