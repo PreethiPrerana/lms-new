@@ -15,7 +15,4 @@ public class LearningPlanDTO {
     private Long batchId;
     private Long learningPlanId;
     private List<PathDTO> path;
-    private List<Long> courseIds;
-    private List<List<Long>> topicIds;
-
 }

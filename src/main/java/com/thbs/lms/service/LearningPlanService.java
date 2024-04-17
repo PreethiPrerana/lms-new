@@ -1,12 +1,12 @@
 package com.thbs.lms.service;
 
+import com.thbs.lms.dto.CourseDTO;
 import com.thbs.lms.dto.LearningPlanDTO;
 import com.thbs.lms.dto.PathDTO;
 import com.thbs.lms.exception.*;
 import com.thbs.lms.model.Course;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.model.LearningPlanPath;
-import com.thbs.lms.model.Topic;
 import com.thbs.lms.repository.LearningPlanPathRepository;
 import com.thbs.lms.repository.LearningPlanRepository;
 
@@ -24,15 +24,14 @@ public class LearningPlanService {
     private LearningPlanRepository learningPlanRepository;
     private LearningPlanPathService learningPlanPathService;
     private LearningPlanPathRepository learningPlanPathRepository;
-    private TopicService topicService;
+    private CourseService courseService;
 
     @Autowired
-    public LearningPlanService(LearningPlanPathService learningPlanPathService, TopicService topicService,
+    public LearningPlanService(LearningPlanPathService learningPlanPathService, CourseService courseService,
             LearningPlanRepository learningPlanRepository, LearningPlanPathRepository learningPlanPathRepository) {
         this.learningPlanPathService = learningPlanPathService;
         this.learningPlanRepository = learningPlanRepository;
         this.learningPlanPathRepository = learningPlanPathRepository;
-        this.topicService = topicService;
     }
 
     // Saves a new learning plan
@@ -60,32 +59,23 @@ public class LearningPlanService {
         List<LearningPlanPath> relatedPaths = learningPlanPathRepository
                 .findByLearningPlanLearningPlanID(learningPlanId);
         List<PathDTO> paths = new ArrayList<>();
-        List<Long> courseIds = new ArrayList<>();
-        List<List<Long>> topicIdsList = new ArrayList<>();
 
         for (LearningPlanPath path : relatedPaths) {
             PathDTO pathDTO = new PathDTO();
             pathDTO.setLearningPlanPathId(path.getPathID());
             pathDTO.setType(path.getType());
-            paths.add(pathDTO);
+            pathDTO.setTrainer(path.getTrainer());
+            pathDTO.setStartDate(path.getStartDate());
+            pathDTO.setEndDate(path.getEndDate());
 
             Course course = path.getCourse();
-            courseIds.add(course.getCourseID());
+            CourseDTO courseDTO = courseService.convertToDTO(course);
+            pathDTO.setCourse(courseDTO);
 
-            List<Long> topicIds = new ArrayList<>();
-            if (path.getType().equalsIgnoreCase("Course")) {
-                List<Topic> topics = topicService.getTopicsByCourse(course);
-                for (Topic topic : topics) {
-                    topicIds.add(topic.getTopicID());
-                }
-            }
-            topicIdsList.add(topicIds);
+            paths.add(pathDTO);
         }
 
         dto.setPath(paths);
-        dto.setCourseIds(courseIds);
-        dto.setTopicIds(topicIdsList);
-
         return dto;
     }
 
