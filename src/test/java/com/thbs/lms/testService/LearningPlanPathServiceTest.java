@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class LearningPlanPathServiceTest {
+class LearningPlanPathServiceTest {
 
     @Mock
     private LearningPlanPathRepository learningPlanPathRepository;
@@ -312,15 +312,17 @@ public class LearningPlanPathServiceTest {
 
     @Test
     void testUpdateLearningPlanPathDates_NullStartDate() {
+        Date date = new Date();
         assertThrows(InvalidLearningPlanPathDataException.class, () -> {
-            learningPlanPathService.updateLearningPlanPathDates(1L, null, new Date());
+            learningPlanPathService.updateLearningPlanPathDates(1L, null, date);
         });
     }
 
     @Test
     void testUpdateLearningPlanPathDates_NullEndDate() {
+        Date date = new Date();
         assertThrows(InvalidLearningPlanPathDataException.class, () -> {
-            learningPlanPathService.updateLearningPlanPathDates(1L, new Date(), null);
+            learningPlanPathService.updateLearningPlanPathDates(1L, date, null);
         });
     }
 
@@ -336,10 +338,11 @@ public class LearningPlanPathServiceTest {
 
     @Test
     void testUpdateLearningPlanPathDates_LearningPlanPathNotFound() {
+        Date date = new Date();
         when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(LearningPlanPathNotFoundException.class, () -> {
-            learningPlanPathService.updateLearningPlanPathDates(2L, new Date(), new Date());
+            learningPlanPathService.updateLearningPlanPathDates(2L, date, date);
         });
     }
 

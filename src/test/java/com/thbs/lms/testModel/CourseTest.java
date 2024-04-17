@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import com.thbs.lms.model.Course;
 
-public class CourseTest {
+class CourseTest {
     @Test
     void testGettersAndSetters() {
         // Initialize a Course object

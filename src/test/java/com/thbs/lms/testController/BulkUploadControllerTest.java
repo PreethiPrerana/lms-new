@@ -20,15 +20,15 @@ import java.io.File;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest 
+@SpringBootTest
 @AutoConfigureMockMvc
-public class BulkUploadControllerTest {
+class BulkUploadControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Test
-    public void testFileUploadSuccess() throws Exception {
+    void testFileUploadSuccess() throws Exception {
         MockMultipartFile file = MockExcelFileGenerator.generateMockExcelFile();
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
@@ -37,51 +37,51 @@ public class BulkUploadControllerTest {
     }
 
     @Test
-    public void pdfFileUploadFailure() throws Exception {
+    void pdfFileUploadFailure() throws Exception {
         String filePath = "sample.pdf";
         File pdfFile = PDFFileGenerator.generatePDFFile(filePath);
 
         MockMultipartFile file = PDFFileGenerator.convertToMockMultipartFile(pdfFile);
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
-        .andExpect(status().isInternalServerError())
-        .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
     }
 
     @Test
-    public void pngFileUploadFailure() throws Exception {
+    void pngFileUploadFailure() throws Exception {
         String filePath = "sample.png";
         File pngFile = PNGFileGenerator.generatePNGFile(filePath);
 
         MockMultipartFile file = PNGFileGenerator.convertToMockMultipartFile(pngFile);
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
-        .andExpect(status().isInternalServerError())
-        .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
     }
 
     @Test
-    public void textFileUploadFailure() throws Exception {
+    void textFileUploadFailure() throws Exception {
         String filePath = "sample.txt";
         File textFile = TextFileGenerator.generateTextFile(filePath);
 
         MockMultipartFile file = TextFileGenerator.convertToMockMultipartFile(textFile);
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
-        .andExpect(status().isInternalServerError())
-        .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
     }
 
     @Test
-    public void jpegFileUploadFailure() throws Exception {
+    void jpegFileUploadFailure() throws Exception {
         String filePath = "sample.jpeg";
         File jpegFile = JPEGFileGenerator.generateJPEGFile(filePath);
 
         MockMultipartFile file = JPEGFileGenerator.convertToMockMultipartFile(jpegFile);
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/learning-plan/upload").file(file))
-        .andExpect(status().isInternalServerError())
-        .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.message").value("Error processing the uploaded file."));
     }
 
 }

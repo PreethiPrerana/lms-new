@@ -9,6 +9,12 @@ import org.apache.poi.ss.usermodel.Sheet;
 import com.thbs.lms.exception.InvalidSheetFormatException;
 
 public class SheetValidator {
+    // Private constructor to prevent instantiation
+    private SheetValidator() {
+        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static boolean isValidSheetFormat(Sheet sheet) {
         // Check if the sheet has at least one row
         if (sheet.getPhysicalNumberOfRows() < 1) {
@@ -35,9 +41,10 @@ public class SheetValidator {
         String level = levelCell.getStringCellValue().trim();
         if (!level.equalsIgnoreCase("BASIC") && !level.equalsIgnoreCase("INTERMEDIATE")
                 && !level.equalsIgnoreCase("ADVANCED")) {
-            throw new InvalidSheetFormatException("Header cell B1 must contain 'BASIC', 'INTERMEDIATE', or 'ADVANCED'.");
+            throw new InvalidSheetFormatException(
+                    "Header cell B1 must contain 'BASIC', 'INTERMEDIATE', or 'ADVANCED'.");
         }
-    
+
         int lastRowNum = sheet.getLastRowNum();
         if (lastRowNum < 1) {
             throw new InvalidSheetFormatException("No topics found in the course.");
@@ -52,11 +59,11 @@ public class SheetValidator {
             Row row = rowIterator.next();
             Cell topicNameCell = row.getCell(0);
             Cell topicDescriptionCell = row.getCell(1);
-            if (topicNameCell != null && topicDescriptionCell == null ){
+            if (topicNameCell != null && topicDescriptionCell == null) {
                 throw new InvalidSheetFormatException("Topic does not have a description.");
             }
         }
-        
+
         return true;
     }
 }

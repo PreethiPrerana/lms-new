@@ -11,7 +11,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class TextFileGenerator {
-
+// Private constructor to prevent instantiation
+private TextFileGenerator() {
+    // Private constructor to prevent instantiation
+    throw new UnsupportedOperationException("Utility class");
+}
     public static File generateTextFile(String filePath) throws IOException {
         File textFile = new File(filePath);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(textFile))) {

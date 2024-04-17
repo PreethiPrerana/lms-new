@@ -7,10 +7,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class InvalidB1CellExcelGenerator {
+    // Private constructor to prevent instantiation
+    private InvalidB1CellExcelGenerator() {
+        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static MockMultipartFile generateInvalidB1CellExcelFile(String filePath) throws IOException {
         // Create a new workbook
         Workbook workbook = new XSSFWorkbook();
-                
+
         // Create a new sheet
         Sheet sheet = workbook.createSheet("Sheet1");
 

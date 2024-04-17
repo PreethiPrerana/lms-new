@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class CourseService {
 
+    private static final String NOT_FOUND_MSG = "Course not found for ID: ";
     private CourseRepository courseRepository;
     private TopicService topicService;
 
@@ -87,7 +88,7 @@ public class CourseService {
         if (optionalCourse.isPresent()) {
             return optionalCourse.get();
         } else {
-            throw new CourseNotFoundException("Course not found for ID: " + courseId);
+            throw new CourseNotFoundException(NOT_FOUND_MSG + courseId);
         }
     }
 
@@ -119,7 +120,7 @@ public class CourseService {
             course.setCourseName(newCourseName);
             return courseRepository.save(course);
         } else {
-            throw new CourseNotFoundException("Course not found for ID: " + courseId);
+            throw new CourseNotFoundException(NOT_FOUND_MSG + courseId);
         }
     }
 
@@ -131,7 +132,7 @@ public class CourseService {
             topicService.deleteTopicsByCourse(course);
             courseRepository.delete(course);
         } else {
-            throw new CourseNotFoundException("Course not found for ID: " + courseId);
+            throw new CourseNotFoundException(NOT_FOUND_MSG + courseId);
         }
     }
 
@@ -144,7 +145,7 @@ public class CourseService {
                 topicService.deleteTopicsByCourse(course);
                 courseRepository.delete(course);
             } else {
-                throw new CourseNotFoundException("Course not found for ID: " + courseId);
+                throw new CourseNotFoundException(NOT_FOUND_MSG + courseId);
             }
         }
     }

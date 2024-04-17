@@ -40,7 +40,6 @@ public class BulkUploadService {
     }
 
     public void uploadFile(MultipartFile file) {
-        System.out.println("uploadFile() method called.");
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             // Process each sheet
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -59,21 +58,17 @@ public class BulkUploadService {
                 Course course;
                 if (existingCourseOptional.isPresent()) {
                     course = existingCourseOptional.get();
-                    System.out.println("Course: " + course.getCourseName() + " already present.");
                 } else {
                     // Create a new course and save it to the database
                     Course newCourse = new Course();
                     newCourse.setCourseName(courseName);
                     newCourse.setLevel(level);
-                    System.out.println("New Course: " + newCourse.getCourseName());
                     course = courseRepository.save(newCourse);
-                    System.out.println("Course saved!");
                 }
 
                 List<Topic> topics = processTopics(sheet, course);
 
                 topicRepository.saveAll(topics);
-                System.out.println("Topics saved!");
             }
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();
@@ -103,9 +98,7 @@ public class BulkUploadService {
                 if (topicRepository.existsByTopicNameAndCourse(topicName, course)) {
                     continue; // Skip adding existing topics
                 }
-                System.out.println("check duplicate");
                 if (topicNames.contains(topicName)) {
-                    System.out.println("Duplicate entries present.");
                     throw new DuplicateTopicException("Duplicate entries present in sheet.");
                 }
                 topicNames.add(topicName);
@@ -115,7 +108,6 @@ public class BulkUploadService {
                 topic.setDescription(description);
                 topic.setCourse(course);
                 topics.add(topic);
-                System.out.println("Topic:" + topic.getTopicName());
             } catch (DuplicateTopicException e) {
                 throw e; // Re-throw DuplicateTopicException
             } catch (Exception e) {

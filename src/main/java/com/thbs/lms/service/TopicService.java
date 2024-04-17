@@ -15,6 +15,7 @@ import java.util.Optional;
 @Service
 public class TopicService {
 
+    private static final String NOT_FOUND_MSG = "Topic not found for ID: ";
     private final TopicRepository topicRepository;
 
     @Autowired
@@ -83,7 +84,7 @@ public class TopicService {
         if (optionalTopic.isPresent()) {
             return optionalTopic.get();
         } else {
-            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+            throw new TopicNotFoundException(NOT_FOUND_MSG + topicId);
         }
     }
 
@@ -107,7 +108,7 @@ public class TopicService {
             topicRepository.save(topic);
             return "Description updated successfully";
         } else {
-            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+            throw new TopicNotFoundException(NOT_FOUND_MSG + topicId);
         }
     }
 
@@ -118,7 +119,7 @@ public class TopicService {
             topicRepository.delete(optionalTopic.get());
         } else {
             // Throws exception if topic not found
-            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+            throw new TopicNotFoundException(NOT_FOUND_MSG + topicId);
         }
     }
 
@@ -131,7 +132,7 @@ public class TopicService {
                 topicRepository.delete(topic);
             } else {
                 // Throws exception if topic not found
-                throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+                throw new TopicNotFoundException(NOT_FOUND_MSG + topicId);
             }
         }
     }
@@ -160,7 +161,7 @@ public class TopicService {
             topicRepository.save(topic);
             return "Topic name updated successfully";
         } else {
-            throw new TopicNotFoundException("Topic not found for ID: " + topicId);
+            throw new TopicNotFoundException(NOT_FOUND_MSG + topicId);
         }
     }
 

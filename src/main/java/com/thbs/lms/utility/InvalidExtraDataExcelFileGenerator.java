@@ -8,6 +8,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class InvalidExtraDataExcelFileGenerator {
+    // Private constructor to prevent instantiation
+    private InvalidExtraDataExcelFileGenerator() {
+        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static MockMultipartFile generateInvalidExtraDataExcelFile(String filePath) throws IOException {
         Workbook workbook = new XSSFWorkbook();

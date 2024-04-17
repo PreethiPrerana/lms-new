@@ -20,6 +20,7 @@ import java.util.Optional;
 @Service
 public class LearningPlanService {
 
+    private static final String NOT_FOUND = " not found.";
     private LearningPlanRepository learningPlanRepository;
     private LearningPlanPathService learningPlanPathService;
     private LearningPlanPathRepository learningPlanPathRepository;
@@ -68,16 +69,17 @@ public class LearningPlanService {
             pathDTO.setType(path.getType());
             paths.add(pathDTO);
 
+            Course course = path.getCourse();
+            courseIds.add(course.getCourseID());
+
+            List<Long> topicIds = new ArrayList<>();
             if (path.getType().equalsIgnoreCase("Course")) {
-                Course course = path.getCourse();
-                courseIds.add(course.getCourseID());
-                List<Long> topicIds = new ArrayList<>();
                 List<Topic> topics = topicService.getTopicsByCourse(course);
                 for (Topic topic : topics) {
                     topicIds.add(topic.getTopicID());
                 }
-                topicIdsList.add(topicIds);
             }
+            topicIdsList.add(topicIds);
         }
 
         dto.setPath(paths);
@@ -120,7 +122,7 @@ public class LearningPlanService {
         if (optionalLearningPlan.isPresent()) {
             return optionalLearningPlan.get();
         } else {
-            throw new LearningPlanNotFoundException("Learning plan with ID " + id + " not found.");
+            throw new LearningPlanNotFoundException("Learning plan with ID " + id + NOT_FOUND);
         }
     }
 
@@ -135,7 +137,7 @@ public class LearningPlanService {
             return learningPlan;
         } else {
             // Throws exception if type is invalid or no learning plans found
-            throw new LearningPlanNotFoundException("Learning plan with Type " + type + " not found.");
+            throw new LearningPlanNotFoundException("Learning plan with Type " + type + NOT_FOUND);
         }
     }
 
@@ -150,7 +152,7 @@ public class LearningPlanService {
         if (!learningPlan.isEmpty()) {
             return learningPlan;
         } else {
-            throw new LearningPlanNotFoundException("Learning plan for Batch " + batchID + " not found.");
+            throw new LearningPlanNotFoundException("Learning plan for Batch " + batchID + NOT_FOUND);
         }
     }
 
@@ -162,7 +164,7 @@ public class LearningPlanService {
             learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(id);
             learningPlanRepository.delete(optionalLearningPlan.get());
         } else {
-            throw new LearningPlanNotFoundException("Learning plan with ID " + id + " not found.");
+            throw new LearningPlanNotFoundException("Learning plan with ID " + id + NOT_FOUND);
         }
     }
 }

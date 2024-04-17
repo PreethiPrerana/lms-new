@@ -8,6 +8,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class DuplicateTopicExcelFileGenerator {
+    // Private constructor to prevent instantiation
+    private DuplicateTopicExcelFileGenerator() {
+        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static MockMultipartFile generateDuplicateTopicExcelFile(String filePath) throws IOException {
         Workbook workbook = new XSSFWorkbook();
 

@@ -12,6 +12,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class PDFFileGenerator {
+    // Private constructor to prevent instantiation
+    private PDFFileGenerator() {
+        // Private constructor to prevent instantiation
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static File generatePDFFile(String filePath) throws IOException {
         File pdfFile = new File(filePath);
         try (PDDocument document = new PDDocument()) {
@@ -45,5 +51,5 @@ public class PDFFileGenerator {
             return new MockMultipartFile("file", file.getName(), "application/pdf", output.toByteArray());
         }
     }
-    
+
 }
