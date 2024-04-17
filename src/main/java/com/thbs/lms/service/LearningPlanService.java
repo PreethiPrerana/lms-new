@@ -65,15 +65,16 @@ public class LearningPlanService {
         for (LearningPlanPath path : relatedPaths) {
             if (path.getType().equalsIgnoreCase("Course")) {
                 learningPlanPathIds.add(path.getPathID());
+                Course course = path.getCourse();
+                courseIds.add(course.getCourseID());
+                List<Long> topicIds = new ArrayList<>();
+                List<Topic> topics = topicService.getTopicsByCourse(course);
+                for (Topic topic : topics) {
+                    topicIds.add(topic.getTopicID());
+                }
+                topicIdsList.add(topicIds);
             }
-            Course course = path.getCourse();
-            courseIds.add(course.getCourseID());
-            List<Long> topicIds = new ArrayList<>();
-            List<Topic> topics = topicService.getTopicsByCourse(course);
-            for (Topic topic : topics) {
-                topicIds.add(topic.getTopicID());
-            }
-            topicIdsList.add(topicIds);
+
         }
 
         dto.setLearningPlanPathIds(learningPlanPathIds);
