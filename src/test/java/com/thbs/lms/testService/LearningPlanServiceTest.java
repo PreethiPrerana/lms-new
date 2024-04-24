@@ -1,14 +1,11 @@
 package com.thbs.lms.testService;
 
-import com.thbs.lms.dto.CourseDTO;
 import com.thbs.lms.dto.LearningPlanDTO;
-import com.thbs.lms.dto.PathDTO;
 import com.thbs.lms.exception.DuplicateLearningPlanException;
 import com.thbs.lms.exception.InvalidBatchException;
 import com.thbs.lms.exception.InvalidLearningPlanException;
 import com.thbs.lms.exception.InvalidTypeException;
 import com.thbs.lms.exception.LearningPlanNotFoundException;
-import com.thbs.lms.model.Course;
 import com.thbs.lms.model.LearningPlan;
 import com.thbs.lms.model.LearningPlanPath;
 import com.thbs.lms.repository.LearningPlanPathRepository;
@@ -25,7 +22,6 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
