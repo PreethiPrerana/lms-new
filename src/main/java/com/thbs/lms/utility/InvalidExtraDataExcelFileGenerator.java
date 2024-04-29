@@ -7,13 +7,25 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * The {@code InvalidExtraDataExcelFileGenerator} class provides a utility
+ * method to generate a mock Excel file
+ * with extra data in unexpected cells for testing purposes.
+ */
 public class InvalidExtraDataExcelFileGenerator {
     // Private constructor to prevent instantiation
     private InvalidExtraDataExcelFileGenerator() {
-        // Private constructor to prevent instantiation
         throw new UnsupportedOperationException("Utility class");
     }
 
+    /**
+     * Generates a mock Excel file with extra data in unexpected cells.
+     *
+     * @param filePath The file path of the generated Excel file. (Not used in the
+     *                 method implementation)
+     * @return A {@code MockMultipartFile} representing the generated Excel file.
+     * @throws IOException If an I/O error occurs.
+     */
     public static MockMultipartFile generateInvalidExtraDataExcelFile(String filePath) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
 

@@ -51,14 +51,14 @@ class LearningPlanPathServiceTest {
     void setUp() {
         // Mocking a LearningPlanPath object
         course = new Course();
-        course.setCourseID(1L);
+        course.setCourseId(1L);
         course.setCourseName("Test Course");
 
         learningPlan = new LearningPlan();
-        learningPlan.setLearningPlanID(1L);
+        learningPlan.setLearningPlanId(1L);
 
         learningPlanPath = new LearningPlanPath();
-        learningPlanPath.setPathID(1L);
+        learningPlanPath.setPathId(1L);
         learningPlanPath.setStartDate(new Date());
         learningPlanPath.setEndDate(new Date());
         learningPlanPath.setTrainer("Test Trainer");
@@ -67,7 +67,7 @@ class LearningPlanPathServiceTest {
         learningPlanPath.setLearningPlan(learningPlan);
 
         learningPlanPath2 = new LearningPlanPath();
-        learningPlanPath2.setPathID(2L);
+        learningPlanPath2.setPathId(2L);
         learningPlanPath2.setStartDate(new Date());
         learningPlanPath2.setEndDate(new Date());
         learningPlanPath2.setTrainer("Test Trainer2");
@@ -151,7 +151,7 @@ class LearningPlanPathServiceTest {
 
     @Test
     void testSaveLearningPlanPath_DuplicateEntry() {
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanIDAndCourseAndType(anyLong(), any(Course.class),
+        when(learningPlanPathRepository.findByLearningPlanLearningPlanIdAndCourseAndType(anyLong(), any(Course.class),
                 anyString())).thenReturn(Optional.of(learningPlanPath));
 
         assertThrows(DuplicateLearningPlanPathException.class, () -> {
@@ -200,14 +200,14 @@ class LearningPlanPathServiceTest {
 
     @Test
     void testGetAllLearningPlanPathsByLearningPlanId_Success() {
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong()))
+        when(learningPlanPathRepository.findByLearningPlanLearningPlanId(anyLong()))
                 .thenReturn(Arrays.asList(learningPlanPath));
 
         List<LearningPlanPath> paths = learningPlanPathService.getAllLearningPlanPathsByLearningPlanId(1L);
 
         assertNotNull(paths);
         assertEquals(1, paths.size());
-        assertEquals(learningPlanPath.getPathID(), paths.get(0).getPathID());
+        assertEquals(learningPlanPath.getPathId(), paths.get(0).getPathId());
     }
 
     @Test
@@ -218,7 +218,7 @@ class LearningPlanPathServiceTest {
 
         assertNotNull(paths);
         assertEquals(1, paths.size());
-        assertEquals(learningPlanPath.getPathID(), paths.get(0).getPathID());
+        assertEquals(learningPlanPath.getPathId(), paths.get(0).getPathId());
     }
 
     @Test
@@ -243,7 +243,7 @@ class LearningPlanPathServiceTest {
 
         assertNotNull(paths);
         assertEquals(1, paths.size());
-        assertEquals(learningPlanPath.getPathID(), paths.get(0).getPathID());
+        assertEquals(learningPlanPath.getPathId(), paths.get(0).getPathId());
     }
 
     @Test
@@ -353,7 +353,7 @@ class LearningPlanPathServiceTest {
         learningPlanPaths.add(learningPlanPath);
         learningPlanPaths.add(learningPlanPath2);
 
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong())).thenReturn(learningPlanPaths);
+        when(learningPlanPathRepository.findByLearningPlanLearningPlanId(anyLong())).thenReturn(learningPlanPaths);
 
         when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.of(learningPlanPath));
         when(learningPlanPathRepository.findById(anyLong())).thenReturn(Optional.of(learningPlanPath2));
@@ -365,7 +365,7 @@ class LearningPlanPathServiceTest {
 
     @Test
     void testDeleteLearningPlanPathsByLearningPlanId_EmptyList() {
-        when(learningPlanPathRepository.findByLearningPlanLearningPlanID(anyLong())).thenReturn(new ArrayList<>());
+        when(learningPlanPathRepository.findByLearningPlanLearningPlanId(anyLong())).thenReturn(new ArrayList<>());
 
         assertDoesNotThrow(() -> {
             learningPlanPathService.deleteLearningPlanPathsByLearningPlanId(2L);

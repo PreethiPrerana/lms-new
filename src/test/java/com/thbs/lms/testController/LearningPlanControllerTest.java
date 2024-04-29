@@ -42,9 +42,9 @@ class LearningPlanControllerTest {
     @BeforeEach
     void setUp() {
         learningPlan = new LearningPlan();
-        learningPlan.setLearningPlanID(1L);
+        learningPlan.setLearningPlanId(1L);
         learningPlan.setType("Test Type");
-        learningPlan.setBatchID(1L);
+        learningPlan.setBatchId(1L);
     }
 
     @Test
@@ -162,7 +162,7 @@ class LearningPlanControllerTest {
         learningPlans.add(learningPlan1);
         learningPlans.add(learningPlan2);
 
-        when(learningPlanService.getLearningPlansByBatchID(batchID)).thenReturn(learningPlans);
+        when(learningPlanService.getLearningPlansByBatchId(batchID)).thenReturn(learningPlans);
 
         ResponseEntity<?> responseEntity = learningPlanController.getLearningPlansByBatchID(batchID);
 

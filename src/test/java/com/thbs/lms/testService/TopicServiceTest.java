@@ -277,7 +277,7 @@ class TopicServiceTest {
     @Test
     void testGetTopicsByCourse_Success() {
         Course course = new Course();
-        course.setCourseID(1L);
+        course.setCourseId(1L);
 
         Topic topic1 = new Topic();
         topic1.setCourse(course);

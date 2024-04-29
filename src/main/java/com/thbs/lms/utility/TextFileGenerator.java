@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 public class TextFileGenerator {
     // Private constructor to prevent instantiation
     private TextFileGenerator() {
-        // Private constructor to prevent instantiation
         throw new UnsupportedOperationException("Utility class");
     }
 

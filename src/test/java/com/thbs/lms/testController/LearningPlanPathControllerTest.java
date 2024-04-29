@@ -50,10 +50,10 @@ class LearningPlanPathControllerTest {
         List<LearningPlanPath> learningPlanPaths = new ArrayList<>();
 
         LearningPlanPath learningPlanPath1 = new LearningPlanPath();
-        learningPlanPath1.setPathID(1L); // Set an ID for testing
+        learningPlanPath1.setPathId(1L); // Set an ID for testing
 
         LearningPlanPath learningPlanPath2 = new LearningPlanPath();
-        learningPlanPath2.setPathID(2L); // Set an ID for testing
+        learningPlanPath2.setPathId(2L); // Set an ID for testing
 
         learningPlanPaths.add(learningPlanPath1);
         learningPlanPaths.add(learningPlanPath2);

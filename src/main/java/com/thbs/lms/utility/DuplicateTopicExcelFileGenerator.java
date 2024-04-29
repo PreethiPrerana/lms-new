@@ -7,15 +7,26 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * The {@code DuplicateTopicExcelFileGenerator} class provides a utility method
+ * to generate a mock Excel file
+ * containing duplicate topic names for testing purposes.
+ */
 public class DuplicateTopicExcelFileGenerator {
     // Private constructor to prevent instantiation
     private DuplicateTopicExcelFileGenerator() {
-        // Private constructor to prevent instantiation
         throw new UnsupportedOperationException("Utility class");
     }
 
+    /**
+     * Generates a mock Excel file with duplicate topic names.
+     *
+     * @param filePath The file path to save the generated Excel file (not used).
+     * @return A {@code MockMultipartFile} representing the generated Excel file.
+     * @throws IOException If an I/O error occurs.
+     */
     public static MockMultipartFile generateDuplicateTopicExcelFile(String filePath) throws IOException {
-        try(Workbook workbook = new XSSFWorkbook()){
+        try (Workbook workbook = new XSSFWorkbook()) {
             // Create a new sheet
             Sheet sheet = workbook.createSheet("Sheet1");
 

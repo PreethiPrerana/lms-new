@@ -18,39 +18,39 @@ class LearningPlanTest {
         LearningPlan learningPlan = new LearningPlan();
 
         // Set values using setters
-        Long learningPlanID = 1L;
+        Long learningPlanId = 1L;
         String type = "Test Type";
-        Long batchID = 123L;
+        Long batchId = 123L;
 
-        learningPlan.setLearningPlanID(learningPlanID);
+        learningPlan.setLearningPlanId(learningPlanId);
         learningPlan.setType(type);
-        learningPlan.setBatchID(batchID);
+        learningPlan.setBatchId(batchId);
 
         // Test getters
-        assertEquals(learningPlanID, learningPlan.getLearningPlanID());
+        assertEquals(learningPlanId, learningPlan.getLearningPlanId());
         assertEquals(type, learningPlan.getType());
-        assertEquals(batchID, learningPlan.getBatchID());
+        assertEquals(batchId, learningPlan.getBatchId());
     }
 
     @Test
     void testNoArgsConstructor() {
         LearningPlan learningPlan = new LearningPlan();
         assertNotNull(learningPlan);
-        assertNull(learningPlan.getLearningPlanID());
+        assertNull(learningPlan.getLearningPlanId());
         assertNull(learningPlan.getType());
-        assertNull(learningPlan.getBatchID());
+        assertNull(learningPlan.getBatchId());
     }
 
     @Test
     void testAllArgsConstructor() {
-        Long learningPlanID = 1L;
+        Long learningPlanId = 1L;
         String type = "Test Type";
-        Long batchID = 123L;
+        Long batchId = 123L;
 
-        LearningPlan learningPlan = new LearningPlan(learningPlanID, type, batchID);
+        LearningPlan learningPlan = new LearningPlan(learningPlanId, type, batchId);
         assertNotNull(learningPlan);
-        assertEquals(learningPlanID, learningPlan.getLearningPlanID());
+        assertEquals(learningPlanId, learningPlan.getLearningPlanId());
         assertEquals(type, learningPlan.getType());
-        assertEquals(batchID, learningPlan.getBatchID());
+        assertEquals(batchId, learningPlan.getBatchId());
     }
 }

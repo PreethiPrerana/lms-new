@@ -8,13 +8,23 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 import com.thbs.lms.exception.InvalidSheetFormatException;
 
+/**
+ * The {@code SheetValidator} class provides utility methods for validating the
+ * format of Excel sheets.
+ */
 public class SheetValidator {
     // Private constructor to prevent instantiation
     private SheetValidator() {
-        // Private constructor to prevent instantiation
         throw new UnsupportedOperationException("Utility class");
     }
 
+    /**
+     * Validates the format of an Excel sheet.
+     *
+     * @param sheet The Excel sheet to be validated.
+     * @return {@code true} if the sheet format is valid, otherwise {@code false}.
+     * @throws InvalidSheetFormatException If the sheet format is invalid.
+     */
     public static boolean isValidSheetFormat(Sheet sheet) {
         // Check if the sheet has at least one row
         if (sheet.getPhysicalNumberOfRows() < 1) {

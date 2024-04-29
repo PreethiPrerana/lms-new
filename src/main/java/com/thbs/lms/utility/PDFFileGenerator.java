@@ -11,13 +11,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * The {@code PDFFileGenerator} class provides utility methods for generating
+ * PDF files
+ * and converting them into {@code MockMultipartFile} objects.
+ */
 public class PDFFileGenerator {
     // Private constructor to prevent instantiation
     private PDFFileGenerator() {
-        // Private constructor to prevent instantiation
         throw new UnsupportedOperationException("Utility class");
     }
 
+    /**
+     * Generates a PDF file with sample content.
+     *
+     * @param filePath The path where the generated PDF file will be saved.
+     * @return A {@code File} object representing the generated PDF file.
+     * @throws IOException If an I/O error occurs.
+     */
     public static File generatePDFFile(String filePath) throws IOException {
         File pdfFile = new File(filePath);
         try (PDDocument document = new PDDocument()) {
@@ -38,6 +49,13 @@ public class PDFFileGenerator {
         return pdfFile;
     }
 
+    /**
+     * Converts a PDF file into a {@code MockMultipartFile}.
+     *
+     * @param file The PDF file to be converted.
+     * @return A {@code MockMultipartFile} representing the PDF file.
+     * @throws IOException If an I/O error occurs.
+     */
     public static MockMultipartFile convertToMockMultipartFile(File file) throws IOException {
         try (FileInputStream input = new FileInputStream(file);
                 ByteArrayOutputStream output = new ByteArrayOutputStream()) {

@@ -21,7 +21,7 @@ class LearningPlanPathTest {
         LearningPlanPath learningPlanPath = new LearningPlanPath();
 
         // Set values using setters
-        Long pathID = 1L;
+        Long pathId = 1L;
         LearningPlan learningPlan = new LearningPlan();
         Course course = new Course();
         String type = "Test Type";
@@ -29,7 +29,7 @@ class LearningPlanPathTest {
         Date startDate = new Date();
         Date endDate = new Date();
 
-        learningPlanPath.setPathID(pathID);
+        learningPlanPath.setPathId(pathId);
         learningPlanPath.setLearningPlan(learningPlan);
         learningPlanPath.setCourse(course);
         learningPlanPath.setType(type);
@@ -38,7 +38,7 @@ class LearningPlanPathTest {
         learningPlanPath.setEndDate(endDate);
 
         // Test getters
-        assertEquals(pathID, learningPlanPath.getPathID());
+        assertEquals(pathId, learningPlanPath.getPathId());
         assertEquals(learningPlan, learningPlanPath.getLearningPlan());
         assertEquals(course, learningPlanPath.getCourse());
         assertEquals(type, learningPlanPath.getType());
@@ -51,7 +51,7 @@ class LearningPlanPathTest {
     void testNoArgsConstructor() {
         LearningPlanPath learningPlanPath = new LearningPlanPath();
         assertNotNull(learningPlanPath);
-        assertNull(learningPlanPath.getPathID());
+        assertNull(learningPlanPath.getPathId());
         assertNull(learningPlanPath.getLearningPlan());
         assertNull(learningPlanPath.getCourse());
         assertNull(learningPlanPath.getType());
@@ -62,7 +62,7 @@ class LearningPlanPathTest {
 
     @Test
     void testAllArgsConstructor() {
-        Long pathID = 1L;
+        Long pathId = 1L;
         LearningPlan learningPlan = new LearningPlan();
         Course course = new Course();
         String type = "Test Type";
@@ -70,10 +70,10 @@ class LearningPlanPathTest {
         Date startDate = new Date();
         Date endDate = new Date();
 
-        LearningPlanPath learningPlanPath = new LearningPlanPath(pathID, learningPlan, course, type, trainer, startDate,
+        LearningPlanPath learningPlanPath = new LearningPlanPath(pathId, learningPlan, course, type, trainer, startDate,
                 endDate);
         assertNotNull(learningPlanPath);
-        assertEquals(pathID, learningPlanPath.getPathID());
+        assertEquals(pathId, learningPlanPath.getPathId());
         assertEquals(learningPlan, learningPlanPath.getLearningPlan());
         assertEquals(course, learningPlanPath.getCourse());
         assertEquals(type, learningPlanPath.getType());

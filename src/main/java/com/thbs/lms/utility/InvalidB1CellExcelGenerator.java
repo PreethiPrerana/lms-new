@@ -6,13 +6,25 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * The {@code InvalidB1CellExcelGenerator} class provides a utility method to
+ * generate a mock Excel file
+ * with an invalid content in cell B1 for testing purposes.
+ */
 public class InvalidB1CellExcelGenerator {
     // Private constructor to prevent instantiation
     private InvalidB1CellExcelGenerator() {
-        // Private constructor to prevent instantiation
         throw new UnsupportedOperationException("Utility class");
     }
 
+    /**
+     * Generates a mock Excel file with invalid content in cell B1.
+     *
+     * @param filePath The file path of the generated Excel file. (Not used in the
+     *                 method implementation)
+     * @return A {@code MockMultipartFile} representing the generated Excel file.
+     * @throws IOException If an I/O error occurs.
+     */
     public static MockMultipartFile generateInvalidB1CellExcelFile(String filePath) throws IOException {
         // Create a new workbook
         try (Workbook workbook = new XSSFWorkbook()) {

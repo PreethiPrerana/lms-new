@@ -147,12 +147,12 @@ class CourseServiceTest {
     void testGetAllCourses_SuccessfulRetrieval() {
         List<Course> courses = new ArrayList<>();
         Course course = new Course();
-        course.setCourseID(1L);
+        course.setCourseId(1L);
         course.setCourseName("Java");
         course.setLevel("Intermediate");
 
         Course course2 = new Course();
-        course2.setCourseID(2L);
+        course2.setCourseId(2L);
         course2.setCourseName("Python");
         course2.setLevel("Beginner");
 
@@ -177,12 +177,12 @@ class CourseServiceTest {
         String level = "Intermediate";
         List<Course> courses = new ArrayList<>();
         Course course = new Course();
-        course.setCourseID(1L);
+        course.setCourseId(1L);
         course.setCourseName("Java");
         course.setLevel("Intermediate");
 
         Course course2 = new Course();
-        course2.setCourseID(2L);
+        course2.setCourseId(2L);
         course2.setCourseName("Python");
         course2.setLevel("Intermediate");
 
@@ -197,7 +197,7 @@ class CourseServiceTest {
     void testGetCourseById_CourseFound() {
         Long courseId = 1L;
         Course course = new Course();
-        course.setCourseID(courseId);
+        course.setCourseId(courseId);
         course.setCourseName("Java");
         course.setLevel("Intermediate");
 
@@ -218,7 +218,7 @@ class CourseServiceTest {
     void testUpdateCourseName_Success() {
         Long courseId = 1L;
         Course course = new Course();
-        course.setCourseID(courseId);
+        course.setCourseId(courseId);
         course.setCourseName("Java");
         course.setLevel("Intermediate");
 
@@ -235,12 +235,12 @@ class CourseServiceTest {
     @Test
     void testGetAllCourseDTOs_SuccessfulRetrieval() {
         Course course1 = new Course();
-        course1.setCourseID(1L);
+        course1.setCourseId(1L);
         course1.setCourseName("Java");
         course1.setLevel("Intermediate");
 
         Course course2 = new Course();
-        course2.setCourseID(2L);
+        course2.setCourseId(2L);
         course2.setCourseName("Python");
         course2.setLevel("Beginner");
 
@@ -253,7 +253,7 @@ class CourseServiceTest {
 
         assertEquals(courses.size(), courseDTOs.size());
         for (int i = 0; i < courses.size(); i++) {
-            assertEquals(courses.get(i).getCourseID(), courseDTOs.get(i).getCourseId());
+            assertEquals(courses.get(i).getCourseId(), courseDTOs.get(i).getCourseId());
             assertEquals(courses.get(i).getCourseName(), courseDTOs.get(i).getCourseName());
             assertTrue(courseDTOs.get(i).getTopics().isEmpty());
         }
@@ -320,7 +320,7 @@ class CourseServiceTest {
         CourseNotFoundException exception = assertThrows(CourseNotFoundException.class,
                 () -> courseService.deleteCourses(coursesToDelete));
 
-        assertEquals("Course not found for ID: 2", exception.getMessage());
+        assertEquals("Course not found for Id: 2", exception.getMessage());
 
         verify(courseRepository, times(1)).delete(any());
     }
@@ -342,7 +342,7 @@ class CourseServiceTest {
         CourseNotFoundException exception = assertThrows(CourseNotFoundException.class,
                 () -> courseService.deleteCourses(coursesToDelete));
 
-        assertEquals("Course not found for ID: 1", exception.getMessage());
+        assertEquals("Course not found for Id: 1", exception.getMessage());
 
         verify(courseRepository, never()).delete(any());
     }

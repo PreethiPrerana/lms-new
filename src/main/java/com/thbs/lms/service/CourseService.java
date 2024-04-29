@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The {@code CourseService} class provides methods for managing courses and
+ * their associated topics.
+ */
 @Service
 public class CourseService {
 
@@ -21,13 +25,28 @@ public class CourseService {
     private CourseRepository courseRepository;
     private TopicService topicService;
 
+    /**
+     * Constructs a new instance of {@code CourseService} with the specified
+     * repositories.
+     *
+     * @param courseRepository The repository for managing courses.
+     * @param topicService     The service for managing topics.
+     */
     @Autowired
     public CourseService(CourseRepository courseRepository, TopicService topicService) {
         this.courseRepository = courseRepository;
         this.topicService = topicService;
     }
 
-    // Saves a single course
+    /**
+     * Saves a single course to the database.
+     *
+     * @param course The course to be saved.
+     * @return The saved course.
+     * @throws InvalidCourseDataException If the course data is invalid.
+     * @throws DuplicateCourseException   If a course with the same name already
+     *                                    exists.
+     */
     public Course saveCourse(Course course) {
         // Validation checks
         if (course.getCourseName() == null || course.getCourseName().isEmpty() ||
@@ -44,7 +63,15 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    // Saves multiple courses
+    /**
+     * Saves multiple courses to the database.
+     *
+     * @param courses The list of courses to be saved.
+     * @return The list of saved courses.
+     * @throws InvalidCourseDataException If any of the course data is invalid.
+     * @throws DuplicateCourseException   If a course with the same name already
+     *                                    exists.
+     */
     public List<Course> saveCourses(List<Course> courses) {
         List<Course> savedCourses = new ArrayList<>();
         // Validation checks
@@ -66,12 +93,22 @@ public class CourseService {
 
     }
 
-    // Retrieves all courses
+    /**
+     * Retrieves all courses from the database.
+     *
+     * @return The list of all courses.
+     */
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
 
-    // Retrieves courses by level
+    /**
+     * Retrieves courses by their level from the database.
+     *
+     * @param level The level of the courses to retrieve.
+     * @return The list of courses with the specified level.
+     * @throws InvalidLevelException If the level is invalid.
+     */
     public List<Course> getCoursesByLevel(String level) {
         // Validation checks for level
 
@@ -81,7 +118,14 @@ public class CourseService {
         return courseRepository.findByLevel(level);
     }
 
-    // Retrieves a course by its ID
+    /**
+     * Retrieves a course by its ID from the database.
+     *
+     * @param courseId The ID of the course to retrieve.
+     * @return The course with the specified ID.
+     * @throws CourseNotFoundException If the course with the specified ID is not
+     *                                 found.
+     */
     public Course getCourseById(Long courseId) {
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         // Retrieves a course by ID or throws exception if not found
@@ -92,7 +136,11 @@ public class CourseService {
         }
     }
 
-    // Retrieves all courses as DTOs
+    /**
+     * Retrieves all courses as DTOs (Data Transfer Objects) from the database.
+     *
+     * @return The list of course DTOs.
+     */
     public List<CourseDTO> getAllCourseDTOs() {
         // Converts each course to DTO and returns a list of DTOs
         List<Course> courses = courseRepository.findAll();
@@ -101,7 +149,12 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    // Converts course entity to a DTO
+    /**
+     * Converts a course entity to a DTO (Data Transfer Object).
+     *
+     * @param course The course entity to convert.
+     * @return The course DTO.
+     */
     public CourseDTO convertToDTO(Course course) {
         // Converts course entity to DTO format with associated topics
         List<TopicDTO> topicDTOs = topicService.getTopicsByCourse(course)
@@ -109,10 +162,18 @@ public class CourseService {
                 .map(topic -> new TopicDTO(topic.getTopicID(), topic.getTopicName()))
                 .collect(Collectors.toList());
 
-        return new CourseDTO(course.getCourseID(), course.getCourseName(), topicDTOs);
+        return new CourseDTO(course.getCourseId(), course.getCourseName(), topicDTOs);
     }
 
-    // Updates the name of the course with the given ID
+    /**
+     * Updates the name of the course with the given ID in the database.
+     *
+     * @param courseId      The ID of the course to update.
+     * @param newCourseName The new name for the course.
+     * @return The updated course.
+     * @throws CourseNotFoundException If the course with the specified ID is not
+     *                                 found.
+     */
     public Course updateCourseName(Long courseId, String newCourseName) {
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -124,7 +185,14 @@ public class CourseService {
         }
     }
 
-    // Deletes a course by its ID along with its associated Topics
+    /**
+     * Deletes a course by its ID from the database along with its associated
+     * topics.
+     *
+     * @param courseId The ID of the course to delete.
+     * @throws CourseNotFoundException If the course with the specified ID is not
+     *                                 found.
+     */
     public void deleteCourse(Long courseId) {
         Optional<Course> optionalCourse = courseRepository.findById(courseId);
         if (optionalCourse.isPresent()) {
@@ -136,10 +204,17 @@ public class CourseService {
         }
     }
 
-    // Deletes multiple courses by its ID's along with its associated Topics
+    /**
+     * Deletes multiple courses by their IDs from the database along with their
+     * associated topics.
+     *
+     * @param courses The list of courses to delete.
+     * @throws CourseNotFoundException If any of the courses with the specified IDs
+     *                                 are not found.
+     */
     public void deleteCourses(List<Course> courses) {
         for (Course course : courses) {
-            Long courseId = course.getCourseID();
+            Long courseId = course.getCourseId();
             Optional<Course> optionalCourse = courseRepository.findById(courseId);
             if (optionalCourse.isPresent()) {
                 topicService.deleteTopicsByCourse(course);

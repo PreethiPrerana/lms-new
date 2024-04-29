@@ -55,9 +55,9 @@ class LearningPlanServiceTest {
     @BeforeEach
     void setUp() {
         learningPlan = new LearningPlan();
-        learningPlan.setLearningPlanID(1L);
+        learningPlan.setLearningPlanId(1L);
         learningPlan.setType("Test Type");
-        learningPlan.setBatchID(1L);
+        learningPlan.setBatchId(1L);
     }
 
     @Test
@@ -71,8 +71,8 @@ class LearningPlanServiceTest {
     }
 
     @Test
-    void testSaveLearningPlan_NullBatchID() {
-        learningPlan.setBatchID(null);
+    void testSaveLearningPlan_NullBatchId() {
+        learningPlan.setBatchId(null);
         assertThrows(InvalidLearningPlanException.class, () -> {
             learningPlanService.saveLearningPlan(learningPlan);
         });
@@ -99,12 +99,12 @@ class LearningPlanServiceTest {
     @Test
     void testSaveLearningPlan_DuplicateLearningPlanException() {
         LearningPlan existingLearningPlan = new LearningPlan();
-        existingLearningPlan.setBatchID(1L);
+        existingLearningPlan.setBatchId(1L);
 
-        when(learningPlanRepository.findByBatchID(existingLearningPlan.getBatchID()))
+        when(learningPlanRepository.findByBatchId(existingLearningPlan.getBatchId()))
                 .thenReturn(new ArrayList<>(List.of(existingLearningPlan)));
 
-        learningPlan.setBatchID(existingLearningPlan.getBatchID());
+        learningPlan.setBatchId(existingLearningPlan.getBatchId());
 
         assertThrows(DuplicateLearningPlanException.class,
                 () -> learningPlanService.saveLearningPlan(learningPlan));
@@ -129,10 +129,10 @@ class LearningPlanServiceTest {
     void testGetAllLearningPlanPathDTOs() {
         // Sample data
         LearningPlan learningPlan1 = new LearningPlan();
-        learningPlan1.setLearningPlanID(1L);
+        learningPlan1.setLearningPlanId(1L);
 
         LearningPlan learningPlan2 = new LearningPlan();
-        learningPlan2.setLearningPlanID(2L);
+        learningPlan2.setLearningPlanId(2L);
 
         List<LearningPlan> learningPlans = List.of(learningPlan1, learningPlan2);
 
@@ -227,35 +227,35 @@ class LearningPlanServiceTest {
     }
 
     @Test
-    void testGetLearningPlansByBatchID_Success() {
-        Long batchID = 1L;
+    void testGetLearningPlansByBatchId_Success() {
+        Long batchId = 1L;
 
         List<LearningPlan> expectedLearningPlans = new ArrayList<>();
         expectedLearningPlans.add(learningPlan);
 
-        when(learningPlanRepository.findByBatchID(batchID)).thenReturn(expectedLearningPlans);
+        when(learningPlanRepository.findByBatchId(batchId)).thenReturn(expectedLearningPlans);
 
-        List<LearningPlan> actualLearningPlans = learningPlanService.getLearningPlansByBatchID(batchID);
+        List<LearningPlan> actualLearningPlans = learningPlanService.getLearningPlansByBatchId(batchId);
 
         assertEquals(expectedLearningPlans.size(), actualLearningPlans.size());
         assertEquals(expectedLearningPlans.get(0), actualLearningPlans.get(0));
     }
 
     @Test
-    void testGetLearningPlansByBatchID_NotFound() {
-        Long batchID = 2L;
+    void testGetLearningPlansByBatchId_NotFound() {
+        Long batchId = 2L;
 
-        when(learningPlanRepository.findByBatchID(batchID)).thenReturn(new ArrayList<>());
+        when(learningPlanRepository.findByBatchId(batchId)).thenReturn(new ArrayList<>());
 
         assertThrows(LearningPlanNotFoundException.class, () -> {
-            learningPlanService.getLearningPlansByBatchID(batchID);
+            learningPlanService.getLearningPlansByBatchId(batchId);
         });
     }
 
     @Test
-    void testGetLearningPlansByBatchID_NullBatchID() {
+    void testGetLearningPlansByBatchId_NullBatchId() {
         assertThrows(InvalidBatchException.class, () -> {
-            learningPlanService.getLearningPlansByBatchID(null);
+            learningPlanService.getLearningPlansByBatchId(null);
         });
     }
 
@@ -280,6 +280,6 @@ class LearningPlanServiceTest {
             learningPlanService.deleteLearningPlan(id);
         });
 
-        assertEquals("Learning plan with ID 1 not found.", exception.getMessage());
+        assertEquals("Learning plan with Id 1 not found.", exception.getMessage());
     }
 }

@@ -27,18 +27,38 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * The {@code BulkUploadService} class provides methods for processing bulk
+ * upload of topics from an Excel file.
+ */
 @Service
 public class BulkUploadService {
 
     private final CourseRepository courseRepository;
     private final TopicRepository topicRepository;
 
+    /**
+     * Constructs a new instance of {@code BulkUploadService} with the specified
+     * repositories.
+     *
+     * @param courseRepository The repository for managing courses.
+     * @param topicRepository  The repository for managing topics.
+     */
     @Autowired
     public BulkUploadService(CourseRepository courseRepository, TopicRepository topicRepository) {
         this.courseRepository = courseRepository;
         this.topicRepository = topicRepository;
     }
 
+    /**
+     * Processes the uploaded Excel file and saves the topics to the database.
+     *
+     * @param file The uploaded Excel file containing topics.
+     * @throws FileProcessingException     If an error occurs while processing the
+     *                                     file.
+     * @throws InvalidSheetFormatException If the format of the Excel sheet is
+     *                                     invalid.
+     */
     public void uploadFile(MultipartFile file) {
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             // Process each sheet
@@ -76,6 +96,17 @@ public class BulkUploadService {
         }
     }
 
+    /**
+     * Processes the topics from the specified sheet and returns a list of topics.
+     *
+     * @param sheet  The Excel sheet containing topics.
+     * @param course The course associated with the topics.
+     * @return A list of topics extracted from the sheet.
+     * @throws DuplicateTopicException     If duplicate topics are found in the
+     *                                     sheet.
+     * @throws InvalidSheetFormatException If the format of the Excel sheet is
+     *                                     invalid.
+     */
     private List<Topic> processTopics(Sheet sheet, Course course) {
         List<Topic> topics = new ArrayList<>();
         Set<String> topicNames = new HashSet<>();
@@ -117,6 +148,12 @@ public class BulkUploadService {
         return topics;
     }
 
+    /**
+     * Checks if the specified row is empty.
+     *
+     * @param row The row to check.
+     * @return {@code true} if the row is empty, {@code false} otherwise.
+     */
     private boolean isRowEmpty(Row row) {
         if (row == null) {
             return true;

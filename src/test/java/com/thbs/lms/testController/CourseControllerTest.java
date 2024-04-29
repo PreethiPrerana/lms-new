@@ -89,7 +89,7 @@ class CourseControllerTest {
     void testGetCourseById() {
         Long id = 1L;
         Course course = new Course();
-        course.setCourseID(id);
+        course.setCourseId(id);
         course.setCourseName("Test Course");
         course.setLevel("Intermediate");
 

@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The {@code TopicService} class provides methods for managing topics.
+ */
 @Service
 public class TopicService {
 
@@ -23,7 +26,18 @@ public class TopicService {
         this.topicRepository = topicRepository;
     }
 
-    // Adds a topic with validation
+    /**
+     * Adds a topic to the database with validation.
+     *
+     * @param topicName   The name of the topic.
+     * @param description The description of the topic.
+     * @param course      The course associated with the topic.
+     * @return The added topic.
+     * @throws DuplicateTopicException   If a topic with the same name already
+     *                                   exists for the given course.
+     * @throws InvalidTopicDataException If the topic name, description, or course
+     *                                   is null or empty.
+     */
     public Topic addTopicWithValidation(String topicName, String description,
             Course course) {
 
@@ -45,7 +59,16 @@ public class TopicService {
         return topicRepository.save(newTopic);
     }
 
-    // Adds multiple topics with validation
+    /**
+     * Adds multiple topics to the database with validation.
+     *
+     * @param topics The list of topics to be added.
+     * @return The list of added topics.
+     * @throws DuplicateTopicException   If a topic with the same name already
+     *                                   exists for any course.
+     * @throws InvalidTopicDataException If any topic name, description, or course
+     *                                   is null or empty.
+     */
     public List<Topic> addTopicsWithValidation(List<Topic> topics) {
         List<Topic> addedTopics = new ArrayList<>();
         for (Topic topic : topics) {
@@ -74,12 +97,23 @@ public class TopicService {
         return addedTopics;
     }
 
-    // Retrieves all topics
+    /**
+     * Retrieves all topics from the database.
+     *
+     * @return The list of all topics.
+     */
     public List<Topic> getAllTopics() {
         return topicRepository.findAll();
     }
 
-    // Retrieves topic by topic id
+    /**
+     * Retrieves a topic by its ID from the database.
+     *
+     * @param topicId The ID of the topic.
+     * @return The topic with the specified ID.
+     * @throws TopicNotFoundException If the topic with the specified ID is not
+     *                                found.
+     */
     public Topic getTopicById(Long topicId) {
         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
         if (optionalTopic.isPresent()) {
@@ -89,12 +123,26 @@ public class TopicService {
         }
     }
 
-    // Retrieves topics by course
+    /**
+     * Retrieves topics associated with a course from the database.
+     *
+     * @param course The course associated with the topics.
+     * @return The list of topics associated with the specified course.
+     */
     public List<Topic> getTopicsByCourse(Course course) {
         return topicRepository.findByCourse(course);
     }
 
-    // Update topic description with validation
+    /**
+     * Updates the description of a topic in the database with validation.
+     *
+     * @param topicId        The ID of the topic to be updated.
+     * @param newDescription The new description for the topic.
+     * @return A message indicating the success of the operation.
+     * @throws InvalidDescriptionException If the new description is null or empty.
+     * @throws TopicNotFoundException      If the topic with the specified ID is not
+     *                                     found.
+     */
     public String updateTopicDescriptionWithValidation(Long topicId, String newDescription) {
         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
         if (optionalTopic.isPresent()) {
@@ -113,7 +161,13 @@ public class TopicService {
         }
     }
 
-    // Delete a topic by its ID
+    /**
+     * Deletes a topic from the database by its ID.
+     *
+     * @param topicId The ID of the topic to be deleted.
+     * @throws TopicNotFoundException If the topic with the specified ID is not
+     *                                found.
+     */
     public void deleteTopicById(Long topicId) {
         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
         if (optionalTopic.isPresent()) {
@@ -124,7 +178,12 @@ public class TopicService {
         }
     }
 
-    // Delete multiple topics by ID's
+    /**
+     * Deletes multiple topics from the database by their IDs.
+     *
+     * @param topics The list of topics to be deleted.
+     * @throws TopicNotFoundException If any topic in the list is not found.
+     */
     public void deleteTopics(List<Topic> topics) {
         for (Topic topic : topics) {
             Long topicId = topic.getTopicID();
@@ -138,7 +197,11 @@ public class TopicService {
         }
     }
 
-    // Delete all topics associated with a course
+    /**
+     * Deletes all topics associated with a course from the database.
+     *
+     * @param course The course whose associated topics are to be deleted.
+     */
     public void deleteTopicsByCourse(Course course) {
         List<Topic> topics = topicRepository.findByCourse(course);
         for (Topic topic : topics) {
@@ -146,7 +209,16 @@ public class TopicService {
         }
     }
 
-    // Update topic name with validation
+    /**
+     * Updates the name of a topic in the database with validation.
+     *
+     * @param topicId The ID of the topic to be updated.
+     * @param newName The new name for the topic.
+     * @return A message indicating the success of the operation.
+     * @throws InvalidTopicDataException If the new name is null or empty.
+     * @throws TopicNotFoundException    If the topic with the specified ID is not
+     *                                   found.
+     */
     public String updateTopicNameWithValidation(Long topicId, String newName) {
         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
         // Updates topic name if exists and validates the new name
