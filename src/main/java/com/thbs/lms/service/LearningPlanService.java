@@ -49,6 +49,7 @@ public class LearningPlanService {
         return learningPlanRepository.save(learningPlan);
     }
 
+    // convert to DTO
     public LearningPlanDTO convertToDTO(Long learningPlanId) {
         LearningPlanDTO dto = new LearningPlanDTO();
 
@@ -90,6 +91,7 @@ public class LearningPlanService {
         return dtos;
     }
 
+    // Retrieves all learning plan paths as DTOs filtered by batch id
     public List<LearningPlanDTO> getAllLearningPlanPathDTOsByBatchId(Long batchId) {
         List<LearningPlanDTO> dtoByBatch = new ArrayList<>();
         List<LearningPlanDTO> allDTO = getAllLearningPlanPathDTOs();

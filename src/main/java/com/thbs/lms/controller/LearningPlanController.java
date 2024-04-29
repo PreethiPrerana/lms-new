@@ -54,6 +54,7 @@ public class LearningPlanController {
         return ResponseEntity.ok().body(dto);
     }
 
+    // Get learningPlanPath DTO by Batch Id
     @GetMapping("/dto/{batchId}")
     public ResponseEntity<List<LearningPlanDTO>> getAllLearningPlanPathDTOsByBatchId(@PathVariable Long batchId) {
         List<LearningPlanDTO> dtos = learningPlanService.getAllLearningPlanPathDTOsByBatchId(batchId);

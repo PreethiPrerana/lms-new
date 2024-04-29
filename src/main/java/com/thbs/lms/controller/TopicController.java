@@ -47,6 +47,7 @@ public class TopicController {
         return ResponseEntity.ok().body(topics);
     }
 
+    // Get topic by topic id
     @GetMapping("/id/{topicId}")
     public ResponseEntity<Topic> getTopicById(@PathVariable Long topicId) {
         Topic topic = topicService.getTopicById(topicId);

@@ -79,6 +79,7 @@ public class TopicService {
         return topicRepository.findAll();
     }
 
+    // Retrieves topic by topic id
     public Topic getTopicById(Long topicId) {
         Optional<Topic> optionalTopic = topicRepository.findById(topicId);
         if (optionalTopic.isPresent()) {
@@ -164,5 +165,4 @@ public class TopicService {
             throw new TopicNotFoundException(NOT_FOUND_MSG + topicId);
         }
     }
-
 }
