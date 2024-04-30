@@ -47,6 +47,7 @@ public class LearningPlanService {
         this.learningPlanPathService = learningPlanPathService;
         this.learningPlanRepository = learningPlanRepository;
         this.learningPlanPathRepository = learningPlanPathRepository;
+        this.courseService=courseService;
     }
 
     /**
