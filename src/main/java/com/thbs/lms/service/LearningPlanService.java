@@ -47,7 +47,7 @@ public class LearningPlanService {
         this.learningPlanPathService = learningPlanPathService;
         this.learningPlanRepository = learningPlanRepository;
         this.learningPlanPathRepository = learningPlanPathRepository;
-        this.courseService=courseService;
+        this.courseService = courseService;
     }
 
     /**
@@ -92,18 +92,21 @@ public class LearningPlanService {
         List<PathDTO> paths = new ArrayList<>();
 
         for (LearningPlanPath path : relatedPaths) {
-            PathDTO pathDTO = new PathDTO();
-            pathDTO.setLearningPlanPathId(path.getPathId());
-            pathDTO.setType(path.getType());
-            pathDTO.setTrainer(path.getTrainer());
-            pathDTO.setStartDate(path.getStartDate());
-            pathDTO.setEndDate(path.getEndDate());
+            if (path.getType().equalsIgnoreCase("course")) {
+                PathDTO pathDTO = new PathDTO();
+                pathDTO.setLearningPlanPathId(path.getPathId());
+                pathDTO.setType(path.getType());
+                pathDTO.setTrainer(path.getTrainer());
+                pathDTO.setStartDate(path.getStartDate());
+                pathDTO.setEndDate(path.getEndDate());
 
-            Course course = path.getCourse();
-            CourseDTO courseDTO = courseService.convertToDTO(course);
-            pathDTO.setCourse(courseDTO);
+                Course course = path.getCourse();
+                CourseDTO courseDTO = courseService.convertToDTO(course);
+                pathDTO.setCourse(courseDTO);
 
-            paths.add(pathDTO);
+                paths.add(pathDTO);
+            }
+
         }
 
         dto.setPath(paths);
