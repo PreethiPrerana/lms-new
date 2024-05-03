@@ -161,8 +161,4 @@ public class LearningPlanPathController {
         return ResponseEntity.ok().body("Learning plan path deleted successfully");
     }
 
-    @GetMapping("/reminders")
-    public List<ReminderDTO> generateCombinedReminders() {
-        return reminderService.generateReminders();
-    }
 }
