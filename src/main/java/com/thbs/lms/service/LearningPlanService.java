@@ -236,4 +236,16 @@ public class LearningPlanService {
             throw new LearningPlanNotFoundException("Learning plan with ID " + id + NOT_FOUND);
         }
     }
+
+
+    public Long getBatchIdByLearningPlanId(Long learningPlanId) {
+        LearningPlan learningPlan = learningPlanRepository.findById(learningPlanId)
+                                                           .orElse(null);
+        if (learningPlan != null) {
+            return learningPlan.getBatchId();
+        } else {
+            // Handle the case where the learning plan with the given ID is not found
+            return null; // Or throw an exception, depending on your requirements
+        }
+    }
 }

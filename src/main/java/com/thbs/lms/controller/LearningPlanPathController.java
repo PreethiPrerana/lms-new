@@ -2,8 +2,10 @@ package com.thbs.lms.controller;
 
 import org.springframework.web.bind.annotation.*;
 
+import com.thbs.lms.dto.ReminderDTO;
 import com.thbs.lms.model.LearningPlanPath;
 import com.thbs.lms.service.LearningPlanPathService;
+import com.thbs.lms.service.ReminderService;
 import com.thbs.lms.utility.DateRange;
 
 import java.util.List;
@@ -27,6 +29,7 @@ public class LearningPlanPathController {
      * paths.
      */
     private final LearningPlanPathService learningPlanPathService;
+    private final ReminderService reminderService;
 
     /**
      * Constructs a new {@code LearningPlanPathController} with the specified
@@ -35,8 +38,10 @@ public class LearningPlanPathController {
      * @param learningPlanPathService the learning plan path service
      */
     @Autowired
-    public LearningPlanPathController(LearningPlanPathService learningPlanPathService) {
+    public LearningPlanPathController(LearningPlanPathService learningPlanPathService,
+            ReminderService reminderService) {
         this.learningPlanPathService = learningPlanPathService;
+        this.reminderService = reminderService;
     }
 
     /**
@@ -154,5 +159,10 @@ public class LearningPlanPathController {
     public ResponseEntity<String> deleteLearningPlanPath(@PathVariable Long learningPlanPathId) {
         learningPlanPathService.deleteLearningPlanPath(learningPlanPathId);
         return ResponseEntity.ok().body("Learning plan path deleted successfully");
+    }
+
+    @GetMapping("/reminders")
+    public List<ReminderDTO> generateCombinedReminders() {
+        return reminderService.generateReminders();
     }
 }
